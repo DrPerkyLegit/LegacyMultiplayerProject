@@ -334,7 +334,8 @@ void UIScene_MainMenu::handlePress(F64 controlId, F64 childId)
 		m_eAction=eAction_RunUnlockOrDLC;
 		signInReturnedFunc = &UIScene_MainMenu::UnlockFullGame_SignInReturned;
 		break;
-#if defined _XBOX
+		//DrPerky - added exit control handling on windows
+#if defined _XBOX || defined _WINDOWS64
 	case eControl_Exit:
 		if( ProfileManager.IsFullVersion() )
 		{				

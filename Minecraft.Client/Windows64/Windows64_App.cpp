@@ -26,6 +26,7 @@ void CConsoleMinecraftApp::StoreLaunchData()
 }
 void CConsoleMinecraftApp::ExitGame()
 {
+	exit(0);
 }
 void CConsoleMinecraftApp::FatalLoadError()
 {
