@@ -24,10 +24,8 @@
 #include "..\..\Minecraft.World\SignTileEntity.h"
 #include "..\..\Minecraft.Client\StatsCounter.h"
 #include "..\GameMode.h"
-#include "..\Xbox\Social\SocialManager.h"
 #include "Tutorial\TutorialMode.h"
 #if defined _XBOX || defined _WINDOWS64
-#include "..\..\Minecraft.Client\Xbox\XML\ATGXmlParser.h"
 #include "..\..\Minecraft.Client\Xbox\XML\xmlFilesCallback.h"
 #endif
 #include "Minecraft_Macros.h"

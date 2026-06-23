@@ -264,47 +264,11 @@
     <Filter Include="Windows64\Source Files\Social">
       <UniqueIdentifier>{541f67ae-2627-40af-8316-d76ee9bb6985}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Orbis">
-      <UniqueIdentifier>{ccfdb851-7965-4551-88bb-4312ddbf830a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Orbis\OrbisExtras">
-      <UniqueIdentifier>{2b9abc76-798a-4aae-ba50-2dfc8f78ae81}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Orbis\4JLibs">
-      <UniqueIdentifier>{35491a01-dd6f-4313-b857-5e3eb323b44f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Orbis\4JLibs\inc">
-      <UniqueIdentifier>{bcac2142-c160-4a73-96c5-cbdf681a16f0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Orbis\4JLibs\libs">
-      <UniqueIdentifier>{290b2f1c-dcd8-4ebc-9d6d-fa6de190117e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Orbis\Source Files">
-      <UniqueIdentifier>{a7ec80a7-ea10-438c-a10f-7eeef759c32d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Orbis\Source Files\Leaderboards">
-      <UniqueIdentifier>{9a2c49f6-2f9d-4e9d-a4ea-a0a04ecba75f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Orbis\Source Files\Sentient">
-      <UniqueIdentifier>{24e96065-3dd4-4150-bde2-128d133fd2c4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Orbis\Source Files\Social">
-      <UniqueIdentifier>{10961b95-cb43-4a00-b999-04b66a1a0b43}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Orbis\GameConfig">
-      <UniqueIdentifier>{6aaa8af3-3df6-43f4-9346-9adfe45ca3a7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Orbis\XML">
-      <UniqueIdentifier>{aba0f713-fcfb-417e-9616-c8474225de71}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Common\Source Files\Audio">
       <UniqueIdentifier>{94298ae6-25e0-4cc9-8c5a-efd53e156baa}</UniqueIdentifier>
     </Filter>
     <Filter Include="Xbox\Source Files\Audio">
       <UniqueIdentifier>{6ec99327-b465-4e61-b064-023a09bdf907}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Orbis\Source Files\Audio">
-      <UniqueIdentifier>{2095b7df-1779-4788-b004-3479d5ab59d8}</UniqueIdentifier>
     </Filter>
     <Filter Include="Windows64\Miles Sound System">
       <UniqueIdentifier>{4c9eb137-a48c-44a4-be08-ef1745834ece}</UniqueIdentifier>
@@ -314,15 +278,6 @@
     </Filter>
     <Filter Include="Windows64\Miles Sound System\lib">
       <UniqueIdentifier>{7c655cf2-f74e-4e6a-9114-405f5bc28a56}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Orbis\Miles Sound System">
-      <UniqueIdentifier>{2e1858a4-a24b-49d8-b19c-c24b45f75a4f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Orbis\Miles Sound System\include">
-      <UniqueIdentifier>{096eb9da-ee6c-46ba-a0f4-dd8d1748b6a1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Orbis\Miles Sound System\lib">
-      <UniqueIdentifier>{50dc7509-93df-4e0a-8a9a-cea040e92180}</UniqueIdentifier>
     </Filter>
     <Filter Include="Windows64\Miles Sound System\dll">
       <UniqueIdentifier>{a36a05f3-bc99-4097-b7a8-f81c37eec6e3}</UniqueIdentifier>
@@ -380,18 +335,6 @@
     </Filter>
     <Filter Include="Common\Source Files\zlib">
       <UniqueIdentifier>{3a9d8989-ff64-411c-84ad-b7dfb2520d5a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Orbis\Iggy">
-      <UniqueIdentifier>{de5f0642-c9ab-431b-a255-a936076ffed2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Orbis\Iggy\gdraw">
-      <UniqueIdentifier>{76ac5981-4824-487a-992f-273bfa73fb68}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Orbis\Iggy\include">
-      <UniqueIdentifier>{b1794e73-9397-4e45-8a0d-a4f6dc72c321}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Orbis\Iggy\lib">
-      <UniqueIdentifier>{ff6b8d80-d0ed-4225-b56c-1d0a19824e2f}</UniqueIdentifier>
     </Filter>
     <Filter Include="Common\Source Files\UI\Components">
       <UniqueIdentifier>{67f51112-db23-4c8a-af1b-f748f7bbce8f}</UniqueIdentifier>
@@ -465,9 +408,6 @@
     <Filter Include="Xbox\Source Files\XUI\Base Scene">
       <UniqueIdentifier>{ad3528e0-0c39-42d5-b756-fdf691df5f17}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Orbis\Network">
-      <UniqueIdentifier>{147837b5-da79-4938-abcf-f8926a72b25c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="net\minecraft\server\commands">
       <UniqueIdentifier>{34edb787-189e-49c7-8412-f5def16b6f99}</UniqueIdentifier>
     </Filter>
@@ -480,12 +420,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
-    <None Include="Xbox\GameConfig\Minecraft.gameconfig">
-      <Filter>Xbox\GameConfig</Filter>
-    </None>
-    <None Include="Xbox\GameConfig\Minecraft.spa">
-      <Filter>Xbox\GameConfig</Filter>
-    </None>
     <None Include="Xbox\res\audio\minecraft.xsb">
       <Filter>Xbox\res\audio</Filter>
     </None>
@@ -495,26 +429,11 @@
     <None Include="Xbox\res\audio\streamed.xwb">
       <Filter>Xbox\res\audio</Filter>
     </None>
-    <None Include="Xbox\4JLibs\Media\4J_strings.resx">
-      <Filter>Xbox\4JLibs\Media</Filter>
-    </None>
     <None Include="Xbox\res\terrain_MipmapLevel2.bmp">
       <Filter>Xbox\res</Filter>
     </None>
     <None Include="Xbox\res\terrain_MipmapLevel3.bmp">
       <Filter>Xbox\res</Filter>
-    </None>
-    <None Include="Xbox\xex.xml">
-      <Filter>Xbox\xexxml</Filter>
-    </None>
-    <None Include="Xbox\xex-dev.xml">
-      <Filter>Xbox\xexxml</Filter>
-    </None>
-    <None Include="Xbox\Sentient\MinecraftTelemetry.xml">
-      <Filter>Xbox\Source Files\Sentient\Telemetry</Filter>
-    </None>
-    <None Include="Xbox\Sentient\trialConfigv1.bin">
-      <Filter>Xbox\Source Files\Sentient\DynamicConf</Filter>
     </None>
     <None Include="ClassDiagram.cd" />
     <None Include="Windows64\GameConfig\Minecraft.gameconfig">
@@ -541,7 +460,6 @@
     <None Include="Network Implementation Notes.txt">
       <Filter>Common\Source Files\Network</Filter>
     </None>
-    <None Include="..\..\Users\PeakB\Downloads\MCLCE-StringTable-Compiler-master\MCLCE-StringTable-Compiler-master\languages.loc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -988,24 +906,6 @@
     <ClInclude Include="StatsScreen.h">
       <Filter>net\minecraft\client\gui\achievement</Filter>
     </ClInclude>
-    <ClInclude Include="Xbox\4JLibs\inc\4J_Input.h">
-      <Filter>Xbox\4JLibs\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Xbox\4JLibs\inc\4J_Profile.h">
-      <Filter>Xbox\4JLibs\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Xbox\4JLibs\inc\4J_Render.h">
-      <Filter>Xbox\4JLibs\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Xbox\4JLibs\inc\4J_Storage.h">
-      <Filter>Xbox\4JLibs\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Xbox\GameConfig\Minecraft.spa.h">
-      <Filter>Xbox\GameConfig</Filter>
-    </ClInclude>
-    <ClInclude Include="Xbox\Xbox_App.h">
-      <Filter>Xbox\Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="PlayerConnection.h">
       <Filter>net\minecraft\server\network</Filter>
     </ClInclude>
@@ -1204,131 +1104,17 @@
     <ClInclude Include="Common\XUI\XUI_SaveMessage.h">
       <Filter>Xbox\Source Files\XUI\Menu screens</Filter>
     </ClInclude>
-    <ClInclude Include="Xbox\XML\ATGXmlParser.h">
-      <Filter>Xbox\XML</Filter>
-    </ClInclude>
-    <ClInclude Include="Xbox\Sentient\Include\SenClientAvatar.h">
-      <Filter>Xbox\SentientLibs\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Xbox\Sentient\Include\SenClientBoxArt.h">
-      <Filter>Xbox\SentientLibs\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Xbox\Sentient\Include\SenClientConfig.h">
-      <Filter>Xbox\SentientLibs\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Xbox\Sentient\Include\SenClientCore.h">
-      <Filter>Xbox\SentientLibs\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Xbox\Sentient\Include\SenClientCulture.h">
-      <Filter>Xbox\SentientLibs\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Xbox\Sentient\Include\SenClientCultureBackCompat_SenBoxArt.h">
-      <Filter>Xbox\SentientLibs\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Xbox\Sentient\Include\SenClientCultureBackCompat_SenClientUGC.h">
-      <Filter>Xbox\SentientLibs\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Xbox\Sentient\Include\SenClientCultureBackCompat_SenCore.h">
-      <Filter>Xbox\SentientLibs\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Xbox\Sentient\Include\SenClientCultureBackCompat_SenNews.h">
-      <Filter>Xbox\SentientLibs\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Xbox\Sentient\Include\SenClientCultureBackCompat_SenSuperstars.h">
-      <Filter>Xbox\SentientLibs\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Xbox\Sentient\Include\SenClientDynamicConfig.h">
-      <Filter>Xbox\SentientLibs\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Xbox\Sentient\Include\SenClientFame.h">
-      <Filter>Xbox\SentientLibs\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Xbox\Sentient\Include\SenClientFile.h">
-      <Filter>Xbox\SentientLibs\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Xbox\Sentient\Include\SenClientHelp.h">
-      <Filter>Xbox\SentientLibs\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Xbox\Sentient\Include\SenClientMain.h">
-      <Filter>Xbox\SentientLibs\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Xbox\Sentient\Include\SenClientMarkers.h">
-      <Filter>Xbox\SentientLibs\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Xbox\Sentient\Include\SenClientNews.h">
-      <Filter>Xbox\SentientLibs\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Xbox\Sentient\Include\SenClientPackage.h">
-      <Filter>Xbox\SentientLibs\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Xbox\Sentient\Include\SenClientRawData.h">
-      <Filter>Xbox\SentientLibs\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Xbox\Sentient\Include\SenClientResource.h">
-      <Filter>Xbox\SentientLibs\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Xbox\Sentient\Include\SenClientStats.h">
-      <Filter>Xbox\SentientLibs\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Xbox\Sentient\Include\SenClientSuperstars.h">
-      <Filter>Xbox\SentientLibs\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Xbox\Sentient\Include\SenClientSys.h">
-      <Filter>Xbox\SentientLibs\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Xbox\Sentient\Include\SenClientTypes.h">
-      <Filter>Xbox\SentientLibs\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Xbox\Sentient\Include\SenClientUGC.h">
-      <Filter>Xbox\SentientLibs\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Xbox\Sentient\Include\SenClientUGCLeaderboards.h">
-      <Filter>Xbox\SentientLibs\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Xbox\Sentient\Include\SenClientUGCTypes.h">
-      <Filter>Xbox\SentientLibs\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Xbox\Sentient\Include\SenClientUser.h">
-      <Filter>Xbox\SentientLibs\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Xbox\Sentient\Include\SenClientUtil.h">
-      <Filter>Xbox\SentientLibs\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Xbox\Sentient\Include\SenClientXML.h">
-      <Filter>Xbox\SentientLibs\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Xbox\Sentient\SentientStats.h">
-      <Filter>Xbox\Source Files\Sentient\Telemetry</Filter>
-    </ClInclude>
-    <ClInclude Include="Xbox\Sentient\TelemetryEnum.h">
-      <Filter>Xbox\Source Files\Sentient\Telemetry</Filter>
-    </ClInclude>
-    <ClInclude Include="Xbox\Sentient\MinecraftTelemetry.h">
-      <Filter>Xbox\Source Files\Sentient\Telemetry</Filter>
-    </ClInclude>
     <ClInclude Include="Common\XUI\XUI_SettingsAll.h">
       <Filter>Xbox\Source Files\XUI\Menu screens\Help &amp; Options\Settings</Filter>
     </ClInclude>
     <ClInclude Include="Common\XUI\XUI_Ctrl_4JIcon.h">
       <Filter>Xbox\Source Files\XUI\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="Xbox\Sentient\DynamicConfigurations.h">
-      <Filter>Xbox\Source Files\Sentient\DynamicConf</Filter>
-    </ClInclude>
     <ClInclude Include="Common\XUI\XUI_LoadSettings.h">
       <Filter>Xbox\Source Files\XUI\Menu screens</Filter>
     </ClInclude>
     <ClInclude Include="Common\XUI\XUI_Ctrl_SplashPulser.h">
       <Filter>Xbox\Source Files\XUI\Controls</Filter>
-    </ClInclude>
-    <ClInclude Include="Xbox\Font\XUI_FontRenderer.h">
-      <Filter>Xbox\Source Files\Font</Filter>
-    </ClInclude>
-    <ClInclude Include="Xbox\Font\XUI_Font.h">
-      <Filter>Xbox\Source Files\Font</Filter>
-    </ClInclude>
-    <ClInclude Include="Xbox\Font\XUI_FontData.h">
-      <Filter>Xbox\Source Files\Font</Filter>
     </ClInclude>
     <ClInclude Include="Common\XUI\XUI_DebugTips.h">
       <Filter>Xbox\Source Files\XUI\Menu screens\Debug</Filter>
@@ -1345,12 +1131,6 @@
     <ClInclude Include="PistonPieceRenderer.h">
       <Filter>net\minecraft\client\renderer\tileentity</Filter>
     </ClInclude>
-    <ClInclude Include="Xbox\Sentient\SentientManager.h">
-      <Filter>Xbox\Source Files\Sentient</Filter>
-    </ClInclude>
-    <ClInclude Include="Xbox\Sentient\SentientTelemetryCommon.h">
-      <Filter>Xbox\Source Files\Sentient\Telemetry</Filter>
-    </ClInclude>
     <ClInclude Include="Common\XUI\XUI_SettingsOptions.h">
       <Filter>Xbox\Source Files\XUI\Menu screens\Help &amp; Options\Settings</Filter>
     </ClInclude>
@@ -1362,9 +1142,6 @@
     </ClInclude>
     <ClInclude Include="Common\XUI\XUI_SettingsGraphics.h">
       <Filter>Xbox\Source Files\XUI\Menu screens\Help &amp; Options\Settings</Filter>
-    </ClInclude>
-    <ClInclude Include="Xbox\XML\xmlFilesCallback.h">
-      <Filter>Xbox\XML</Filter>
     </ClInclude>
     <ClInclude Include="ServerPlayerGameMode.h">
       <Filter>net\minecraft\server\level</Filter>
@@ -1549,17 +1326,8 @@
     <ClInclude Include="Common\XUI\XUI_Scene_Win.h">
       <Filter>Xbox\Source Files\XUI\Menu screens</Filter>
     </ClInclude>
-    <ClInclude Include="Xbox\Social\SocialManager.h">
-      <Filter>Xbox\Source Files\Social</Filter>
-    </ClInclude>
     <ClInclude Include="extraX64client.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Xbox\Resource.h">
-      <Filter>Windows</Filter>
-    </ClInclude>
-    <ClInclude Include="Xbox\targetver.h">
-      <Filter>Windows</Filter>
     </ClInclude>
     <ClInclude Include="Common\Trial\TrialMode.h">
       <Filter>Common\Source Files\Trial</Filter>
@@ -1948,9 +1716,6 @@
     <ClInclude Include="Common\Audio\Consoles_SoundEngine.h">
       <Filter>Common\Source Files\Audio</Filter>
     </ClInclude>
-    <ClInclude Include="Xbox\Audio\SoundEngine.h">
-      <Filter>Xbox\Source Files\Audio</Filter>
-    </ClInclude>
     <ClInclude Include="Common\Audio\SoundEngine.h">
       <Filter>Common\Source Files\Audio</Filter>
     </ClInclude>
@@ -2103,9 +1868,6 @@
     </ClInclude>
     <ClInclude Include="Common\UI\UIScene_DebugOverlay.h">
       <Filter>Common\Source Files\UI\Scenes\Debug</Filter>
-    </ClInclude>
-    <ClInclude Include="Xbox\Xbox_UIController.h">
-      <Filter>Xbox\Source Files</Filter>
     </ClInclude>
     <ClInclude Include="Common\Network\SessionInfo.h">
       <Filter>Common\Source Files\Network</Filter>
@@ -2332,9 +2094,6 @@
     <ClInclude Include="Common\Leaderboards\LeaderboardManager.h">
       <Filter>Common\Source Files\Leaderboards</Filter>
     </ClInclude>
-    <ClInclude Include="Xbox\Leaderboards\XboxLeaderboardManager.h">
-      <Filter>Xbox\Source Files\Leaderboards</Filter>
-    </ClInclude>
     <ClInclude Include="Common\UI\UIScene_HowToPlay.h">
       <Filter>Common\Source Files\UI\Scenes\Help &amp; Options</Filter>
     </ClInclude>
@@ -2506,9 +2265,6 @@
     <ClInclude Include="Common\UI\IUIScene_StartGame.h">
       <Filter>Common\Source Files\UI\Scenes\Frontend Menu screens</Filter>
     </ClInclude>
-    <ClInclude Include="Xbox\4JLibs\inc\4J_xtms.h">
-      <Filter>Xbox\4JLibs\inc</Filter>
-    </ClInclude>
     <ClInclude Include="Common\UI\UIControl_SpaceIndicatorBar.h">
       <Filter>Common\Source Files\UI\Controls</Filter>
     </ClInclude>
@@ -2528,6 +2284,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Common\Audio\stb_vorbis.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Xbox\XML\xmlFilesCallback.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Xbox\Resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -2973,12 +2735,6 @@
     <ClCompile Include="BufferedImage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Xbox\Xbox_App.cpp">
-      <Filter>Xbox\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Xbox\Xbox_Minecraft.cpp">
-      <Filter>Xbox\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="PendingConnection.cpp">
       <Filter>net\minecraft\server\network</Filter>
     </ClCompile>
@@ -3162,20 +2918,11 @@
     <ClCompile Include="Common\XUI\XUI_SaveMessage.cpp">
       <Filter>Xbox\Source Files\XUI\Menu screens</Filter>
     </ClCompile>
-    <ClCompile Include="Xbox\XML\ATGXmlParser.cpp">
-      <Filter>Xbox\XML</Filter>
-    </ClCompile>
-    <ClCompile Include="Xbox\Sentient\SentientStats.cpp">
-      <Filter>Xbox\Source Files\Sentient\Telemetry</Filter>
-    </ClCompile>
     <ClCompile Include="Common\XUI\XUI_SettingsAll.cpp">
       <Filter>Xbox\Source Files\XUI\Menu screens\Help &amp; Options\Settings</Filter>
     </ClCompile>
     <ClCompile Include="Common\XUI\XUI_Ctrl_4JIcon.cpp">
       <Filter>Xbox\Source Files\XUI\Controls</Filter>
-    </ClCompile>
-    <ClCompile Include="Xbox\Sentient\DynamicConfigurations.cpp">
-      <Filter>Xbox\Source Files\Sentient\DynamicConf</Filter>
     </ClCompile>
     <ClCompile Include="Common\XUI\XUI_LoadSettings.cpp">
       <Filter>Xbox\Source Files\XUI\Menu screens</Filter>
@@ -3183,20 +2930,8 @@
     <ClCompile Include="Common\XUI\XUI_Ctrl_SplashPulser.cpp">
       <Filter>Xbox\Source Files\XUI\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="Xbox\Font\XUI_FontRenderer.cpp">
-      <Filter>Xbox\Source Files\Font</Filter>
-    </ClCompile>
-    <ClCompile Include="Xbox\Font\XUI_Font.cpp">
-      <Filter>Xbox\Source Files\Font</Filter>
-    </ClCompile>
-    <ClCompile Include="Xbox\Font\XUI_FontData.cpp">
-      <Filter>Xbox\Source Files\Font</Filter>
-    </ClCompile>
     <ClCompile Include="Common\XUI\XUI_DebugTips.cpp">
       <Filter>Xbox\Source Files\XUI\Menu screens\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Xbox\Sentient\SentientManager.cpp">
-      <Filter>Xbox\Source Files\Sentient</Filter>
     </ClCompile>
     <ClCompile Include="Common\XUI\XUI_SkinSelect.cpp">
       <Filter>Xbox\Source Files\XUI\Menu screens\Help &amp; Options\Settings</Filter>
@@ -3386,9 +3121,6 @@
     </ClCompile>
     <ClCompile Include="Common\XUI\XUI_Scene_Win.cpp">
       <Filter>Xbox\Source Files\XUI\Menu screens</Filter>
-    </ClCompile>
-    <ClCompile Include="Xbox\Social\SocialManager.cpp">
-      <Filter>Xbox\Source Files\Social</Filter>
     </ClCompile>
     <ClCompile Include="Extrax64Stubs.cpp">
       <Filter>Source Files</Filter>
@@ -3687,9 +3419,6 @@
     <ClCompile Include="OzelotModel.cpp">
       <Filter>net\minecraft\client\model</Filter>
     </ClCompile>
-    <ClCompile Include="Xbox\Audio\SoundEngine.cpp">
-      <Filter>Xbox\Source Files\Audio</Filter>
-    </ClCompile>
     <ClCompile Include="Common\Audio\SoundEngine.cpp">
       <Filter>Common\Source Files\Audio</Filter>
     </ClCompile>
@@ -3830,9 +3559,6 @@
     </ClCompile>
     <ClCompile Include="Common\UI\UIScene_DebugOverlay.cpp">
       <Filter>Common\Source Files\UI\Scenes\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Xbox\Xbox_UIController.cpp">
-      <Filter>Xbox\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Common\Network\GameNetworkManager.cpp">
       <Filter>Common\Source Files\Network</Filter>
@@ -4041,9 +3767,6 @@
     <ClCompile Include="Common\Leaderboards\LeaderboardManager.cpp">
       <Filter>Common\Source Files\Leaderboards</Filter>
     </ClCompile>
-    <ClCompile Include="Xbox\Leaderboards\XboxLeaderboardManager.cpp">
-      <Filter>Xbox\Source Files\Leaderboards</Filter>
-    </ClCompile>
     <ClCompile Include="Common\UI\UIScene_HowToPlay.cpp">
       <Filter>Common\Source Files\UI\Scenes\Help &amp; Options</Filter>
     </ClCompile>
@@ -4232,39 +3955,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Library Include="Xbox\4JLibs\libs\4J_Render_d.lib">
-      <Filter>Xbox\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="Xbox\4JLibs\libs\4J_Render.lib">
-      <Filter>Xbox\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="Xbox\4JLibs\libs\4J_Input_d.lib">
-      <Filter>Xbox\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="Xbox\4JLibs\libs\4J_Input_r.lib">
-      <Filter>Xbox\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="Xbox\4JLibs\libs\4J_Profile.lib">
-      <Filter>Xbox\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="Xbox\4JLibs\libs\4J_Profile_d.lib">
-      <Filter>Xbox\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="Xbox\4JLibs\libs\4J_Profile_r.lib">
-      <Filter>Xbox\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="Xbox\4JLibs\libs\4J_Storage.lib">
-      <Filter>Xbox\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="Xbox\4JLibs\libs\4J_Storage_d.lib">
-      <Filter>Xbox\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="Xbox\4JLibs\libs\4J_Storage_r.lib">
-      <Filter>Xbox\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="Xbox\4JLibs\libs\4J_Input.lib">
-      <Filter>Xbox\4JLibs\libs</Filter>
-    </Library>
     <Library Include="Windows64\4JLibs\libs\4J_Render_PC.lib">
       <Filter>Windows64\4JLibs\libs</Filter>
     </Library>
@@ -4292,29 +3982,9 @@
     <Library Include="Windows64\4JLibs\libs\4J_Storage_d.lib">
       <Filter>Windows64\4JLibs\libs</Filter>
     </Library>
-    <Library Include="Xbox\4JLibs\libs\4J_XTMS_d.lib">
-      <Filter>Xbox\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="Xbox\4JLibs\libs\4J_XTMS_r.lib">
-      <Filter>Xbox\4JLibs\libs</Filter>
-    </Library>
   </ItemGroup>
   <ItemGroup>
-    <Xsd Include="Xbox\Sentient\SentientStats.xsd">
-      <Filter>Xbox\SentientLibs</Filter>
-    </Xsd>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="Xbox\MinecraftWindows.ico">
-      <Filter>Windows</Filter>
-    </Image>
-    <Image Include="Xbox\small.ico">
-      <Filter>Windows</Filter>
-    </Image>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="Xbox\MinecraftWindows.rc">
-      <Filter>Windows</Filter>
-    </ResourceCompile>
+    <Image Include="Xbox\MinecraftWindows.ico" />
+    <Image Include="Xbox\small.ico" />
   </ItemGroup>
 </Project>

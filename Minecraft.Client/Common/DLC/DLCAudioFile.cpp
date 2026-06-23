@@ -2,7 +2,6 @@
 #include "DLCManager.h"
 #include "DLCAudioFile.h"
 #if defined _XBOX || defined _WINDOWS64
-#include "..\..\Xbox\XML\ATGXmlParser.h"
 #include "..\..\Xbox\XML\xmlFilesCallback.h"
 #endif
 
