@@ -1296,7 +1296,7 @@ if not exist "$(TargetDir)\savedata" mkdir "$(TargetDir)\savedata"</Command>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)$(ProjectName).pdb</ProgramDatabaseFile>
-      <AdditionalDependencies>d3d11.lib;..\Minecraft.World\x64_Debug\Minecraft.World.lib;%(AdditionalDependencies);XInput9_1_0.lib;..\Minecraft.Client\Windows64\Miles\Lib\mss64.lib</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;..\Minecraft.World\x64_Debug\Minecraft.World.lib;%(AdditionalDependencies);XInput9_1_0.lib</AdditionalDependencies>
       <ShowProgress>NotSet</ShowProgress>
       <SuppressStartupBanner>false</SuppressStartupBanner>
       <ForceFileOutput>MultiplyDefinedSymbolOnly</ForceFileOutput>
@@ -3201,6 +3201,7 @@ xcopy /q /y /i /s /e $(ProjectDir)Durango\CU  $(LayoutDir)Image\Loose\CU</Comman
     <ClInclude Include="Common\App_enums.h" />
     <ClInclude Include="Common\App_structs.h" />
     <ClInclude Include="Common\Audio\Consoles_SoundEngine.h" />
+    <ClInclude Include="Common\Audio\miniaudio.h" />
     <ClInclude Include="Common\Audio\SoundEngine.h" />
     <ClInclude Include="Common\BuildVer.h" />
     <ClInclude Include="Common\Colours\ColourTable.h" />
@@ -5776,6 +5777,7 @@ xcopy /q /y /i /s /e $(ProjectDir)Durango\CU  $(LayoutDir)Image\Loose\CU</Comman
     <ClInclude Include="FireballRenderer.h" />
     <ClInclude Include="FishingHookRenderer.h" />
     <ClInclude Include="FlameParticle.h" />
+    <ClInclude Include="FolderFile.h" />
     <ClInclude Include="FolderTexturePack.h" />
     <ClInclude Include="Font.h" />
     <ClInclude Include="FootstepParticle.h" />
@@ -6514,40 +6516,6 @@ xcopy /q /y /i /s /e $(ProjectDir)Durango\CU  $(LayoutDir)Image\Loose\CU</Comman
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ORBIS'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ORBIS'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ContentPackage_Vita|ORBIS'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="Windows64\Miles\include\mss.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Durango'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Durango'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ContentPackage_Vita|Durango'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ORBIS'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ContentPackage_Vita|ORBIS'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ORBIS'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|PS3'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|PSVita'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|PS3'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ContentPackage_Vita|PS3'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|PSVita'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ContentPackage_Vita|PSVita'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Xbox 360'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ContentPackage_Vita|Xbox 360'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox 360'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="Windows64\Miles\include\rrcore.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Durango'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Durango'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ContentPackage_Vita|Durango'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ORBIS'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ContentPackage_Vita|ORBIS'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ORBIS'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|PS3'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|PSVita'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|PS3'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ContentPackage_Vita|PS3'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|PSVita'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ContentPackage_Vita|PSVita'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Xbox 360'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ContentPackage_Vita|Xbox 360'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox 360'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Windows64\Minecraft_Macros.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ContentPackage|Durango'">true</ExcludedFromBuild>
@@ -14844,6 +14812,7 @@ xcopy /q /y /i /s /e $(ProjectDir)Durango\CU  $(LayoutDir)Image\Loose\CU</Comman
     <ClCompile Include="FireballRenderer.cpp" />
     <ClCompile Include="FishingHookRenderer.cpp" />
     <ClCompile Include="FlameParticle.cpp" />
+    <ClCompile Include="FolderFile.cpp" />
     <ClCompile Include="FolderTexturePack.cpp" />
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="FootstepParticle.cpp" />
@@ -19549,23 +19518,6 @@ xcopy /q /y /i /s /e $(ProjectDir)Durango\CU  $(LayoutDir)Image\Loose\CU</Comman
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox 360'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Xbox 360'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ContentPackage_Vita|Xbox 360'">true</ExcludedFromBuild>
-    </Library>
-    <Library Include="Windows64\Miles\lib\mss64.lib">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Durango'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Durango'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ContentPackage_Vita|Durango'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ORBIS'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ContentPackage_Vita|ORBIS'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ORBIS'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|PS3'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|PSVita'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|PS3'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ContentPackage_Vita|PS3'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|PSVita'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ContentPackage_Vita|PSVita'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Xbox 360'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ContentPackage_Vita|Xbox 360'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox 360'">true</ExcludedFromBuild>
     </Library>
     <Library Include="Xbox\4JLibs\libs\4J_Input.lib">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ContentPackage|x64'">true</ExcludedFromBuild>

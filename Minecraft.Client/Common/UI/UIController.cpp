@@ -457,7 +457,7 @@ void UIController::loadSkins()
 	// Every platform has one of these, so nothing shared
 	if(m_fScreenHeight==1080.0f)
 	{
-		m_iggyLibraries[eLibrary_Platform] = loadSkin(platformSkinPath, L"platformskinHD.swf");
+		m_iggyLibraries[eLibrary_Platform] = loadSkin(L"platformskinHD.swf", L"platformskinHD.swf");
 	}
 	else
 	{
@@ -1554,9 +1554,11 @@ void UIController::NavigateToHomeMenu()
 	{
 		// need to stop the streaming audio - by playing streaming audio from the default texture pack now
 		// reset the streaming sounds back to the normal ones
-		pMinecraft->soundEngine->SetStreamingSounds(eStream_Overworld_Calm1,eStream_Overworld_piano3,
-			eStream_Nether1,eStream_Nether4,
-			eStream_end_dragon,eStream_end_end,
+		pMinecraft->soundEngine->SetStreamingSounds(eStream_Overworld_Calm1, eStream_Overworld_piano3,
+			eStream_Nether1, eStream_Nether4,
+			eStream_end_dragon, eStream_end_end,
+			eStream_Overworld_Creative1, eStream_Overworld_Creative6,
+			eStream_Overworld_Menu1, eStream_Overworld_Menu4,
 			eStream_CD_1);
 		pMinecraft->soundEngine->playStreaming(L"", 0, 0, 0, 1, 1);
 

@@ -16,6 +16,14 @@ public:
 		e_AudioType_Nether,
 		e_AudioType_End,
 
+		// @3UR: thanks https://github.com/LCERD/PCK-Studio/blob/500fc74395ce99fe20cbd7598999bfab3b606745/PckStudio.Core/FileFormats/PckAudioFile.cs#L25
+		e_AudioType_Creative,
+		e_AudioType_Menu,
+		e_AudioType_Battle,
+		e_AudioType_Tumble,
+		e_AudioType_Glide,
+		e_AudioType_BuildOff,
+
 		e_AudioType_Max,
 	};
 	enum EAudioParameterType

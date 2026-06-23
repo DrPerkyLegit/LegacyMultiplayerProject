@@ -48,6 +48,7 @@
 #include "..\StringTable.h"
 #ifndef _XBOX
 #include "..\ArchiveFile.h"
+#include "..\FolderFile.h"
 #endif
 #include "..\Minecraft.h"
 #ifdef _XBOX
@@ -3464,9 +3465,11 @@ void CMinecraftApp::HandleXuiActions(void)
 						// need to stop the streaming audio - by playing streaming audio from the default texture pack now
 						// reset the streaming sounds back to the normal ones
 #ifndef _XBOX
-						pMinecraft->soundEngine->SetStreamingSounds(eStream_Overworld_Calm1,eStream_Overworld_piano3,
-							eStream_Nether1,eStream_Nether4,
-							eStream_end_dragon,eStream_end_end,
+						pMinecraft->soundEngine->SetStreamingSounds(eStream_Overworld_Calm1, eStream_Overworld_piano3,
+							eStream_Nether1, eStream_Nether4,
+							eStream_end_dragon, eStream_end_end,
+							eStream_Overworld_Creative1, eStream_Overworld_Creative6,
+							eStream_Overworld_Menu1, eStream_Overworld_Menu4,
 							eStream_CD_1);
 #endif
 						pMinecraft->soundEngine->playStreaming(L"", 0, 0, 0, 1, 1);
@@ -4083,61 +4086,12 @@ void CMinecraftApp::loadMediaArchive()
 {
 	wstring mediapath = L"";
 
-#ifdef __PS3__
-	mediapath = L"Common\\Media\\MediaPS3.arc";
-#elif _WINDOWS64
-	mediapath = L"Common\\Media\\MediaWindows64.arc";
-#elif __ORBIS__
-	mediapath = L"Common\\Media\\MediaOrbis.arc";
-#elif _DURANGO
-	mediapath = L"Common\\Media\\MediaDurango.arc";
-#elif __PSVITA__
-	mediapath = L"Common\\Media\\MediaPSVita.arc";
-#endif
+	mediapath = L"Common\\Media";
 
 	if (!mediapath.empty()) 
 	{
-		m_mediaArchive = new ArchiveFile( File(mediapath) );
+		m_mediaArchive = new FolderFile(mediapath);
 	}
-#if 0
-	string path = "Common\\media.arc";
-	HANDLE hFile = CreateFile(	path.c_str(),
-								GENERIC_READ,
-								FILE_SHARE_READ,
-								NULL,
-								OPEN_EXISTING,
-								FILE_FLAG_SEQUENTIAL_SCAN,
-								NULL );
-
-	if( hFile != INVALID_HANDLE_VALUE )
-	{
-		File fileHelper(convStringToWstring(path));
-		DWORD dwFileSize = fileHelper.length();
-
-		// Initialize memory.
-		PBYTE m_fBody = new BYTE[ dwFileSize ];
-		ZeroMemory(m_fBody, dwFileSize);
-
-		DWORD m_fSize = 0;
-		BOOL hr = ReadFile(	hFile,
-							m_fBody,
-							dwFileSize,
-							&m_fSize,
-							NULL	);
-
-		assert( m_fSize == dwFileSize );
-
-		CloseHandle( hFile );
-
-		m_mediaArchive = new ArchiveFile(m_fBody, m_fSize);
-	}
-	else
-	{
-		assert( false );
-		// AHHHHHHHHHHHH
-		m_mediaArchive = NULL;
-	}
-#endif
 }
 
 void CMinecraftApp::loadStringTable()

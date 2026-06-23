@@ -467,23 +467,50 @@ int DLCTexturePack::packMounted(LPVOID pParam,int iPad,DWORD dwErr,DWORD dwLicen
 				}
 #else 
 				//DLCPack *pack = texturePack->m_dlcInfoPack->GetParentPack();
-				if(pack->getDLCItemsCount(DLCManager::e_DLCType_Audio)>0)
+				if (pack->getDLCItemsCount(DLCManager::e_DLCType_Audio) > 0)
 				{
-					DLCAudioFile *dlcFile = (DLCAudioFile *) pack->getFile(DLCManager::e_DLCType_Audio, 0);
+					DLCAudioFile* dlcFile = static_cast<DLCAudioFile*>(pack->getFile(DLCManager::e_DLCType_Audio, 0));
 					texturePack->setHasAudio(true);
 					// init the streaming sound ids for this texture pack
-					int iOverworldStart, iNetherStart, iEndStart;
-					int iOverworldC, iNetherC, iEndC;
+					int iOverworldC = dlcFile->GetCountofType(DLCAudioFile::e_AudioType_Overworld);
+					int iNetherC = dlcFile->GetCountofType(DLCAudioFile::e_AudioType_Nether);
+					int iEndStart = iOverworldC + iNetherC;
+					int iEndC = dlcFile->GetCountofType(DLCAudioFile::e_AudioType_End);
+					int iAfterEnd = iOverworldC + iNetherC + iEndC;
+					int iCreativeC = dlcFile->GetCountofType(DLCAudioFile::e_AudioType_Creative);
 
-					iOverworldStart=0;
-					iOverworldC=dlcFile->GetCountofType(DLCAudioFile::e_AudioType_Overworld);
-					iNetherStart=iOverworldC;
-					iNetherC=dlcFile->GetCountofType(DLCAudioFile::e_AudioType_Nether);
-					iEndStart=iOverworldC+iNetherC;
-					iEndC=dlcFile->GetCountofType(DLCAudioFile::e_AudioType_End);
+					int iCreativeStart, iCreativeRange;
+					if (iCreativeC)
+					{
+						iCreativeStart = iAfterEnd;
+						iCreativeRange = iCreativeC;
+						iAfterEnd += iCreativeC;
+					}
+					else
+					{
+						iCreativeStart = 0;
+						iCreativeRange = iOverworldC;
+					}
 
-					Minecraft::GetInstance()->soundEngine->SetStreamingSounds(iOverworldStart,iOverworldStart+iOverworldC,
-						iNetherStart,iNetherStart+iNetherC,iEndStart,iEndStart+iEndC,iEndStart+iEndC); // push the CD start to after
+					int iMenuC = dlcFile->GetCountofType(DLCAudioFile::e_AudioType_Menu);
+					int iMenuStart, iMenuRange;
+					if (iMenuC)
+					{
+						iMenuStart = iAfterEnd;
+						iMenuRange = iMenuC;
+						iAfterEnd += iMenuC;
+					}
+					else
+					{
+						iMenuStart = 0;
+						iMenuRange = iOverworldC;
+					}
+
+					Minecraft::GetInstance()->soundEngine->SetStreamingSounds(0, iOverworldC - 1,
+						iOverworldC, iOverworldC + iNetherC - 1,
+						iEndStart, iEndStart + iEndC - 1,
+						iCreativeStart, iCreativeStart + iCreativeRange - 1,
+						iMenuStart, iMenuStart + iMenuRange - 1, iAfterEnd);
 				}
 #endif
 }
