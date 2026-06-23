@@ -43,7 +43,6 @@
 #ifdef _XBOX
 #include "Common\XUI\XUI_DebugSetCamera.h"
 #endif
-#include "PS3\PS3Extras\ShutdownManager.h"
 #include "ServerCommandDispatcher.h"
 #include "..\Minecraft.World\BiomeSource.h"
 #include "PlayerChunkMap.h"
@@ -274,7 +273,6 @@ bool MinecraftServer::initServer(__int64 seed, NetworkGameInitData *initData, DW
 // 4J - added - extra thread to post processing on separate thread during level creation
 int MinecraftServer::runPostUpdate(void* lpParam)
 {
-	ShutdownManager::HasStarted(ShutdownManager::ePostProcessThread);
 
 	MinecraftServer *server = (MinecraftServer *)lpParam;
 	Entity::useSmallIds();		// This thread can end up spawning entities as resources
@@ -304,12 +302,12 @@ int MinecraftServer::runPostUpdate(void* lpParam)
 			LeaveCriticalSection(&server->m_postProcessCS);
 		}
 		Sleep(1);
-	} while (!server->m_postUpdateTerminate && ShutdownManager::ShouldRun(ShutdownManager::ePostProcessThread));
+	} while (!server->m_postUpdateTerminate);
 //#ifndef __PS3__
 	// One final pass through updates to make sure we're done
 	EnterCriticalSection(&server->m_postProcessCS);
 	int maxRequests = server->m_postProcessRequests.size();
-	while(server->m_postProcessRequests.size() && ShutdownManager::ShouldRun(ShutdownManager::ePostProcessThread) )
+	while(server->m_postProcessRequests.size() )
 	{
 		MinecraftServer::postProcessRequest request = server->m_postProcessRequests.back();
 		server->m_postProcessRequests.pop_back();
@@ -331,8 +329,6 @@ int MinecraftServer::runPostUpdate(void* lpParam)
 	AABB::ReleaseThreadStorage();
 	Vec3::ReleaseThreadStorage();
 	Level::destroyLightingCache();
-
-	ShutdownManager::HasFinished(ShutdownManager::ePostProcessThread);
 
 	return 0;
 }
@@ -1573,7 +1569,6 @@ void MinecraftServer::main(__int64 seed, void *lpParameter)
 	server->run(seed, lpParameter);
 	delete server;
 	server = NULL;
-	ShutdownManager::HasFinished(ShutdownManager::eServerThread );
 }
 
 void MinecraftServer::HaltServer(bool bPrimaryPlayerSignedOut)

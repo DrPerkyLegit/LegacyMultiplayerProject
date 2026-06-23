@@ -769,64 +769,6 @@
     <None Include="Windows64\GameConfig\Minecraft.spa">
       <Filter>Windows64\GameConfig</Filter>
     </None>
-    <None Include="Durango\SmallLogo.png">
-      <Filter>Durango</Filter>
-    </None>
-    <None Include="Durango\SplashScreen.png">
-      <Filter>Durango</Filter>
-    </None>
-    <None Include="Durango\StoreLogo.png">
-      <Filter>Durango</Filter>
-    </None>
-    <None Include="Orbis\GameConfig\Minecraft.spa" />
-    <None Include="Orbis\4JLibs\Libs\4J_Render.a">
-      <Filter>Orbis\4JLibs\libs</Filter>
-    </None>
-    <None Include="Orbis\4JLibs\Libs\4J_Render_d.a">
-      <Filter>Orbis\4JLibs\libs</Filter>
-    </None>
-    <None Include="Orbis\4JLibs\Libs\4J_Input.a">
-      <Filter>Orbis\4JLibs\libs</Filter>
-    </None>
-    <None Include="Orbis\4JLibs\Libs\4J_Input_d.a">
-      <Filter>Orbis\4JLibs\libs</Filter>
-    </None>
-    <None Include="Orbis\Miles\lib\mssorbis.a">
-      <Filter>Orbis\Miles Sound System\lib</Filter>
-    </None>
-    <None Include="PS3\Miles\lib\audps3.a">
-      <Filter>PS3\Miles Sound System\lib</Filter>
-    </None>
-    <None Include="PS3\Miles\lib\fltps3.a">
-      <Filter>PS3\Miles Sound System\lib</Filter>
-    </None>
-    <None Include="PS3\Miles\lib\mssps3.a">
-      <Filter>PS3\Miles Sound System\lib</Filter>
-    </None>
-    <None Include="PS3\Miles\lib\spu\binkaspu.a">
-      <Filter>PS3\Miles Sound System\lib\spu</Filter>
-    </None>
-    <None Include="PS3\Miles\lib\spu\mssppu_raw.a">
-      <Filter>PS3\Miles Sound System\lib\spu</Filter>
-    </None>
-    <None Include="PS3\Miles\lib\spu\mssppu_spurs.a">
-      <Filter>PS3\Miles Sound System\lib\spu</Filter>
-    </None>
-    <None Include="PS3\Miles\lib\spu\mssppu_sputhreads.a">
-      <Filter>PS3\Miles Sound System\lib\spu</Filter>
-    </None>
-    <None Include="PS3\Miles\lib\spu\mssspu.a">
-      <Filter>PS3\Miles Sound System\lib\spu</Filter>
-    </None>
-    <None Include="PS3\Miles\lib\spu\mssspu_raw.a">
-      <Filter>PS3\Miles Sound System\lib\spu</Filter>
-    </None>
-    <None Include="PS3\Miles\lib\spu\mssspu_spurs.a">
-      <Filter>PS3\Miles Sound System\lib\spu</Filter>
-    </None>
-    <None Include="PS3\Miles\lib\spu\mssspu_sputhreads.a">
-      <Filter>PS3\Miles Sound System\lib\spu</Filter>
-    </None>
     <None Include="Windows64\Iggy\gdraw\gdraw_d3d1x_shared.inl">
       <Filter>Windows64\Iggy\gdraw</Filter>
     </None>
@@ -839,47 +781,11 @@
     <None Include="Windows64\Iggy\gdraw\gdraw_shared.inl">
       <Filter>Windows64\Iggy\gdraw</Filter>
     </None>
-    <None Include="Durango\Iggy\gdraw\gdraw_d3d1x_shared.inl">
-      <Filter>Durango\Iggy\gdraw</Filter>
-    </None>
-    <None Include="Durango\Iggy\gdraw\gdraw_d3d10_shaders.inl">
-      <Filter>Durango\Iggy\gdraw</Filter>
-    </None>
-    <None Include="Durango\Iggy\gdraw\gdraw_shared.inl">
-      <Filter>Durango\Iggy\gdraw</Filter>
-    </None>
-    <None Include="PS3\Iggy\gdraw\gdraw_ps3gcm_shaders.inl">
-      <Filter>PS3\Iggy\gdraw</Filter>
-    </None>
-    <None Include="PS3\Iggy\gdraw\gdraw_shared.inl">
-      <Filter>PS3\Iggy\gdraw</Filter>
-    </None>
     <None Include="Windows64\Iggy\gdraw\gdraw_d3d10_shaders.inl">
       <Filter>Windows64\Iggy\gdraw</Filter>
     </None>
-    <None Include="Orbis\Iggy\gdraw\gdraw_orbis_shaders.inl">
-      <Filter>Orbis\Iggy\gdraw</Filter>
-    </None>
-    <None Include="Orbis\Iggy\gdraw\gdraw_shared.inl">
-      <Filter>Orbis\Iggy\gdraw</Filter>
-    </None>
     <None Include="Network Implementation Notes.txt">
       <Filter>Common\Source Files\Network</Filter>
-    </None>
-    <None Include="PSVita\GameConfig\Minecraft.gameconfig">
-      <Filter>PSVita\GameConfig</Filter>
-    </None>
-    <None Include="PSVita\GameConfig\Minecraft.spa">
-      <Filter>PSVita\GameConfig</Filter>
-    </None>
-    <None Include="Orbis\4JLibs\Libs\4J_Input_r.a">
-      <Filter>Orbis\4JLibs\libs</Filter>
-    </None>
-    <None Include="PSVita\Iggy\gdraw\gdraw_psp2_shaders.inl">
-      <Filter>PSVita\Iggy\gdraw</Filter>
-    </None>
-    <None Include="PSVita\Iggy\gdraw\gdraw_shared.inl">
-      <Filter>PSVita\Iggy\gdraw</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -1900,18 +1806,6 @@
     <ClInclude Include="Xbox\targetver.h">
       <Filter>Windows</Filter>
     </ClInclude>
-    <ClInclude Include="Durango\4JLibs\inc\4J_Input.h">
-      <Filter>Durango\4JLibs\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Durango\4JLibs\inc\4J_Profile.h">
-      <Filter>Durango\4JLibs\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Durango\4JLibs\inc\4J_Render.h">
-      <Filter>Durango\4JLibs\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Durango\4JLibs\inc\4J_Storage.h">
-      <Filter>Durango\4JLibs\inc</Filter>
-    </ClInclude>
     <ClInclude Include="Common\Trial\TrialMode.h">
       <Filter>Common\Source Files\Trial</Filter>
     </ClInclude>
@@ -2056,86 +1950,11 @@
     <ClInclude Include="Common\Tutorial\TutorialMode.h">
       <Filter>Common\Source Files\Tutorial</Filter>
     </ClInclude>
-    <ClInclude Include="Durango\Minecraft_Macros.h">
-      <Filter>Durango\Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="Common\Tutorial\LookAtTileHint.h">
       <Filter>Common\Source Files\Tutorial\Hints</Filter>
     </ClInclude>
-    <ClInclude Include="Durango\Sentient\MinecraftTelemetry.h">
-      <Filter>Durango\Source Files\Sentient</Filter>
-    </ClInclude>
-    <ClInclude Include="Durango\Sentient\SentientTelemetryCommon.h">
-      <Filter>Durango\Source Files\Sentient</Filter>
-    </ClInclude>
-    <ClInclude Include="Durango\Sentient\TelemetryEnum.h">
-      <Filter>Durango\Source Files\Sentient</Filter>
-    </ClInclude>
-    <ClInclude Include="Durango\Sentient\SentientStats.h">
-      <Filter>Durango\Source Files\Sentient</Filter>
-    </ClInclude>
-    <ClInclude Include="Durango\Sentient\SentientManager.h">
-      <Filter>Durango\Source Files\Sentient</Filter>
-    </ClInclude>
-    <ClInclude Include="Durango\XML\ATGXmlParser.h">
-      <Filter>Durango\XML</Filter>
-    </ClInclude>
-    <ClInclude Include="Durango\Sentient\DynamicConfigurations.h">
-      <Filter>Durango\Source Files\Sentient</Filter>
-    </ClInclude>
-    <ClInclude Include="Durango\Social\SocialManager.h">
-      <Filter>Durango\Source Files\Social</Filter>
-    </ClInclude>
-    <ClInclude Include="Durango\Resource.h">
-      <Filter>Durango</Filter>
-    </ClInclude>
     <ClInclude Include="Common\Potion_Macros.h">
       <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\4JLibs\inc\4J_Input.h">
-      <Filter>PS3\4JLibs\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\4JLibs\inc\4J_Profile.h">
-      <Filter>PS3\4JLibs\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\4JLibs\inc\4J_Render.h">
-      <Filter>PS3\4JLibs\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\4JLibs\inc\4J_Storage.h">
-      <Filter>PS3\4JLibs\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\Social\SocialManager.h">
-      <Filter>PS3\Source Files\Social</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\Sentient\DynamicConfigurations.h">
-      <Filter>PS3\Source Files\Sentient</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\Sentient\MinecraftTelemetry.h">
-      <Filter>PS3\Source Files\Sentient</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\Sentient\SentientManager.h">
-      <Filter>PS3\Source Files\Sentient</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\Sentient\SentientStats.h">
-      <Filter>PS3\Source Files\Sentient</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\Sentient\SentientTelemetryCommon.h">
-      <Filter>PS3\Source Files\Sentient</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\Sentient\TelemetryEnum.h">
-      <Filter>PS3\Source Files\Sentient</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\Minecraft_Macros.h">
-      <Filter>PS3\Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\PS3Extras\Ps3Stubs.h">
-      <Filter>PS3\PS3Extras</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\PS3Extras\Ps3Types.h">
-      <Filter>PS3\PS3Extras</Filter>
-    </ClInclude>
-    <ClInclude Include="Durango\Durango_App.h">
-      <Filter>Durango</Filter>
     </ClInclude>
     <ClInclude Include="Common\Console_Awards_enum.h">
       <Filter>Common\Source Files</Filter>
@@ -2157,9 +1976,6 @@
     </ClInclude>
     <ClInclude Include="Common\GameRules\ConsoleGameRulesConstants.h">
       <Filter>Common\Source Files\GameRules</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\PS3_App.h">
-      <Filter>PS3</Filter>
     </ClInclude>
     <ClInclude Include="Common\XUI\XUI_CustomMessages.h">
       <Filter>Xbox\Source Files\XUI</Filter>
@@ -2260,12 +2076,6 @@
     <ClInclude Include="Common\XUI\XUI_TextEntry.h">
       <Filter>Xbox\Source Files\XUI</Filter>
     </ClInclude>
-    <ClInclude Include="PS3\PS3Extras\winerror.h">
-      <Filter>PS3\PS3Extras</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\PS3Extras\TLSStorage.h">
-      <Filter>PS3\PS3Extras</Filter>
-    </ClInclude>
     <ClInclude Include="PreStitchedTextureMap.h">
       <Filter>net\minecraft\client\renderer\texture</Filter>
     </ClInclude>
@@ -2344,74 +2154,11 @@
     <ClInclude Include="Windows64\Windows64_App.h">
       <Filter>Windows64</Filter>
     </ClInclude>
-    <ClInclude Include="Durango\ApplicationView.h">
-      <Filter>Durango\Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Orbis\OrbisExtras\OrbisTypes.h">
-      <Filter>Orbis\OrbisExtras</Filter>
-    </ClInclude>
-    <ClInclude Include="Orbis\4JLibs\inc\4J_Input.h">
-      <Filter>Orbis\4JLibs\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Orbis\4JLibs\inc\4J_Profile.h">
-      <Filter>Orbis\4JLibs\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Orbis\4JLibs\inc\4J_Render.h">
-      <Filter>Orbis\4JLibs\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Orbis\4JLibs\inc\4J_Storage.h">
-      <Filter>Orbis\4JLibs\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Orbis\OrbisExtras\TLSStorage.h">
-      <Filter>Orbis\OrbisExtras</Filter>
-    </ClInclude>
-    <ClInclude Include="Orbis\OrbisExtras\OrbisStubs.h">
-      <Filter>Orbis\OrbisExtras</Filter>
-    </ClInclude>
     <ClInclude Include="Common\XUI\XUI_HUD.h">
       <Filter>Xbox\Source Files\XUI\Base Scene</Filter>
     </ClInclude>
-    <ClInclude Include="Orbis\GameConfig\Minecraft.spa.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Common\DLC\DLCUIDataFile.h">
       <Filter>Common\Source Files\DLC</Filter>
-    </ClInclude>
-    <ClInclude Include="Orbis\Orbis_App.h">
-      <Filter>Orbis</Filter>
-    </ClInclude>
-    <ClInclude Include="Orbis\OrbisExtras\OrbisMaths.h">
-      <Filter>Orbis\OrbisExtras</Filter>
-    </ClInclude>
-    <ClInclude Include="Orbis\Sentient\DynamicConfigurations.h">
-      <Filter>Orbis\Source Files\Sentient</Filter>
-    </ClInclude>
-    <ClInclude Include="Orbis\Sentient\MinecraftTelemetry.h">
-      <Filter>Orbis\Source Files\Sentient</Filter>
-    </ClInclude>
-    <ClInclude Include="Orbis\Sentient\SentientManager.h">
-      <Filter>Orbis\Source Files\Sentient</Filter>
-    </ClInclude>
-    <ClInclude Include="Orbis\Sentient\SentientStats.h">
-      <Filter>Orbis\Source Files\Sentient</Filter>
-    </ClInclude>
-    <ClInclude Include="Orbis\Sentient\SentientTelemetryCommon.h">
-      <Filter>Orbis\Source Files\Sentient</Filter>
-    </ClInclude>
-    <ClInclude Include="Orbis\Sentient\TelemetryEnum.h">
-      <Filter>Orbis\Source Files\Sentient</Filter>
-    </ClInclude>
-    <ClInclude Include="Orbis\Social\SocialManager.h">
-      <Filter>Orbis\Source Files\Social</Filter>
-    </ClInclude>
-    <ClInclude Include="Orbis\XML\ATGXmlParser.h">
-      <Filter>Orbis\XML</Filter>
-    </ClInclude>
-    <ClInclude Include="Orbis\Minecraft_Macros.h">
-      <Filter>Orbis\Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Orbis\OrbisExtras\winerror.h">
-      <Filter>Orbis\OrbisExtras</Filter>
     </ClInclude>
     <ClInclude Include="EnderParticle.h">
       <Filter>net\minecraft\client\particle</Filter>
@@ -2449,24 +2196,6 @@
     <ClInclude Include="Windows64\Miles\include\rrcore.h">
       <Filter>Windows64\Miles Sound System\Include</Filter>
     </ClInclude>
-    <ClInclude Include="Orbis\Miles\include\mss.h">
-      <Filter>Orbis\Miles Sound System\include</Filter>
-    </ClInclude>
-    <ClInclude Include="Orbis\Miles\include\rrCore.h">
-      <Filter>Orbis\Miles Sound System\include</Filter>
-    </ClInclude>
-    <ClInclude Include="Durango\Miles\include\mss.h">
-      <Filter>Durango\Miles Sound System\include</Filter>
-    </ClInclude>
-    <ClInclude Include="Durango\Miles\include\rrCore.h">
-      <Filter>Durango\Miles Sound System\include</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\Miles\include\mss.h">
-      <Filter>PS3\Miles Sound System\include</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\Miles\include\rrCore.h">
-      <Filter>PS3\Miles Sound System\include</Filter>
-    </ClInclude>
     <ClInclude Include="Common\Audio\Consoles_SoundEngine.h">
       <Filter>Common\Source Files\Audio</Filter>
     </ClInclude>
@@ -2475,255 +2204,6 @@
     </ClInclude>
     <ClInclude Include="Common\Audio\SoundEngine.h">
       <Filter>Common\Source Files\Audio</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\PS3Extras\C4JThread_SPU.h">
-      <Filter>PS3\PS3Extras</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\ThinFenceTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\Tile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\TileRenderer_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\TntTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\TopSnowTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\TorchTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\TrapDoorTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\TreeTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\VineTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\WaterLilyTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\WebTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\WoodTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\WorkbenchTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\BedTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\BookshelfTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\BrewingStandTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\Bush_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\ButtonTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\CactusTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\CakeTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\CauldronTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\ChestTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\ChunkRebuildData.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\CocoaTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\CropTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\DetectorRailTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\DiodeTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\Direction_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\DirectionalTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\DirtTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\DispenserTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\DoorTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\EggTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\EnchantmentTableTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\EntityTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\Facing_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\FarmTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\FenceGateTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\FenceTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\FireTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\FurnaceTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\GlassTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\GrassTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\HalfSlabTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\HalfTransparentTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\HugeMushroomTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\IceTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\Icon_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\LadderTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\LeafTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\LeverTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\LiquidTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\Material_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\MelonTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\Mushroom_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\MycelTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\NetherStalkTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\PistonBaseTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\PistonExtensionTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\PistonMovingPiece_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\PortalTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\PressurePlateTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\PumpkinTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\RailTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\RecordPlayerTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\RedlightTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\RedStoneDustTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\ReedTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\SandStoneTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\Sapling_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\SignTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\SmoothStoneBrickTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\StairTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\stdafx.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\StemTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\StoneMonsterTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\stubs_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\TallGrass_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\Tesselator_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\TheEndPortal_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\ChunkUpdate\TheEndPortalFrameTile_SPU.h">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\SPU_Tasks\CompressedTile\CompressedTileStorage_SPU.h">
-      <Filter>PS3\CompressedTile_SPU</Filter>
     </ClInclude>
     <ClInclude Include="StringTable.h">
       <Filter>Common\Source Files\Localisation</Filter>
@@ -2751,9 +2231,6 @@
     </ClInclude>
     <ClInclude Include="Common\DLC\DLCGameRulesFile.h">
       <Filter>Common\Source Files\DLC</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\PS3Extras\C4JSpursJob.h">
-      <Filter>PS3</Filter>
     </ClInclude>
     <ClInclude Include="Common\GameRules\GameRulesInstance.h">
       <Filter>Common\Source Files\GameRules\LevelRules\Rules</Filter>
@@ -2833,54 +2310,6 @@
     <ClInclude Include="Common\DLC\DLCGameRules.h">
       <Filter>Common\Source Files\DLC</Filter>
     </ClInclude>
-    <ClInclude Include="Durango\DurangoExtras\DurangoStubs.h">
-      <Filter>Durango\DurangoExtras</Filter>
-    </ClInclude>
-    <ClInclude Include="Durango\Iggy\include\gdraw.h">
-      <Filter>Durango\Iggy\include</Filter>
-    </ClInclude>
-    <ClInclude Include="Durango\Iggy\include\iggy.h">
-      <Filter>Durango\Iggy\include</Filter>
-    </ClInclude>
-    <ClInclude Include="Durango\Iggy\include\iggyexpruntime.h">
-      <Filter>Durango\Iggy\include</Filter>
-    </ClInclude>
-    <ClInclude Include="Durango\Iggy\include\iggyperfmon.h">
-      <Filter>Durango\Iggy\include</Filter>
-    </ClInclude>
-    <ClInclude Include="Durango\Iggy\include\rrCore.h">
-      <Filter>Durango\Iggy\include</Filter>
-    </ClInclude>
-    <ClInclude Include="Durango\Iggy\gdraw\gdraw_d3d11.h">
-      <Filter>Durango\Iggy\gdraw</Filter>
-    </ClInclude>
-    <ClInclude Include="Durango\Durango_UIController.h">
-      <Filter>Durango</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\PS3_UIController.h">
-      <Filter>PS3</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\Iggy\gdraw\gdraw_ps3gcm.h">
-      <Filter>PS3\Iggy\gdraw</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\Iggy\include\gdraw.h">
-      <Filter>PS3\Iggy\include</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\Iggy\include\iggy.h">
-      <Filter>PS3\Iggy\include</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\Iggy\include\iggyexpruntime.h">
-      <Filter>PS3\Iggy\include</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\Iggy\include\iggyperfmon.h">
-      <Filter>PS3\Iggy\include</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\Iggy\include\iggyperfmon_ps3.h">
-      <Filter>PS3\Iggy\include</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\Iggy\include\rrCore.h">
-      <Filter>PS3\Iggy\include</Filter>
-    </ClInclude>
     <ClInclude Include="Common\zlib\crc32.h">
       <Filter>Common\Source Files\zlib</Filter>
     </ClInclude>
@@ -2914,27 +2343,6 @@
     <ClInclude Include="Common\zlib\zutil.h">
       <Filter>Common\Source Files\zlib</Filter>
     </ClInclude>
-    <ClInclude Include="Orbis\Iggy\gdraw\gdraw_orbis.h">
-      <Filter>Orbis\Iggy\gdraw</Filter>
-    </ClInclude>
-    <ClInclude Include="Orbis\Iggy\include\gdraw.h">
-      <Filter>Orbis\Iggy\include</Filter>
-    </ClInclude>
-    <ClInclude Include="Orbis\Iggy\include\iggy.h">
-      <Filter>Orbis\Iggy\include</Filter>
-    </ClInclude>
-    <ClInclude Include="Orbis\Iggy\include\iggyexpruntime.h">
-      <Filter>Orbis\Iggy\include</Filter>
-    </ClInclude>
-    <ClInclude Include="Orbis\Iggy\include\iggyperfmon.h">
-      <Filter>Orbis\Iggy\include</Filter>
-    </ClInclude>
-    <ClInclude Include="Orbis\Iggy\include\iggyperfmon_orbis.h">
-      <Filter>Orbis\Iggy\include</Filter>
-    </ClInclude>
-    <ClInclude Include="Orbis\Iggy\include\rrCore.h">
-      <Filter>Orbis\Iggy\include</Filter>
-    </ClInclude>
     <ClInclude Include="Common\Network\NetworkPlayerInterface.h">
       <Filter>Common\Source Files\Network</Filter>
     </ClInclude>
@@ -2956,9 +2364,6 @@
     <ClInclude Include="Common\Network\GameNetworkManager.h">
       <Filter>Common\Source Files\Network</Filter>
     </ClInclude>
-    <ClInclude Include="PS3\PS3Extras\EdgeZLib.h">
-      <Filter>PS3\PS3Extras</Filter>
-    </ClInclude>
     <ClInclude Include="Common\UI\UIScene_MainMenu.h">
       <Filter>Common\Source Files\UI\Scenes\Frontend Menu screens</Filter>
     </ClInclude>
@@ -2976,9 +2381,6 @@
     </ClInclude>
     <ClInclude Include="Common\UI\UIScene_LoadMenu.h">
       <Filter>Common\Source Files\UI\Scenes\Frontend Menu screens</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\PS3Extras\PS3Maths.h">
-      <Filter>PS3\PS3Extras</Filter>
     </ClInclude>
     <ClInclude Include="Common\UI\UIScene_CreateWorldMenu.h">
       <Filter>Common\Source Files\UI\Scenes\Frontend Menu screens</Filter>
@@ -3109,9 +2511,6 @@
     <ClInclude Include="Xbox\Network\NetworkPlayerXbox.h">
       <Filter>Xbox\Source Files\Network</Filter>
     </ClInclude>
-    <ClInclude Include="Orbis\Orbis_UIController.h">
-      <Filter>Orbis</Filter>
-    </ClInclude>
     <ClInclude Include="Common\UI\UIControl_ButtonList.h">
       <Filter>Common\Source Files\UI\Controls</Filter>
     </ClInclude>
@@ -3157,9 +2556,6 @@
     <ClInclude Include="Common\UI\UIScene_Intro.h">
       <Filter>Common\Source Files\UI\Scenes\Frontend Menu screens</Filter>
     </ClInclude>
-    <ClInclude Include="PS3\Passphrase\ps3__np_conf.h">
-      <Filter>PS3</Filter>
-    </ClInclude>
     <ClInclude Include="Common\UI\UIScene_SaveMessage.h">
       <Filter>Common\Source Files\UI\Scenes\Frontend Menu screens</Filter>
     </ClInclude>
@@ -3184,15 +2580,6 @@
     <ClInclude Include="Common\UI\UIControl_TexturePackList.h">
       <Filter>Common\Source Files\UI\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="PS3\Network\SonyVoiceChat.h">
-      <Filter>PS3\Source Files\Network</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\Leaderboards\PS3LeaderboardManager.h">
-      <Filter>PS3\Source Files\Leaderboards</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\Leaderboards\base64.h">
-      <Filter>PS3\Source Files\Leaderboards</Filter>
-    </ClInclude>
     <ClInclude Include="Common\Leaderboards\LeaderboardManager.h">
       <Filter>Common\Source Files\Leaderboards</Filter>
     </ClInclude>
@@ -3213,12 +2600,6 @@
     </ClInclude>
     <ClInclude Include="Windows64\Leaderboards\WindowsLeaderboardManager.h">
       <Filter>Windows64\Source Files\Leaderboards</Filter>
-    </ClInclude>
-    <ClInclude Include="Orbis\Leaderboards\OrbisLeaderboardManager.h">
-      <Filter>Orbis\Source Files\Leaderboards</Filter>
-    </ClInclude>
-    <ClInclude Include="Durango\Leaderboards\DurangoLeaderboardManager.h">
-      <Filter>Durango\Source Files\Leaderboards</Filter>
     </ClInclude>
     <ClInclude Include="Common\UI\UIScene_ControlsMenu.h">
       <Filter>Common\Source Files\UI\Scenes\Help &amp; Options</Filter>
@@ -3247,9 +2628,6 @@
     <ClInclude Include="Common\UI\UIControl_DLCList.h">
       <Filter>Common\Source Files\UI\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="PS3\PS3Extras\PS3Strings.h">
-      <Filter>PS3\PS3Extras</Filter>
-    </ClInclude>
     <ClInclude Include="Common\UI\UIScene_InGameHostOptionsMenu.h">
       <Filter>Common\Source Files\UI\Scenes\In-Game Menu Screens</Filter>
     </ClInclude>
@@ -3271,9 +2649,6 @@
     <ClInclude Include="Common\UI\UIScene_InGamePlayerOptionsMenu.h">
       <Filter>Common\Source Files\UI\Scenes\In-Game Menu Screens</Filter>
     </ClInclude>
-    <ClInclude Include="PS3\PS3Extras\ShutdownManager.h">
-      <Filter>PS3\PS3Extras</Filter>
-    </ClInclude>
     <ClInclude Include="Common\UI\UIScene_TrialExitUpsell.h">
       <Filter>Common\Source Files\UI\Scenes\Frontend Menu screens</Filter>
     </ClInclude>
@@ -3286,17 +2661,11 @@
     <ClInclude Include="Common\UI\UIComponent_PressStartToPlay.h">
       <Filter>Common\Source Files\UI\Components</Filter>
     </ClInclude>
-    <ClInclude Include="PS3\4JLibs\STO_TitleSmallStorage.h">
-      <Filter>PS3\4JLibs</Filter>
-    </ClInclude>
     <ClInclude Include="Common\UI\UIComponent_MenuBackground.h">
       <Filter>Common\Source Files\UI\Components</Filter>
     </ClInclude>
     <ClInclude Include="Common\UI\UIScene_EULA.h">
       <Filter>Common\Source Files\UI\Scenes\Frontend Menu screens</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\PS3_PlayerUID.h">
-      <Filter>PS3\Source Files</Filter>
     </ClInclude>
     <ClInclude Include="Common\UI\UIControl_DynamicLabel.h">
       <Filter>Common\Source Files\UI\Controls</Filter>
@@ -3312,9 +2681,6 @@
     </ClInclude>
     <ClInclude Include="Common\UI\UIScene_TradingMenu.h">
       <Filter>Common\Source Files\UI\Scenes\In-Game Menu Screens\Containers</Filter>
-    </ClInclude>
-    <ClInclude Include="Durango\Achievements\AchievementManager.h">
-      <Filter>Durango\Source Files\Achievements</Filter>
     </ClInclude>
     <ClInclude Include="Common\UI\UIScene_DebugSetCamera.h">
       <Filter>Common\Source Files\UI\Scenes\Debug</Filter>
@@ -3337,29 +2703,11 @@
     <ClInclude Include="ZombieRenderer.h">
       <Filter>net\minecraft\client\renderer\entity</Filter>
     </ClInclude>
-    <ClInclude Include="Orbis\Orbis_PlayerUID.h">
-      <Filter>Orbis</Filter>
-    </ClInclude>
-    <ClInclude Include="Orbis\ps4__np_conf.h">
-      <Filter>Orbis\Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Orbis\Network\Orbis_NPToolkit.h">
-      <Filter>Orbis\Network</Filter>
-    </ClInclude>
     <ClInclude Include="ServerCommandDispatcher.h">
       <Filter>net\minecraft\server\commands</Filter>
     </ClInclude>
     <ClInclude Include="TeleportCommand.h">
       <Filter>net\minecraft\server\commands</Filter>
-    </ClInclude>
-    <ClInclude Include="Durango\Network\NetworkPlayerDurango.h">
-      <Filter>Durango\Network</Filter>
-    </ClInclude>
-    <ClInclude Include="Durango\Network\PlatformNetworkManagerDurango.h">
-      <Filter>Durango\Network</Filter>
-    </ClInclude>
-    <ClInclude Include="Durango\Network\DQRNetworkManager.h">
-      <Filter>Durango\Network</Filter>
     </ClInclude>
     <ClInclude Include="Common\Network\Sony\SQRNetworkPlayer.h">
       <Filter>Common\Source Files\Network\Sony</Filter>
@@ -3367,20 +2715,11 @@
     <ClInclude Include="Common\Network\Sony\SQRNetworkManager.h">
       <Filter>Common\Source Files\Network\Sony</Filter>
     </ClInclude>
-    <ClInclude Include="Orbis\Network\SQRNetworkManager_Orbis.h">
-      <Filter>Orbis\Network</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\Network\SQRNetworkManager_PS3.h">
-      <Filter>PS3\Source Files\Network</Filter>
-    </ClInclude>
     <ClInclude Include="Common\Network\Sony\PlatformNetworkManagerSony.h">
       <Filter>Common\Source Files\Network\Sony</Filter>
     </ClInclude>
     <ClInclude Include="Common\Network\Sony\NetworkPlayerSony.h">
       <Filter>Common\Source Files\Network\Sony</Filter>
-    </ClInclude>
-    <ClInclude Include="Orbis\Network\SonyCommerce_Orbis.h">
-      <Filter>Orbis\Network</Filter>
     </ClInclude>
     <ClInclude Include="Common\Network\Sony\SonyHttp.h">
       <Filter>Common\Source Files\Network\Sony</Filter>
@@ -3388,20 +2727,8 @@
     <ClInclude Include="Common\Network\Sony\SonyCommerce.h">
       <Filter>Common\Source Files\Network\Sony</Filter>
     </ClInclude>
-    <ClInclude Include="PS3\Network\SonyCommerce_PS3.h">
-      <Filter>PS3\Source Files\Network</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\Network\SonyHttp_PS3.h">
-      <Filter>PS3\Source Files\Network</Filter>
-    </ClInclude>
-    <ClInclude Include="Orbis\Network\SonyHttp_Orbis.h">
-      <Filter>Orbis\Network</Filter>
-    </ClInclude>
     <ClInclude Include="Common\GameRules\StartFeature.h">
       <Filter>Common\Source Files\GameRules\LevelGeneration</Filter>
-    </ClInclude>
-    <ClInclude Include="Durango\Network\PartyController.h">
-      <Filter>Durango\Network</Filter>
     </ClInclude>
     <ClInclude Include="Common\UI\UIScene_TeleportMenu.h">
       <Filter>Common\Source Files\UI\Scenes\In-Game Menu Screens</Filter>
@@ -3409,92 +2736,11 @@
     <ClInclude Include="Common\XUI\XUI_Teleport.h">
       <Filter>Xbox\Source Files\XUI\Menu screens</Filter>
     </ClInclude>
-    <ClInclude Include="Durango\Network\DQRNetworkPlayer.h">
-      <Filter>Durango\Network</Filter>
-    </ClInclude>
-    <ClInclude Include="PSVita\4JLibs\inc\4J_Input.h">
-      <Filter>PSVita\4JLibs\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="PSVita\4JLibs\inc\4J_Profile.h">
-      <Filter>PSVita\4JLibs\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="PSVita\4JLibs\inc\4J_Render.h">
-      <Filter>PSVita\4JLibs\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="PSVita\4JLibs\inc\4J_Storage.h">
-      <Filter>PSVita\4JLibs\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="PSVita\PSVitaExtras\PSVitaMaths.h">
-      <Filter>PSVita\PSVitaExtras</Filter>
-    </ClInclude>
-    <ClInclude Include="PSVita\PSVitaExtras\PSVitaStubs.h">
-      <Filter>PSVita\PSVitaExtras</Filter>
-    </ClInclude>
-    <ClInclude Include="PSVita\PSVitaExtras\PSVitaTypes.h">
-      <Filter>PSVita\PSVitaExtras</Filter>
-    </ClInclude>
-    <ClInclude Include="PSVita\PSVita_App.h">
-      <Filter>PSVita</Filter>
-    </ClInclude>
-    <ClInclude Include="PSVita\Sentient\DynamicConfigurations.h">
-      <Filter>PSVita\Source Files\Sentient</Filter>
-    </ClInclude>
-    <ClInclude Include="PSVita\Sentient\MinecraftTelemetry.h">
-      <Filter>PSVita\Source Files\Sentient</Filter>
-    </ClInclude>
-    <ClInclude Include="PSVita\Sentient\SentientManager.h">
-      <Filter>PSVita\Source Files\Sentient</Filter>
-    </ClInclude>
-    <ClInclude Include="PSVita\Sentient\SentientStats.h">
-      <Filter>PSVita\Source Files\Sentient</Filter>
-    </ClInclude>
-    <ClInclude Include="PSVita\Sentient\SentientTelemetryCommon.h">
-      <Filter>PSVita\Source Files\Sentient</Filter>
-    </ClInclude>
-    <ClInclude Include="PSVita\Sentient\TelemetryEnum.h">
-      <Filter>PSVita\Source Files\Sentient</Filter>
-    </ClInclude>
-    <ClInclude Include="PSVita\Social\SocialManager.h">
-      <Filter>PSVita\Source Files\Social</Filter>
-    </ClInclude>
-    <ClInclude Include="PSVita\XML\ATGXmlParser.h">
-      <Filter>PSVita\XML</Filter>
-    </ClInclude>
-    <ClInclude Include="PSVita\PSVita_UIController.h">
-      <Filter>PSVita</Filter>
-    </ClInclude>
-    <ClInclude Include="PSVita\PSVita_PlayerUID.h">
-      <Filter>PSVita\Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PSVita\GameConfig\Minecraft.spa.h">
-      <Filter>PSVita\GameConfig</Filter>
-    </ClInclude>
-    <ClInclude Include="Orbis\Network\SonyVoiceChat_Orbis.h">
-      <Filter>Orbis\Network</Filter>
-    </ClInclude>
-    <ClInclude Include="Orbis\Leaderboards\base64.h">
-      <Filter>Orbis\Source Files\Leaderboards</Filter>
-    </ClInclude>
     <ClInclude Include="Common\UI\UIScene_DebugCreateSchematic.h">
       <Filter>Common\Source Files\UI\Scenes\Debug</Filter>
     </ClInclude>
-    <ClInclude Include="Durango\PresenceIds.h">
-      <Filter>Durango\Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Durango\Network\base64.h">
-      <Filter>Durango\Network</Filter>
-    </ClInclude>
-    <ClInclude Include="Durango\Leaderboards\DurangoStatsDebugger.h">
-      <Filter>Durango\Source Files\Leaderboards</Filter>
-    </ClInclude>
     <ClInclude Include="Common\Telemetry\TelemetryManager.h">
       <Filter>Common\Source Files\Telemetry</Filter>
-    </ClInclude>
-    <ClInclude Include="Durango\Sentient\DurangoTelemetry.h">
-      <Filter>Durango\Source Files\Sentient</Filter>
-    </ClInclude>
-    <ClInclude Include="Durango\ServiceConfig\Events-XBLA.8-149E11AEEvents.h">
-      <Filter>Durango\ServiceConfig</Filter>
     </ClInclude>
     <ClInclude Include="Common\UI\UIFontData.h">
       <Filter>Common\Source Files\UI</Filter>
@@ -3502,104 +2748,14 @@
     <ClInclude Include="Common\Network\Sony\SonyRemoteStorage.h">
       <Filter>Common\Source Files\Network\Sony</Filter>
     </ClInclude>
-    <ClInclude Include="Orbis\Network\SonyRemoteStorage_Orbis.h">
-      <Filter>Orbis\Network</Filter>
-    </ClInclude>
-    <ClInclude Include="PS3\Network\SonyRemoteStorage_PS3.h">
-      <Filter>PS3\Source Files\Network</Filter>
-    </ClInclude>
     <ClInclude Include="Common\UI\UIComponent_DebugUIMarketingGuide.h">
       <Filter>Common\Source Files\UI\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="Durango\Network\ChatIntegrationLayer.h">
-      <Filter>Durango\Network</Filter>
-    </ClInclude>
-    <ClInclude Include="Durango\XML\xmlFilesCallback.h">
-      <Filter>Durango\XML</Filter>
-    </ClInclude>
-    <ClInclude Include="PSVita\Iggy\gdraw\gdraw_psp2.h">
-      <Filter>PSVita\Iggy\gdraw</Filter>
-    </ClInclude>
-    <ClInclude Include="PSVita\Iggy\include\iggy.h">
-      <Filter>PSVita\Iggy\include</Filter>
-    </ClInclude>
-    <ClInclude Include="PSVita\Iggy\include\iggyexpruntime.h">
-      <Filter>PSVita\Iggy\include</Filter>
-    </ClInclude>
-    <ClInclude Include="PSVita\Iggy\include\iggyperfmon.h">
-      <Filter>PSVita\Iggy\include</Filter>
-    </ClInclude>
-    <ClInclude Include="PSVita\Iggy\include\iggyperfmon_psp2.h">
-      <Filter>PSVita\Iggy\include</Filter>
-    </ClInclude>
-    <ClInclude Include="PSVita\Iggy\include\rrCore.h">
-      <Filter>PSVita\Iggy\include</Filter>
-    </ClInclude>
-    <ClInclude Include="PSVita\Iggy\include\gdraw.h">
-      <Filter>PSVita\Iggy\include</Filter>
-    </ClInclude>
-    <ClInclude Include="PSVita\PSVitaExtras\zconf.h">
-      <Filter>PSVita\PSVitaExtras</Filter>
-    </ClInclude>
-    <ClInclude Include="PSVita\PSVitaExtras\zlib.h">
-      <Filter>PSVita\PSVitaExtras</Filter>
-    </ClInclude>
-    <ClInclude Include="PSVita\PSVitaExtras\PSVitaTLSStorage.h">
-      <Filter>PSVita\PSVitaExtras</Filter>
-    </ClInclude>
-    <ClInclude Include="PSVita\PSVitaExtras\ShutdownManager.h">
-      <Filter>PSVita\PSVitaExtras</Filter>
-    </ClInclude>
-    <ClInclude Include="PSVita\PSVitaExtras\libdivide.h">
-      <Filter>PSVita\PSVitaExtras</Filter>
-    </ClInclude>
-    <ClInclude Include="PSVita\PSVitaExtras\PSVitaStrings.h">
-      <Filter>PSVita\PSVitaExtras</Filter>
-    </ClInclude>
-    <ClInclude Include="PSVita\PSVitaExtras\Conf.h">
-      <Filter>PSVita\PSVitaExtras</Filter>
     </ClInclude>
     <ClInclude Include="Common\UI\UIControl_Touch.h">
       <Filter>Common\Source Files\UI\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="PSVita\Network\SonyVoiceChat_Vita.h">
-      <Filter>PSVita\Source Files\Network</Filter>
-    </ClInclude>
-    <ClInclude Include="PSVita\Network\SQRNetworkManager_AdHoc_Vita.h">
-      <Filter>PSVita\Source Files\Network</Filter>
-    </ClInclude>
-    <ClInclude Include="PSVita\Network\SQRNetworkManager_Vita.h">
-      <Filter>PSVita\Source Files\Network</Filter>
-    </ClInclude>
-    <ClInclude Include="PSVita\Leaderboards\base64.h">
-      <Filter>PSVita\Source Files\Leaderboards</Filter>
-    </ClInclude>
-    <ClInclude Include="PSVita\Leaderboards\PSVitaLeaderboardManager.h">
-      <Filter>PSVita\Source Files\Leaderboards</Filter>
-    </ClInclude>
     <ClInclude Include="Common\UI\IUIScene_StartGame.h">
       <Filter>Common\Source Files\UI\Scenes\Frontend Menu screens</Filter>
-    </ClInclude>
-    <ClInclude Include="PSVita\Miles\include\mss.h">
-      <Filter>PSVita\Miles Sound System\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="PSVita\Miles\include\rrCore.h">
-      <Filter>PSVita\Miles Sound System\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="Durango\Leaderboards\GameProgress.h">
-      <Filter>Durango\Source Files\Leaderboards</Filter>
-    </ClInclude>
-    <ClInclude Include="PSVita\Network\SonyHttp_Vita.h">
-      <Filter>PSVita\Source Files\Network</Filter>
-    </ClInclude>
-    <ClInclude Include="PSVita\Network\SonyRemoteStorage_Vita.h">
-      <Filter>PSVita\Source Files\Network</Filter>
-    </ClInclude>
-    <ClInclude Include="PSVita\PSVitaExtras\CustomSet.h">
-      <Filter>PSVita\PSVitaExtras</Filter>
-    </ClInclude>
-    <ClInclude Include="PSVita\PSVitaExtras\CustomMap.h">
-      <Filter>PSVita\PSVitaExtras</Filter>
     </ClInclude>
     <ClInclude Include="Xbox\4JLibs\inc\4J_xtms.h">
       <Filter>Xbox\4JLibs\inc</Filter>
@@ -3609,15 +2765,6 @@
     </ClInclude>
     <ClInclude Include="Common\UI\UIScene_InGameSaveManagementMenu.h">
       <Filter>Common\Source Files\UI\Scenes\In-Game Menu Screens</Filter>
-    </ClInclude>
-    <ClInclude Include="PSVita\Network\SonyCommerce_Vita.h">
-      <Filter>PSVita\Source Files\Network</Filter>
-    </ClInclude>
-    <ClInclude Include="PSVita\Network\PSVita_NPToolkit.h">
-      <Filter>PSVita\Source Files\Network</Filter>
-    </ClInclude>
-    <ClInclude Include="Orbis\Network\PsPlusUpsellWrapper_Orbis.h">
-      <Filter>Orbis\Network</Filter>
     </ClInclude>
     <ClInclude Include="Xbox\Network\extra.h">
       <Filter>Xbox\Source Files\Network</Filter>
@@ -4617,18 +3764,6 @@
     <ClCompile Include="Common\Tutorial\LookAtTileHint.cpp">
       <Filter>Common\Source Files\Tutorial\Hints</Filter>
     </ClCompile>
-    <ClCompile Include="PS3\PS3_Minecraft.cpp">
-      <Filter>PS3\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PS3\PS3Extras\Ps3Stubs.cpp">
-      <Filter>PS3\PS3Extras</Filter>
-    </ClCompile>
-    <ClCompile Include="Durango\Durango_App.cpp">
-      <Filter>Durango</Filter>
-    </ClCompile>
-    <ClCompile Include="Durango\Durango_Minecraft.cpp">
-      <Filter>Durango\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Common\Console_Utils.cpp">
       <Filter>Common\Source Files</Filter>
     </ClCompile>
@@ -4637,9 +3772,6 @@
     </ClCompile>
     <ClCompile Include="Common\GameRules\ConsoleGenerateStructure.cpp">
       <Filter>Common\Source Files\GameRules\LevelGeneration</Filter>
-    </ClCompile>
-    <ClCompile Include="PS3\PS3_App.cpp">
-      <Filter>PS3</Filter>
     </ClCompile>
     <ClCompile Include="Common\XUI\XUI_Reinstall.cpp">
       <Filter>Xbox\Source Files\XUI</Filter>
@@ -4731,9 +3863,6 @@
     <ClCompile Include="Common\XUI\XUI_SettingsUI.cpp">
       <Filter>Xbox\Source Files\XUI\Menu screens\Help &amp; Options\Settings</Filter>
     </ClCompile>
-    <ClCompile Include="PS3\PS3Extras\TLSStorage.cpp">
-      <Filter>PS3\PS3Extras</Filter>
-    </ClCompile>
     <ClCompile Include="Common\XUI\XUI_FullscreenProgress.cpp">
       <Filter>Xbox\Source Files\XUI\Menu screens</Filter>
     </ClCompile>
@@ -4773,26 +3902,11 @@
     <ClCompile Include="Windows64\Windows64_App.cpp">
       <Filter>Windows64</Filter>
     </ClCompile>
-    <ClCompile Include="Durango\ApplicationView.cpp">
-      <Filter>Durango\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Orbis\OrbisExtras\TLSStorage.cpp">
-      <Filter>Orbis\OrbisExtras</Filter>
-    </ClCompile>
     <ClCompile Include="Common\XUI\XUI_HUD.cpp">
       <Filter>Xbox\Source Files\XUI\Base Scene</Filter>
     </ClCompile>
     <ClCompile Include="Common\DLC\DLCUIDataFile.cpp">
       <Filter>Common\Source Files\DLC</Filter>
-    </ClCompile>
-    <ClCompile Include="Orbis\OrbisExtras\OrbisStubs.cpp">
-      <Filter>Orbis\OrbisExtras</Filter>
-    </ClCompile>
-    <ClCompile Include="Orbis\Orbis_App.cpp">
-      <Filter>Orbis</Filter>
-    </ClCompile>
-    <ClCompile Include="Orbis\Orbis_Minecraft.cpp">
-      <Filter>Orbis\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="EnderParticle.cpp">
       <Filter>net\minecraft\client\particle</Filter>
@@ -4824,66 +3938,6 @@
     <ClCompile Include="Common\Audio\SoundNames.cpp">
       <Filter>Common\Source Files\Audio</Filter>
     </ClCompile>
-    <ClCompile Include="PS3\PS3Extras\C4JThread_SPU.cpp">
-      <Filter>PS3\PS3Extras</Filter>
-    </ClCompile>
-    <ClCompile Include="PS3\SPU_Tasks\ChunkUpdate\ChunkRebuildData.cpp">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClCompile>
-    <ClCompile Include="PS3\SPU_Tasks\ChunkUpdate\DiodeTile_SPU.cpp">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClCompile>
-    <ClCompile Include="PS3\SPU_Tasks\ChunkUpdate\Direction_SPU.cpp">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClCompile>
-    <ClCompile Include="PS3\SPU_Tasks\ChunkUpdate\DoorTile_SPU.cpp">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClCompile>
-    <ClCompile Include="PS3\SPU_Tasks\ChunkUpdate\Facing_SPU.cpp">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClCompile>
-    <ClCompile Include="PS3\SPU_Tasks\ChunkUpdate\FenceTile_SPU.cpp">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClCompile>
-    <ClCompile Include="PS3\SPU_Tasks\ChunkUpdate\GrassTile_SPU.cpp">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClCompile>
-    <ClCompile Include="PS3\SPU_Tasks\ChunkUpdate\HalfSlabTile_SPU.cpp">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClCompile>
-    <ClCompile Include="PS3\SPU_Tasks\ChunkUpdate\Icon_SPU.cpp">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClCompile>
-    <ClCompile Include="PS3\SPU_Tasks\ChunkUpdate\LeafTile_SPU.cpp">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClCompile>
-    <ClCompile Include="PS3\SPU_Tasks\ChunkUpdate\LiquidTile_SPU.cpp">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClCompile>
-    <ClCompile Include="PS3\SPU_Tasks\ChunkUpdate\PressurePlateTile_SPU.cpp">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClCompile>
-    <ClCompile Include="PS3\SPU_Tasks\ChunkUpdate\StairTile_SPU.cpp">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClCompile>
-    <ClCompile Include="PS3\SPU_Tasks\ChunkUpdate\TallGrass_SPU.cpp">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClCompile>
-    <ClCompile Include="PS3\SPU_Tasks\ChunkUpdate\Tesselator_SPU.cpp">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClCompile>
-    <ClCompile Include="PS3\SPU_Tasks\ChunkUpdate\ThinFenceTile_SPU.cpp">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClCompile>
-    <ClCompile Include="PS3\SPU_Tasks\ChunkUpdate\Tile_SPU.cpp">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClCompile>
-    <ClCompile Include="PS3\SPU_Tasks\ChunkUpdate\TileRenderer_SPU.cpp">
-      <Filter>PS3\ChunkRebuild_SPU</Filter>
-    </ClCompile>
-    <ClCompile Include="PS3\SPU_Tasks\CompressedTile\CompressedTileStorage_SPU.cpp">
-      <Filter>PS3\CompressedTile_SPU</Filter>
-    </ClCompile>
     <ClCompile Include="StringTable.cpp">
       <Filter>Common\Source Files\Localisation</Filter>
     </ClCompile>
@@ -4910,9 +3964,6 @@
     </ClCompile>
     <ClCompile Include="Common\DLC\DLCGameRulesFile.cpp">
       <Filter>Common\Source Files\DLC</Filter>
-    </ClCompile>
-    <ClCompile Include="PS3\PS3Extras\C4JSpursJob.cpp">
-      <Filter>PS3</Filter>
     </ClCompile>
     <ClCompile Include="Common\GameRules\GameRuleManager.cpp">
       <Filter>Common\Source Files\GameRules</Filter>
@@ -4968,21 +4019,6 @@
     <ClCompile Include="Common\DLC\DLCGameRulesHeader.cpp">
       <Filter>Common\Source Files\DLC</Filter>
     </ClCompile>
-    <ClCompile Include="Durango\DurangoExtras\DurangoStubs.cpp">
-      <Filter>Durango\DurangoExtras</Filter>
-    </ClCompile>
-    <ClCompile Include="Durango\Iggy\gdraw\gdraw_d3d11.cpp">
-      <Filter>Durango\Iggy\gdraw</Filter>
-    </ClCompile>
-    <ClCompile Include="Durango\Durango_UIController.cpp">
-      <Filter>Durango</Filter>
-    </ClCompile>
-    <ClCompile Include="PS3\PS3_UIController.cpp">
-      <Filter>PS3</Filter>
-    </ClCompile>
-    <ClCompile Include="PS3\Iggy\gdraw\gdraw_ps3gcm.cpp">
-      <Filter>PS3\Iggy\gdraw</Filter>
-    </ClCompile>
     <ClCompile Include="Common\zlib\adler32.c">
       <Filter>Common\Source Files\zlib</Filter>
     </ClCompile>
@@ -5028,17 +4064,11 @@
     <ClCompile Include="Common\zlib\zutil.c">
       <Filter>Common\Source Files\zlib</Filter>
     </ClCompile>
-    <ClCompile Include="PS3\Audio\PS3_SoundEngine.cpp">
-      <Filter>PS3\Source Files\Audio</Filter>
-    </ClCompile>
     <ClCompile Include="Common\UI\UIBitmapFont.cpp">
       <Filter>Common\Source Files\UI</Filter>
     </ClCompile>
     <ClCompile Include="Common\UI\UITTFFont.cpp">
       <Filter>Common\Source Files\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="Orbis\Iggy\gdraw\gdraw_orbis.cpp">
-      <Filter>Orbis\Iggy\gdraw</Filter>
     </ClCompile>
     <ClCompile Include="Common\UI\UIScene_DebugOverlay.cpp">
       <Filter>Common\Source Files\UI\Scenes\Debug</Filter>
@@ -5048,9 +4078,6 @@
     </ClCompile>
     <ClCompile Include="Common\Network\GameNetworkManager.cpp">
       <Filter>Common\Source Files\Network</Filter>
-    </ClCompile>
-    <ClCompile Include="PS3\PS3Extras\EdgeZLib.cpp">
-      <Filter>PS3\PS3Extras</Filter>
     </ClCompile>
     <ClCompile Include="Common\UI\UIScene_MainMenu.cpp">
       <Filter>Common\Source Files\UI\Scenes\Frontend Menu screens</Filter>
@@ -5190,9 +4217,6 @@
     <ClCompile Include="Xbox\Network\NetworkPlayerXbox.cpp">
       <Filter>Xbox\Source Files\Network</Filter>
     </ClCompile>
-    <ClCompile Include="Orbis\Orbis_UIController.cpp">
-      <Filter>Orbis</Filter>
-    </ClCompile>
     <ClCompile Include="Common\UI\UIControl_ButtonList.cpp">
       <Filter>Common\Source Files\UI\Controls</Filter>
     </ClCompile>
@@ -5256,15 +4280,6 @@
     <ClCompile Include="Common\UI\UIControl_TexturePackList.cpp">
       <Filter>Common\Source Files\UI\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="PS3\Network\SonyVoiceChat.cpp">
-      <Filter>PS3\Source Files\Network</Filter>
-    </ClCompile>
-    <ClCompile Include="PS3\Leaderboards\PS3LeaderboardManager.cpp">
-      <Filter>PS3\Source Files\Leaderboards</Filter>
-    </ClCompile>
-    <ClCompile Include="PS3\Leaderboards\base64.cpp">
-      <Filter>PS3\Source Files\Leaderboards</Filter>
-    </ClCompile>
     <ClCompile Include="Common\Leaderboards\LeaderboardManager.cpp">
       <Filter>Common\Source Files\Leaderboards</Filter>
     </ClCompile>
@@ -5285,12 +4300,6 @@
     </ClCompile>
     <ClCompile Include="Windows64\Leaderboards\WindowsLeaderboardManager.cpp">
       <Filter>Windows64\Source Files\Leaderboards</Filter>
-    </ClCompile>
-    <ClCompile Include="Orbis\Leaderboards\OrbisLeaderboardManager.cpp">
-      <Filter>Orbis\Source Files\Leaderboards</Filter>
-    </ClCompile>
-    <ClCompile Include="Durango\Leaderboards\DurangoLeaderboardManager.cpp">
-      <Filter>Durango\Source Files\Leaderboards</Filter>
     </ClCompile>
     <ClCompile Include="Common\UI\UIScene_ControlsMenu.cpp">
       <Filter>Common\Source Files\UI\Scenes\Help &amp; Options</Filter>
@@ -5319,9 +4328,6 @@
     <ClCompile Include="Common\UI\UIControl_DLCList.cpp">
       <Filter>Common\Source Files\UI\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="PS3\PS3Extras\PS3Strings.cpp">
-      <Filter>PS3\PS3Extras</Filter>
-    </ClCompile>
     <ClCompile Include="Common\UI\UIScene_InGameHostOptionsMenu.cpp">
       <Filter>Common\Source Files\UI\Scenes\In-Game Menu Screens</Filter>
     </ClCompile>
@@ -5343,9 +4349,6 @@
     <ClCompile Include="Common\UI\UIScene_InGamePlayerOptionsMenu.cpp">
       <Filter>Common\Source Files\UI\Scenes\In-Game Menu Screens</Filter>
     </ClCompile>
-    <ClCompile Include="PS3\PS3Extras\ShutdownManager.cpp">
-      <Filter>PS3\PS3Extras</Filter>
-    </ClCompile>
     <ClCompile Include="Common\UI\UIScene_TrialExitUpsell.cpp">
       <Filter>Common\Source Files\UI\Scenes\Frontend Menu screens</Filter>
     </ClCompile>
@@ -5358,9 +4361,6 @@
     <ClCompile Include="Common\UI\UIComponent_PressStartToPlay.cpp">
       <Filter>Common\Source Files\UI\Components</Filter>
     </ClCompile>
-    <ClCompile Include="PS3\4JLibs\STO_TitleSmallStorage.cpp">
-      <Filter>PS3\4JLibs</Filter>
-    </ClCompile>
     <ClCompile Include="Common\UI\UIComponent_MenuBackground.cpp">
       <Filter>Common\Source Files\UI\Components</Filter>
     </ClCompile>
@@ -5369,9 +4369,6 @@
     </ClCompile>
     <ClCompile Include="Common\Audio\Consoles_SoundEngine.cpp">
       <Filter>Common\Source Files\Audio</Filter>
-    </ClCompile>
-    <ClCompile Include="PS3\PS3_PlayerUID.cpp">
-      <Filter>PS3\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Common\UI\UIControl_DynamicLabel.cpp">
       <Filter>Common\Source Files\UI\Controls</Filter>
@@ -5387,9 +4384,6 @@
     </ClCompile>
     <ClCompile Include="Common\UI\UIScene_TradingMenu.cpp">
       <Filter>Common\Source Files\UI\Scenes\In-Game Menu Screens\Containers</Filter>
-    </ClCompile>
-    <ClCompile Include="Durango\Achievements\AchievementManager.cpp">
-      <Filter>Durango\Source Files\Achievements</Filter>
     </ClCompile>
     <ClCompile Include="Common\UI\UIScene_DebugSetCamera.cpp">
       <Filter>Common\Source Files\UI\Scenes\Debug</Filter>
@@ -5412,26 +4406,11 @@
     <ClCompile Include="ZombieRenderer.cpp">
       <Filter>net\minecraft\client\renderer\entity</Filter>
     </ClCompile>
-    <ClCompile Include="Orbis\Orbis_PlayerUID.cpp">
-      <Filter>Orbis</Filter>
-    </ClCompile>
-    <ClCompile Include="Orbis\Network\Orbis_NPToolkit.cpp">
-      <Filter>Orbis\Network</Filter>
-    </ClCompile>
     <ClCompile Include="ServerCommandDispatcher.cpp">
       <Filter>net\minecraft\server\commands</Filter>
     </ClCompile>
     <ClCompile Include="TeleportCommand.cpp">
       <Filter>net\minecraft\server\commands</Filter>
-    </ClCompile>
-    <ClCompile Include="Durango\Network\NetworkPlayerDurango.cpp">
-      <Filter>Durango\Network</Filter>
-    </ClCompile>
-    <ClCompile Include="Durango\Network\PlatformNetworkManagerDurango.cpp">
-      <Filter>Durango\Network</Filter>
-    </ClCompile>
-    <ClCompile Include="Durango\Network\DQRNetworkManager.cpp">
-      <Filter>Durango\Network</Filter>
     </ClCompile>
     <ClCompile Include="Common\Network\Sony\NetworkPlayerSony.cpp">
       <Filter>Common\Source Files\Network\Sony</Filter>
@@ -5442,32 +4421,11 @@
     <ClCompile Include="Common\Network\Sony\SQRNetworkPlayer.cpp">
       <Filter>Common\Source Files\Network\Sony</Filter>
     </ClCompile>
-    <ClCompile Include="PS3\Network\SQRNetworkManager_PS3.cpp">
-      <Filter>PS3\Source Files\Network</Filter>
-    </ClCompile>
-    <ClCompile Include="Orbis\Network\SQRNetworkManager_Orbis.cpp">
-      <Filter>Orbis\Network</Filter>
-    </ClCompile>
-    <ClCompile Include="Orbis\Network\SonyCommerce_Orbis.cpp">
-      <Filter>Orbis\Network</Filter>
-    </ClCompile>
     <ClCompile Include="Common\Network\Sony\SonyHttp.cpp">
       <Filter>Common\Source Files\Network\Sony</Filter>
     </ClCompile>
-    <ClCompile Include="PS3\Network\SonyHttp_PS3.cpp">
-      <Filter>PS3\Source Files\Network</Filter>
-    </ClCompile>
-    <ClCompile Include="PS3\Network\SonyCommerce_PS3.cpp">
-      <Filter>PS3\Source Files\Network</Filter>
-    </ClCompile>
-    <ClCompile Include="Orbis\Network\SonyHttp_Orbis.cpp">
-      <Filter>Orbis\Network</Filter>
-    </ClCompile>
     <ClCompile Include="Common\GameRules\StartFeature.cpp">
       <Filter>Common\Source Files\GameRules\LevelGeneration</Filter>
-    </ClCompile>
-    <ClCompile Include="Durango\Network\PartyController.cpp">
-      <Filter>Durango\Network</Filter>
     </ClCompile>
     <ClCompile Include="Common\UI\UIScene_TeleportMenu.cpp">
       <Filter>Common\Source Files\UI\Scenes\In-Game Menu Screens</Filter>
@@ -5475,161 +4433,35 @@
     <ClCompile Include="Common\XUI\XUI_Teleport.cpp">
       <Filter>Xbox\Source Files\XUI\Menu screens</Filter>
     </ClCompile>
-    <ClCompile Include="Durango\Network\DQRNetworkPlayer.cpp">
-      <Filter>Durango\Network</Filter>
-    </ClCompile>
-    <ClCompile Include="PSVita\PSVita_App.cpp">
-      <Filter>PSVita</Filter>
-    </ClCompile>
-    <ClCompile Include="PSVita\PSVita_UIController.cpp">
-      <Filter>PSVita</Filter>
-    </ClCompile>
-    <ClCompile Include="PSVita\PSVita_PlayerUID.cpp">
-      <Filter>PSVita\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PSVita\PSVita_Minecraft.cpp">
-      <Filter>PSVita\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PSVita\PSVitaExtras\PsVitaStubs.cpp">
-      <Filter>PSVita\PSVitaExtras</Filter>
-    </ClCompile>
-    <ClCompile Include="Orbis\Network\SonyVoiceChat_Orbis.cpp">
-      <Filter>Orbis\Network</Filter>
-    </ClCompile>
     <ClCompile Include="Common\Network\Sony\SQRNetworkManager.cpp">
       <Filter>Common\Source Files\Network\Sony</Filter>
-    </ClCompile>
-    <ClCompile Include="Orbis\Leaderboards\base64.cpp">
-      <Filter>Orbis\Source Files\Leaderboards</Filter>
     </ClCompile>
     <ClCompile Include="Common\UI\UIScene_DebugCreateSchematic.cpp">
       <Filter>Common\Source Files\UI\Scenes\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="Durango\Network\base64.cpp">
-      <Filter>Durango\Network</Filter>
-    </ClCompile>
-    <ClCompile Include="Durango\Leaderboards\DurangoStatsDebugger.cpp">
-      <Filter>Durango\Source Files\Leaderboards</Filter>
-    </ClCompile>
     <ClCompile Include="Common\Telemetry\TelemetryManager.cpp">
       <Filter>Common\Source Files\Telemetry</Filter>
-    </ClCompile>
-    <ClCompile Include="Durango\Sentient\DurangoTelemetry.cpp">
-      <Filter>Durango\Source Files\Sentient</Filter>
     </ClCompile>
     <ClCompile Include="Common\UI\UIFontData.cpp">
       <Filter>Common\Source Files\UI</Filter>
     </ClCompile>
-    <ClCompile Include="Orbis\Network\SonyRemoteStorage_Orbis.cpp">
-      <Filter>Orbis\Network</Filter>
-    </ClCompile>
-    <ClCompile Include="PS3\Network\SonyRemoteStorage_PS3.cpp">
-      <Filter>PS3\Source Files\Network</Filter>
-    </ClCompile>
     <ClCompile Include="Common\Network\Sony\SonyRemoteStorage.cpp">
       <Filter>Common\Source Files\Network\Sony</Filter>
-    </ClCompile>
-    <ClCompile Include="Orbis\user_malloc.cpp">
-      <Filter>Orbis</Filter>
-    </ClCompile>
-    <ClCompile Include="Orbis\user_malloc_for_tls.cpp">
-      <Filter>Orbis</Filter>
-    </ClCompile>
-    <ClCompile Include="Orbis\user_new.cpp">
-      <Filter>Orbis</Filter>
     </ClCompile>
     <ClCompile Include="Common\UI\UIComponent_DebugUIMarketingGuide.cpp">
       <Filter>Common\Source Files\UI\Components</Filter>
     </ClCompile>
-    <ClCompile Include="Durango\Network\ChatIntegrationLayer.cpp">
-      <Filter>Durango\Network</Filter>
-    </ClCompile>
-    <ClCompile Include="Durango\Network\DQRNetworkManager_Log.cpp">
-      <Filter>Durango\Network</Filter>
-    </ClCompile>
-    <ClCompile Include="Durango\Network\DQRNetworkManager_FriendSessions.cpp">
-      <Filter>Durango\Network</Filter>
-    </ClCompile>
-    <ClCompile Include="Durango\Network\DQRNetworkManager_XRNSEvent.cpp">
-      <Filter>Durango\Network</Filter>
-    </ClCompile>
-    <ClCompile Include="Durango\Network\DQRNetworkManager_SendReceive.cpp">
-      <Filter>Durango\Network</Filter>
-    </ClCompile>
-    <ClCompile Include="Durango\XML\ATGXmlParser.cpp">
-      <Filter>Durango\XML</Filter>
-    </ClCompile>
-    <ClCompile Include="PSVita\Iggy\gdraw\gdraw_psp2.cpp">
-      <Filter>PSVita\Iggy\gdraw</Filter>
-    </ClCompile>
-    <ClCompile Include="PSVita\PSVitaExtras\user_malloc.c">
-      <Filter>PSVita\PSVitaExtras</Filter>
-    </ClCompile>
-    <ClCompile Include="PSVita\PSVitaExtras\user_malloc_for_tls.c">
-      <Filter>PSVita\PSVitaExtras</Filter>
-    </ClCompile>
-    <ClCompile Include="PSVita\PSVitaExtras\user_new.cpp">
-      <Filter>PSVita\PSVitaExtras</Filter>
-    </ClCompile>
-    <ClCompile Include="PSVita\PSVitaExtras\PSVitaTLSStorage.cpp">
-      <Filter>PSVita\PSVitaExtras</Filter>
-    </ClCompile>
-    <ClCompile Include="PSVita\PSVitaExtras\ShutdownManager.cpp">
-      <Filter>PSVita\PSVitaExtras</Filter>
-    </ClCompile>
-    <ClCompile Include="PSVita\PSVitaExtras\PSVitaStrings.cpp">
-      <Filter>PSVita\PSVitaExtras</Filter>
-    </ClCompile>
     <ClCompile Include="Common\UI\UIControl_Touch.cpp">
       <Filter>Common\Source Files\UI\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="PSVita\Network\SonyVoiceChat_Vita.cpp">
-      <Filter>PSVita\Source Files\Network</Filter>
-    </ClCompile>
-    <ClCompile Include="PSVita\Network\SQRNetworkManager_AdHoc_Vita.cpp">
-      <Filter>PSVita\Source Files\Network</Filter>
-    </ClCompile>
-    <ClCompile Include="PSVita\Network\SQRNetworkManager_Vita.cpp">
-      <Filter>PSVita\Source Files\Network</Filter>
-    </ClCompile>
-    <ClCompile Include="PSVita\Leaderboards\base64.cpp">
-      <Filter>PSVita\Source Files\Leaderboards</Filter>
-    </ClCompile>
-    <ClCompile Include="PSVita\Leaderboards\PSVitaLeaderboardManager.cpp">
-      <Filter>PSVita\Source Files\Leaderboards</Filter>
-    </ClCompile>
     <ClCompile Include="Common\UI\IUIScene_StartGame.cpp">
       <Filter>Common\Source Files\UI\Scenes\Frontend Menu screens</Filter>
-    </ClCompile>
-    <ClCompile Include="Durango\Leaderboards\GameProgress.cpp">
-      <Filter>Durango\Source Files\Leaderboards</Filter>
-    </ClCompile>
-    <ClCompile Include="PSVita\Network\SonyHttp_Vita.cpp">
-      <Filter>PSVita\Source Files\Network</Filter>
-    </ClCompile>
-    <ClCompile Include="PSVita\Network\SonyRemoteStorage_Vita.cpp">
-      <Filter>PSVita\Source Files\Network</Filter>
-    </ClCompile>
-    <ClCompile Include="PSVita\PSVitaExtras\CustomSet.cpp">
-      <Filter>PSVita\PSVitaExtras</Filter>
-    </ClCompile>
-    <ClCompile Include="PSVita\PSVitaExtras\CustomMap.cpp">
-      <Filter>PSVita\PSVitaExtras</Filter>
     </ClCompile>
     <ClCompile Include="Common\UI\UIControl_SpaceIndicatorBar.cpp">
       <Filter>Common\Source Files\UI\Controls</Filter>
     </ClCompile>
     <ClCompile Include="Common\UI\UIScene_InGameSaveManagementMenu.cpp">
       <Filter>Common\Source Files\UI\Scenes\In-Game Menu Screens</Filter>
-    </ClCompile>
-    <ClCompile Include="PSVita\Network\SonyCommerce_Vita.cpp">
-      <Filter>PSVita\Source Files\Network</Filter>
-    </ClCompile>
-    <ClCompile Include="PSVita\Network\PSVita_NPToolkit.cpp">
-      <Filter>PSVita\Source Files\Network</Filter>
-    </ClCompile>
-    <ClCompile Include="Orbis\Network\PsPlusUpsellWrapper_Orbis.cpp">
-      <Filter>Orbis\Network</Filter>
     </ClCompile>
     <ClCompile Include="Common\UI\UIScene_Keyboard.cpp">
       <Filter>Common\Source Files\UI\Scenes</Filter>
@@ -5644,9 +4476,6 @@
     </Library>
     <Library Include="Xbox\4JLibs\libs\4J_Render.lib">
       <Filter>Xbox\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="Durango\4JLibs\libs\4J_Render_d.lib">
-      <Filter>Durango\4JLibs\libs</Filter>
     </Library>
     <Library Include="Xbox\4JLibs\libs\4J_Input_d.lib">
       <Filter>Xbox\4JLibs\libs</Filter>
@@ -5675,15 +4504,6 @@
     <Library Include="Xbox\4JLibs\libs\4J_Input.lib">
       <Filter>Xbox\4JLibs\libs</Filter>
     </Library>
-    <Library Include="Durango\4JLibs\libs\4J_Render.lib">
-      <Filter>Durango\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="Durango\4JLibs\libs\4J_Input.lib">
-      <Filter>Durango\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="Durango\4JLibs\libs\4J_Input_d.lib">
-      <Filter>Durango\4JLibs\libs</Filter>
-    </Library>
     <Library Include="Windows64\4JLibs\libs\4J_Render_PC.lib">
       <Filter>Windows64\4JLibs\libs</Filter>
     </Library>
@@ -5708,191 +4528,17 @@
     <Library Include="Windows64\Iggy\lib\iggyperfmon_w64.lib">
       <Filter>Windows64\Iggy\lib</Filter>
     </Library>
-    <Library Include="Durango\Iggy\lib\iggy_durango.lib">
-      <Filter>Durango\Iggy\lib</Filter>
-    </Library>
-    <Library Include="Durango\Iggy\lib\iggy_durango_debugcrt.lib">
-      <Filter>Durango\Iggy\lib</Filter>
-    </Library>
-    <Library Include="Durango\Iggy\lib\iggyperfmon_durango.lib">
-      <Filter>Durango\Iggy\lib</Filter>
-    </Library>
-    <Library Include="Durango\Iggy\lib\iggyperfmon_durango_debugcrt.lib">
-      <Filter>Durango\Iggy\lib</Filter>
-    </Library>
-    <Library Include="PS3\Iggy\lib\libiggy_ps3.a">
-      <Filter>PS3\Iggy\lib</Filter>
-    </Library>
-    <Library Include="PS3\Iggy\lib\libiggyexpruntime_ps3.a">
-      <Filter>PS3\Iggy\lib</Filter>
-    </Library>
-    <Library Include="PS3\Iggy\lib\libiggyperfmon_ps3.a">
-      <Filter>PS3\Iggy\lib</Filter>
-    </Library>
-    <Library Include="Orbis\Iggy\lib\libiggy_orbis.a">
-      <Filter>Orbis\Iggy\lib</Filter>
-    </Library>
-    <Library Include="Orbis\Iggy\lib\libiggyperfmon_orbis.a">
-      <Filter>Orbis\Iggy\lib</Filter>
-    </Library>
-    <Library Include="PS3\4JLibs\libs\4J_Input.a">
-      <Filter>PS3\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="PS3\4JLibs\libs\4J_Input_d.a">
-      <Filter>PS3\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="PS3\4JLibs\libs\4J_Profile.a">
-      <Filter>PS3\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="PS3\4JLibs\libs\4J_Profile_d.a">
-      <Filter>PS3\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="PS3\4JLibs\libs\4J_Render.a">
-      <Filter>PS3\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="PS3\4JLibs\libs\4J_Render_d.a">
-      <Filter>PS3\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="PS3\4JLibs\libs\4J_Storage.a">
-      <Filter>PS3\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="PS3\4JLibs\libs\4J_Storage_d.a">
-      <Filter>PS3\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="Durango\Miles\lib\binkadurango.LTCG.lib">
-      <Filter>Durango\Miles Sound System\lib</Filter>
-    </Library>
-    <Library Include="Durango\Miles\lib\mssdurango.LTCG.lib">
-      <Filter>Durango\Miles Sound System\lib</Filter>
-    </Library>
-    <Library Include="PS3\4JLibs\libs\4J_Input_r.a">
-      <Filter>PS3\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="PS3\4JLibs\libs\4J_Profile_r.a">
-      <Filter>PS3\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="PS3\4JLibs\libs\4J_Render_r.a">
-      <Filter>PS3\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="PS3\4JLibs\libs\4J_Storage_r.a">
-      <Filter>PS3\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="Orbis\4JLibs\Libs\4J_Storage.a">
-      <Filter>Orbis\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="Orbis\4JLibs\Libs\4J_Storage_d.a">
-      <Filter>Orbis\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="Orbis\4JLibs\Libs\4J_Storage_r.a">
-      <Filter>Orbis\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="Durango\4JLibs\libs\4J_Storage.lib">
-      <Filter>Durango\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="Durango\4JLibs\libs\4J_Storage_d.lib">
-      <Filter>Durango\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="Durango\4JLibs\libs\4J_Storage_r.lib">
-      <Filter>Durango\4JLibs\libs</Filter>
-    </Library>
     <Library Include="Windows64\4JLibs\libs\4J_Storage.lib">
       <Filter>Windows64\4JLibs\libs</Filter>
     </Library>
     <Library Include="Windows64\4JLibs\libs\4J_Storage_d.lib">
       <Filter>Windows64\4JLibs\libs</Filter>
     </Library>
-    <Library Include="Durango\4JLibs\libs\4J_Profile.lib">
-      <Filter>Durango\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="Durango\4JLibs\libs\4J_Profile_d.lib">
-      <Filter>Durango\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="Orbis\4JLibs\Libs\4J_Profile.a">
-      <Filter>Orbis\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="Orbis\4JLibs\Libs\4J_Profile_d.a">
-      <Filter>Orbis\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="Orbis\4JLibs\Libs\4J_Profile_r.a">
-      <Filter>Orbis\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="Durango\4JLibs\libs\4J_Input_r.lib">
-      <Filter>Durango\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="Durango\4JLibs\libs\4J_Profile_r.lib">
-      <Filter>Durango\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="PSVita\4JLibs\libs\4J_Input.a">
-      <Filter>PSVita\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="PSVita\4JLibs\libs\4J_Input_d.a">
-      <Filter>PSVita\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="PSVita\4JLibs\libs\4J_Input_r.a">
-      <Filter>PSVita\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="PSVita\4JLibs\libs\4J_Profile.a">
-      <Filter>PSVita\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="PSVita\4JLibs\libs\4J_Profile_d.a">
-      <Filter>PSVita\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="PSVita\4JLibs\libs\4J_Profile_r.a">
-      <Filter>PSVita\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="PSVita\4JLibs\libs\4J_Render.a">
-      <Filter>PSVita\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="PSVita\4JLibs\libs\4J_Render_d.a">
-      <Filter>PSVita\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="PSVita\4JLibs\libs\4J_Render_r.a">
-      <Filter>PSVita\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="PSVita\4JLibs\libs\4J_Storage.a">
-      <Filter>PSVita\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="PSVita\4JLibs\libs\4J_Storage_d.a">
-      <Filter>PSVita\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="PSVita\4JLibs\libs\4J_Storage_r.a">
-      <Filter>PSVita\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="PSVita\Iggy\lib\libiggy_psp2.a">
-      <Filter>PSVita\Iggy\Lib</Filter>
-    </Library>
-    <Library Include="PSVita\Iggy\lib\libiggyperfmon_psp2.a">
-      <Filter>PSVita\Iggy\Lib</Filter>
-    </Library>
-    <Library Include="PSVita\Miles\lib\binkapsp2.a">
-      <Filter>PSVita\Miles Sound System\lib</Filter>
-    </Library>
-    <Library Include="PSVita\Miles\lib\fltpsp2.a">
-      <Filter>PSVita\Miles Sound System\lib</Filter>
-    </Library>
-    <Library Include="PSVita\Miles\lib\msspsp2.a">
-      <Filter>PSVita\Miles Sound System\lib</Filter>
-    </Library>
-    <Library Include="PSVita\Miles\lib\msspsp2midi.a">
-      <Filter>PSVita\Miles Sound System\lib</Filter>
-    </Library>
     <Library Include="Xbox\4JLibs\libs\4J_XTMS_d.lib">
       <Filter>Xbox\4JLibs\libs</Filter>
     </Library>
     <Library Include="Xbox\4JLibs\libs\4J_XTMS_r.lib">
       <Filter>Xbox\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="PSVita\4JLibs\libs\libSceNpToolkit_rtti.a">
-      <Filter>PSVita\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="PSVita\4JLibs\libs\libSceNpToolkitUtils_rtti.a">
-      <Filter>PSVita\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="PSVita\4JLibs\libs\libSceNpToolkit_rtti_dbg.a">
-      <Filter>PSVita\4JLibs\libs</Filter>
-    </Library>
-    <Library Include="PSVita\4JLibs\libs\libSceNpToolkitUtils_rtti_dbg.a">
-      <Filter>PSVita\4JLibs\libs</Filter>
     </Library>
   </ItemGroup>
   <ItemGroup>
@@ -5907,111 +4553,10 @@
     <Image Include="Xbox\small.ico">
       <Filter>Windows</Filter>
     </Image>
-    <Image Include="Durango\WideLogo.png">
-      <Filter>Durango</Filter>
-    </Image>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Xbox\MinecraftWindows.rc">
       <Filter>Windows</Filter>
     </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Object Include="PS3\SPU_Tasks\ObjFiles\Release\ChunkUpdate.ppu.o">
-      <Filter>PS3\SPUObjFiles\Release</Filter>
-    </Object>
-    <Object Include="PS3\SPU_Tasks\ObjFiles\Release\CompressedTile.ppu.o">
-      <Filter>PS3\SPUObjFiles\Release</Filter>
-    </Object>
-    <Object Include="PS3\SPU_Tasks\ObjFiles\Release\CompressedTileStorage_compress.ppu.o">
-      <Filter>PS3\SPUObjFiles\Release</Filter>
-    </Object>
-    <Object Include="PS3\SPU_Tasks\ObjFiles\Release\LevelRenderer_cull.ppu.o">
-      <Filter>PS3\SPUObjFiles\Release</Filter>
-    </Object>
-    <Object Include="PS3\SPU_Tasks\ObjFiles\Release\LevelRenderer_FindNearestChunk.ppu.o">
-      <Filter>PS3\SPUObjFiles\Release</Filter>
-    </Object>
-    <Object Include="PS3\SPU_Tasks\ObjFiles\Release\LevelRenderer_zSort.ppu.o">
-      <Filter>PS3\SPUObjFiles\Release</Filter>
-    </Object>
-    <Object Include="PS3\SPU_Tasks\ObjFiles\Release\PerlinNoise.ppu.o">
-      <Filter>PS3\SPUObjFiles\Release</Filter>
-    </Object>
-    <Object Include="PS3\SPU_Tasks\ObjFiles\Release\Renderer_TextureUpdate.ppu.o">
-      <Filter>PS3\SPUObjFiles\Release</Filter>
-    </Object>
-    <Object Include="PS3\SPU_Tasks\ObjFiles\Release\Texture_blit.ppu.o">
-      <Filter>PS3\SPUObjFiles\Release</Filter>
-    </Object>
-    <Object Include="PS3\SPU_Tasks\ObjFiles\Debug\ChunkUpdate.ppu.o">
-      <Filter>PS3\SPUObjFiles\Debug</Filter>
-    </Object>
-    <Object Include="PS3\SPU_Tasks\ObjFiles\Debug\CompressedTile.ppu.o">
-      <Filter>PS3\SPUObjFiles\Debug</Filter>
-    </Object>
-    <Object Include="PS3\SPU_Tasks\ObjFiles\Debug\CompressedTileStorage_compress.ppu.o">
-      <Filter>PS3\SPUObjFiles\Debug</Filter>
-    </Object>
-    <Object Include="PS3\SPU_Tasks\ObjFiles\Debug\LevelRenderer_cull.ppu.o">
-      <Filter>PS3\SPUObjFiles\Debug</Filter>
-    </Object>
-    <Object Include="PS3\SPU_Tasks\ObjFiles\Debug\LevelRenderer_FindNearestChunk.ppu.o">
-      <Filter>PS3\SPUObjFiles\Debug</Filter>
-    </Object>
-    <Object Include="PS3\SPU_Tasks\ObjFiles\Debug\LevelRenderer_zSort.ppu.o">
-      <Filter>PS3\SPUObjFiles\Debug</Filter>
-    </Object>
-    <Object Include="PS3\SPU_Tasks\ObjFiles\Debug\PerlinNoise.ppu.o">
-      <Filter>PS3\SPUObjFiles\Debug</Filter>
-    </Object>
-    <Object Include="PS3\SPU_Tasks\ObjFiles\Debug\Renderer_TextureUpdate.ppu.o">
-      <Filter>PS3\SPUObjFiles\Debug</Filter>
-    </Object>
-    <Object Include="PS3\SPU_Tasks\ObjFiles\Debug\Texture_blit.ppu.o">
-      <Filter>PS3\SPUObjFiles\Debug</Filter>
-    </Object>
-    <Object Include="PS3\SPU_Tasks\ObjFiles\ContentPackage\ChunkUpdate.ppu.o">
-      <Filter>PS3\SPUObjFiles\ContentPackage</Filter>
-    </Object>
-    <Object Include="PS3\SPU_Tasks\ObjFiles\ContentPackage\CompressedTile.ppu.o">
-      <Filter>PS3\SPUObjFiles\ContentPackage</Filter>
-    </Object>
-    <Object Include="PS3\SPU_Tasks\ObjFiles\ContentPackage\CompressedTileStorage_compress.ppu.o">
-      <Filter>PS3\SPUObjFiles\ContentPackage</Filter>
-    </Object>
-    <Object Include="PS3\SPU_Tasks\ObjFiles\ContentPackage\LevelRenderer_cull.ppu.o">
-      <Filter>PS3\SPUObjFiles\ContentPackage</Filter>
-    </Object>
-    <Object Include="PS3\SPU_Tasks\ObjFiles\ContentPackage\LevelRenderer_FindNearestChunk.ppu.o">
-      <Filter>PS3\SPUObjFiles\ContentPackage</Filter>
-    </Object>
-    <Object Include="PS3\SPU_Tasks\ObjFiles\ContentPackage\LevelRenderer_zSort.ppu.o">
-      <Filter>PS3\SPUObjFiles\ContentPackage</Filter>
-    </Object>
-    <Object Include="PS3\SPU_Tasks\ObjFiles\ContentPackage\PerlinNoise.ppu.o">
-      <Filter>PS3\SPUObjFiles\ContentPackage</Filter>
-    </Object>
-    <Object Include="PS3\SPU_Tasks\ObjFiles\ContentPackage\Renderer_TextureUpdate.ppu.o">
-      <Filter>PS3\SPUObjFiles\ContentPackage</Filter>
-    </Object>
-    <Object Include="PS3\SPU_Tasks\ObjFiles\ContentPackage\Texture_blit.ppu.o">
-      <Filter>PS3\SPUObjFiles\ContentPackage</Filter>
-    </Object>
-    <Object Include="PS3\SPU_Tasks\ObjFiles\Release\CompressedTileStorage_getData.ppu.o">
-      <Filter>PS3\SPUObjFiles\Release</Filter>
-    </Object>
-    <Object Include="PS3\SPU_Tasks\ObjFiles\Debug\CompressedTileStorage_getData.ppu.o">
-      <Filter>PS3\SPUObjFiles\Debug</Filter>
-    </Object>
-    <Object Include="PS3\SPU_Tasks\ObjFiles\ContentPackage\CompressedTileStorage_getData.ppu.o">
-      <Filter>PS3\SPUObjFiles\ContentPackage</Filter>
-    </Object>
-  </ItemGroup>
-  <ItemGroup>
-    <AppxManifest Include="Durango\Autogenerated.appxmanifest" />
-  </ItemGroup>
-  <ItemGroup>
-    <Xml Include="Durango\manifest.xml" />
   </ItemGroup>
 </Project>

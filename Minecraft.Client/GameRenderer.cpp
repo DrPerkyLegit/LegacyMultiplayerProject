@@ -44,7 +44,6 @@
 #include "HumanoidModel.h"
 #include "..\Minecraft.World\Item.h"
 #include "..\Minecraft.World\compression.h"
-#include "PS3\PS3Extras\ShutdownManager.h"
 
 #include "TexturePackRepository.h"
 #include "TexturePack.h"
@@ -1149,18 +1148,12 @@ int GameRenderer::runUpdate(LPVOID lpParam)
 #endif
 	Tile::CreateNewThreadStorage();
 
-	ShutdownManager::HasStarted(ShutdownManager::eRenderChunkUpdateThread,m_updateEvents);
-	while(ShutdownManager::ShouldRun(ShutdownManager::eRenderChunkUpdateThread))
+	while(true)
 	{
 		//m_updateEvents->Clear(eUpdateEventIsFinished);
 		//m_updateEvents->WaitForSingle(eUpdateCanRun,INFINITE);
 		// 4J Stu - We Need to have this happen atomically to avoid deadlocks
 		m_updateEvents->WaitForAll(INFINITE);
-
-		if( !ShutdownManager::ShouldRun(ShutdownManager::eRenderChunkUpdateThread) )
-		{
-			break;
-		}
 
 		m_updateEvents->Set(eUpdateCanRun);
 
@@ -1219,7 +1212,6 @@ int GameRenderer::runUpdate(LPVOID lpParam)
 		m_updateEvents->Set(eUpdateEventIsFinished);
 	}
 
-	ShutdownManager::HasFinished(ShutdownManager::eRenderChunkUpdateThread);
 	return 0;
 }
 #endif

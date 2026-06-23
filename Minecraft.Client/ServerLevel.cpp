@@ -32,7 +32,6 @@
 #include "TexturePackRepository.h"
 #include "DLCTexturePack.h"
 #include "..\Minecraft.World\ProgressListener.h"
-#include "PS3\PS3Extras\ShutdownManager.h"
 #include "PlayerChunkMap.h"
 
 WeighedTreasureArray ServerLevel::RANDOM_BONUS_ITEMS;
@@ -1375,12 +1374,9 @@ bool ServerLevel::newFallingTileAllowed()
 
 int ServerLevel::runUpdate(void* lpParam)
 {
-	ShutdownManager::HasStarted(ShutdownManager::eRunUpdateThread,m_updateTrigger);
-	while(ShutdownManager::ShouldRun(ShutdownManager::eRunUpdateThread))
+	while(true)
 	{
 		m_updateTrigger->WaitForAll(INFINITE);
-
-		if(!ShutdownManager::ShouldRun(ShutdownManager::eRunUpdateThread)) break;
 
 		PIXBeginNamedEvent(0,"Updating tiles to be ticked");
 		// 4J Stu - Grass and Lava ticks currently take up the majority of all tile updates, so I am limiting them
@@ -1449,8 +1445,6 @@ int ServerLevel::runUpdate(void* lpParam)
 		Sleep(10);
 #endif //__PS3__
 	}
-
-	ShutdownManager::HasFinished(ShutdownManager::eRunUpdateThread);
 
 	return 0;
 }
