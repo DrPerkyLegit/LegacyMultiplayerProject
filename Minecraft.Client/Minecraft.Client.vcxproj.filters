@@ -189,75 +189,6 @@
     <Filter Include="Windows">
       <UniqueIdentifier>{5f5f5678-57b0-4f7f-b7dc-1ddd01ea2774}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Durango">
-      <UniqueIdentifier>{a19d2d41-9a2f-4631-941b-c3bfa7c2fdfd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Durango\4JLibs">
-      <UniqueIdentifier>{bcdb8322-b7e6-482b-a3da-eb3f84dac713}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Durango\4JLibs\inc">
-      <UniqueIdentifier>{e2959475-d5c8-4874-a782-fb5266e4441c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Durango\4JLibs\libs">
-      <UniqueIdentifier>{794dfcdb-98c6-4939-b04d-86b9657d4ff6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Durango\4JLibs\Media">
-      <UniqueIdentifier>{775f3088-bc52-43a3-b9ec-7f3f58508240}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Durango\res">
-      <UniqueIdentifier>{ebe1835b-76a8-408d-b3ee-70ffa4db7907}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Durango\res\achievement">
-      <UniqueIdentifier>{45bddf1c-e6d6-4a78-9b7d-73d7511e070d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Durango\res\armor">
-      <UniqueIdentifier>{16186163-4c73-4fa8-85c7-57d2b34e3fe9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Durango\res\art">
-      <UniqueIdentifier>{b33b6793-e585-487e-8626-0096242f8e04}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Durango\res\audio">
-      <UniqueIdentifier>{1264d92e-fa06-40ef-846c-4ce2a99e8ccc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Durango\res\environment">
-      <UniqueIdentifier>{b28c2ec8-a257-41ca-aad2-cf2ced04e4fa}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Durango\res\font">
-      <UniqueIdentifier>{7369fca1-3096-4b7d-a93e-924587f23108}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Durango\res\gui">
-      <UniqueIdentifier>{e0eabf73-2721-46f9-bc46-4e0292bb53d3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Durango\res\item">
-      <UniqueIdentifier>{bf450dfd-c9e8-4120-8a4c-3860b606637e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Durango\res\misc">
-      <UniqueIdentifier>{4412cd12-307d-407c-8d4a-34df3274c892}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Durango\res\mob">
-      <UniqueIdentifier>{91fbb0f7-3d94-4786-aa07-c9c57a6db9a9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Durango\res\terrain">
-      <UniqueIdentifier>{afb9404f-f23d-46b1-b4d5-4b1096d5bf40}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Durango\res\title">
-      <UniqueIdentifier>{716a30f7-f9dd-43bf-9228-646dff4c58b1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Durango\SentientLibs">
-      <UniqueIdentifier>{3531c304-b08e-48ae-860c-773f6702ec4d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Durango\Source Files">
-      <UniqueIdentifier>{924f367a-618c-429e-9866-f60821f21d4a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Durango\Source Files\Leaderboards">
-      <UniqueIdentifier>{e3e43b8f-e455-4222-a92e-f6567a41e326}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Durango\Source Files\Sentient">
-      <UniqueIdentifier>{61ac879d-17b0-402b-b29f-88c60a1161c7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Durango\Source Files\Social">
-      <UniqueIdentifier>{4f5c7e99-5cbc-4db4-99c4-37db45537198}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Common">
       <UniqueIdentifier>{33341824-5702-4a56-b75c-9dac57e49349}</UniqueIdentifier>
     </Filter>
@@ -287,42 +218,6 @@
     </Filter>
     <Filter Include="Common\Source Files\Tutorial\Tasks">
       <UniqueIdentifier>{056ec81c-c93f-4c56-9bcb-697cda24a612}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Durango\XML">
-      <UniqueIdentifier>{d3d4cc74-edfa-4bbb-8e66-7252dbbc131b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PS3">
-      <UniqueIdentifier>{1511a94f-13bc-49e0-bf75-7cdf98f1e77f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PS3\4JLibs">
-      <UniqueIdentifier>{f0b2e12a-e042-49bc-a5fa-78d1cf79e5d3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PS3\4JLibs\inc">
-      <UniqueIdentifier>{d2020762-d261-4c89-bbb9-0c7113012882}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PS3\4JLibs\libs">
-      <UniqueIdentifier>{88ebd63d-2bbc-438a-a810-9b26fcfdd908}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PS3\4JLibs\Media">
-      <UniqueIdentifier>{2cf98618-28c5-46df-9ff7-3d331ee4a275}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PS3\GameConfig">
-      <UniqueIdentifier>{3c643f18-092d-4870-a206-8dc906748a64}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PS3\Source Files">
-      <UniqueIdentifier>{11cc2598-d569-47ad-8843-7a8296878be9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PS3\Source Files\Leaderboards">
-      <UniqueIdentifier>{33371180-d4ec-4439-8a95-059babcc1db9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PS3\Source Files\Sentient">
-      <UniqueIdentifier>{c6d264ea-d4ac-4f3f-81f7-0d91fdc27713}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PS3\Source Files\Social">
-      <UniqueIdentifier>{bde45e25-7dce-4a39-a2bf-dad234708b07}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PS3\PS3Extras">
-      <UniqueIdentifier>{9685dbaa-ed65-453c-ba57-ec01e59022ae}</UniqueIdentifier>
     </Filter>
     <Filter Include="net\minecraft\client\renderer\texture">
       <UniqueIdentifier>{92ead381-f2b8-4c6d-a3ca-c6fbc7753361}</UniqueIdentifier>
@@ -420,15 +315,6 @@
     <Filter Include="Windows64\Miles Sound System\lib">
       <UniqueIdentifier>{7c655cf2-f74e-4e6a-9114-405f5bc28a56}</UniqueIdentifier>
     </Filter>
-    <Filter Include="PS3\Miles Sound System">
-      <UniqueIdentifier>{a392080f-8e8b-42be-832a-a35869dba580}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PS3\Miles Sound System\include">
-      <UniqueIdentifier>{42dca5dc-e462-4537-9929-847a044eb116}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PS3\Miles Sound System\lib">
-      <UniqueIdentifier>{0da3a534-f8c9-4d0c-a73f-dfeb402b27c1}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Orbis\Miles Sound System">
       <UniqueIdentifier>{2e1858a4-a24b-49d8-b19c-c24b45f75a4f}</UniqueIdentifier>
     </Filter>
@@ -438,18 +324,6 @@
     <Filter Include="Orbis\Miles Sound System\lib">
       <UniqueIdentifier>{50dc7509-93df-4e0a-8a9a-cea040e92180}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Durango\Miles Sound System">
-      <UniqueIdentifier>{67544d93-633f-46a8-9cdf-8ae646a745d1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Durango\Miles Sound System\include">
-      <UniqueIdentifier>{08da2d2a-3276-4109-b190-05fbc4709398}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Durango\Miles Sound System\lib">
-      <UniqueIdentifier>{cef89641-7631-4c30-855f-603163446077}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PS3\Miles Sound System\lib\spu">
-      <UniqueIdentifier>{a15076ff-0dbe-4fb5-8b58-4ceb4b189c8f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Windows64\Miles Sound System\dll">
       <UniqueIdentifier>{a36a05f3-bc99-4097-b7a8-f81c37eec6e3}</UniqueIdentifier>
     </Filter>
@@ -458,15 +332,6 @@
     </Filter>
     <Filter Include="Windows64\Miles Sound System\dll\Release">
       <UniqueIdentifier>{bcd2eaff-60b9-41f4-8e1a-258639b27f99}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PS3\Source Files\Audio">
-      <UniqueIdentifier>{ebc154be-8d55-478b-9038-856d445aaf15}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PS3\ChunkRebuild_SPU">
-      <UniqueIdentifier>{0749340b-e216-450a-a02e-001917097ba5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PS3\CompressedTile_SPU">
-      <UniqueIdentifier>{6b6c31a6-0b8d-4dc0-8d6e-38ab6de709ff}</UniqueIdentifier>
     </Filter>
     <Filter Include="Common\Source Files\Localisation">
       <UniqueIdentifier>{d7537fdd-877b-461c-9c86-3235843fcfc0}</UniqueIdentifier>
@@ -513,33 +378,6 @@
     <Filter Include="Common\Source Files\Colours">
       <UniqueIdentifier>{18d3c9bc-132e-4770-a665-fc030eb86394}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Durango\DurangoExtras">
-      <UniqueIdentifier>{8a2156f5-3462-447b-b04d-e555a917fbf2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Durango\Iggy">
-      <UniqueIdentifier>{e0cb4d67-dd35-43ab-88cc-63173cc31125}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Durango\Iggy\gdraw">
-      <UniqueIdentifier>{090821e7-2a93-44de-bf5e-d5dbbcb41621}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Durango\Iggy\include">
-      <UniqueIdentifier>{11f70fef-83b4-4fb9-85ab-51109fbb6a56}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Durango\Iggy\lib">
-      <UniqueIdentifier>{7b594635-988d-40aa-8a00-0d60b1f49a5a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PS3\Iggy">
-      <UniqueIdentifier>{e7df083d-5b13-46bc-a5b9-610c3ffb33bc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PS3\Iggy\gdraw">
-      <UniqueIdentifier>{2ef42e03-cbaa-4077-a7f4-008150037f01}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PS3\Iggy\include">
-      <UniqueIdentifier>{4d1da71a-dd84-4073-be6d-1e534eca98f3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PS3\Iggy\lib">
-      <UniqueIdentifier>{acb27adb-45a3-45cf-85f5-3ae00cf3357d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Common\Source Files\zlib">
       <UniqueIdentifier>{3a9d8989-ff64-411c-84ad-b7dfb2520d5a}</UniqueIdentifier>
     </Filter>
@@ -554,9 +392,6 @@
     </Filter>
     <Filter Include="Orbis\Iggy\lib">
       <UniqueIdentifier>{ff6b8d80-d0ed-4225-b56c-1d0a19824e2f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PS3\Source Files\Network">
-      <UniqueIdentifier>{4d0806f8-ae38-4bac-8469-0a82fc61eecd}</UniqueIdentifier>
     </Filter>
     <Filter Include="Common\Source Files\UI\Components">
       <UniqueIdentifier>{67f51112-db23-4c8a-af1b-f748f7bbce8f}</UniqueIdentifier>
@@ -630,98 +465,17 @@
     <Filter Include="Xbox\Source Files\XUI\Base Scene">
       <UniqueIdentifier>{ad3528e0-0c39-42d5-b756-fdf691df5f17}</UniqueIdentifier>
     </Filter>
-    <Filter Include="PS3\SPUObjFiles">
-      <UniqueIdentifier>{262a14ae-51b7-4d11-be00-2bf7840dc67d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PS3\SPUObjFiles\Release">
-      <UniqueIdentifier>{40ad6aa5-e972-4aaf-bbb0-c783e72fb341}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PS3\SPUObjFiles\Debug">
-      <UniqueIdentifier>{d705167f-d99e-49b5-a667-24c0c2fe7bcc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PS3\SPUObjFiles\ContentPackage">
-      <UniqueIdentifier>{d52b4de1-b2d7-4c80-afb4-7c6edae1efcb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Durango\Source Files\Achievements">
-      <UniqueIdentifier>{61ac299e-6446-4df9-b5cc-9b2c0890b47c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Orbis\Network">
       <UniqueIdentifier>{147837b5-da79-4938-abcf-f8926a72b25c}</UniqueIdentifier>
     </Filter>
     <Filter Include="net\minecraft\server\commands">
       <UniqueIdentifier>{34edb787-189e-49c7-8412-f5def16b6f99}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Durango\Network">
-      <UniqueIdentifier>{1f029554-0246-45da-8bfd-8d4bc8d4cffc}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Common\Source Files\Network\Sony">
       <UniqueIdentifier>{15633337-4260-4618-bffa-df945dba2b1a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="PSVita">
-      <UniqueIdentifier>{81d283e0-15b7-4dcf-a85d-961169a993cd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PSVita\4JLibs">
-      <UniqueIdentifier>{dea799c3-4584-461c-a788-9766f61cea56}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PSVita\4JLibs\inc">
-      <UniqueIdentifier>{619bbb82-dfbc-499e-b078-048ad7e26222}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PSVita\4JLibs\libs">
-      <UniqueIdentifier>{f5065760-0ad8-4fb3-b6a9-f3ba06be0e51}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PSVita\4JLibs\Media">
-      <UniqueIdentifier>{360a336e-01e3-4a34-8608-efd2c7c72ef7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PSVita\Source Files">
-      <UniqueIdentifier>{1d9e76bb-7f51-487f-b0b4-de3419fd1925}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PSVita\PSVitaExtras">
-      <UniqueIdentifier>{177ed754-f97c-4e53-9e75-1f548ae2a0b4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PSVita\Source Files\Sentient">
-      <UniqueIdentifier>{4b317e13-b7e6-4468-8a2e-bfbbe3bb272b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PSVita\Source Files\Social">
-      <UniqueIdentifier>{acc4e8ae-a1f1-4f2b-9bf2-e12b74fa3a1a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PSVita\XML">
-      <UniqueIdentifier>{893769f2-22f7-4c41-ad2b-cb8668fb3b66}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PSVita\GameConfig">
-      <UniqueIdentifier>{c1441371-f323-4549-90a0-53c6f743b4b1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Durango\ServiceConfig">
-      <UniqueIdentifier>{b043e348-607a-4ac2-95de-f573db5dd04f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Common\Source Files\Telemetry">
       <UniqueIdentifier>{af98fe8e-ce25-437a-8ab9-efa9d8f0a5b0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PSVita\Iggy">
-      <UniqueIdentifier>{9a61fbe5-f9a2-4c83-b407-5a295808664e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PSVita\Iggy\Lib">
-      <UniqueIdentifier>{f55d07b2-80f2-4a01-8fb8-0b09545bf916}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PSVita\Iggy\include">
-      <UniqueIdentifier>{829b148f-b0d9-4a70-87ea-22f57281ac1f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PSVita\Iggy\gdraw">
-      <UniqueIdentifier>{08832b8f-5370-4c06-95ab-b5b285eb5fc5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PSVita\Source Files\Network">
-      <UniqueIdentifier>{918450ce-de83-4daf-8f25-7aaa8afcb856}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PSVita\Source Files\Leaderboards">
-      <UniqueIdentifier>{5d807c82-39b9-4651-ab8a-14244deff851}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PSVita\Miles Sound System">
-      <UniqueIdentifier>{9dee27ed-5aaf-4fad-b219-faebcebbe450}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PSVita\Miles Sound System\Include">
-      <UniqueIdentifier>{22d0b2d5-3279-4144-a23c-8eafb9d90e63}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PSVita\Miles Sound System\lib">
-      <UniqueIdentifier>{0061db22-43de-4b54-a161-c43958cdcd7e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

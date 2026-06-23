@@ -1458,6 +1458,21 @@ xcopy /q /y /i /s /e $(ProjectDir)Durango\CU  $(LayoutDir)Image\Loose\CU</Comman
       <DeploymentType>CopyToHardDrive</DeploymentType>
       <DeploymentFiles>$(RemoteRoot)=$(ImagePath);$(RemoteRoot)\res=Xbox\res;$(RemoteRoot)=Xbox\AvatarAwards;$(RemoteRoot)\Tutorial=Xbox\Tutorial\Tutorial;$(RemoteRoot)=Xbox\584111F70AAAAAAA;$(RemoteRoot)=Xbox\kinect\speech;$(RemoteRoot)=Xbox\XZP\TMSFiles.xzp</DeploymentFiles>
     </Deploy>
+    <PostBuildEvent>
+      <Command>xcopy "$(ProjectDir)Windows64\Iggy\lib\redist64" "$(TargetDir)\" /E /I /Y
+
+xcopy "$(ProjectDir)Windows64Media" "$(TargetDir)Windows64Media\" /E /I /Y
+
+xcopy "$(ProjectDir)Common\Media\*.swf" "$(TargetDir)Common\Media\" /E /I /Y
+xcopy "$(ProjectDir)Common\Media\*.col" "$(TargetDir)Common\Media\" /E /I /Y
+xcopy "$(ProjectDir)Common\Media\splashes.txt" "$(TargetDir)Common\Media\" /E /I /Y
+xcopy "$(ProjectDir)Common\Media\languages.loc" "$(TargetDir)Common\Media\" /E /I /Y
+xcopy "$(ProjectDir)Common\Media\Graphics" "$(TargetDir)Common\Media\Graphics\" /E /I /Y
+
+xcopy "$(ProjectDir)Common\res" "$(TargetDir)Common\res" /E /I /Y
+
+xcopy "$(ProjectDir)music" "$(TargetDir)\music" /E /I /Y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ContentPackage_Vita|x64'">
     <ClCompile>
