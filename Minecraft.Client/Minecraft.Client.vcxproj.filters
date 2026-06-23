@@ -787,6 +787,7 @@
     <None Include="Network Implementation Notes.txt">
       <Filter>Common\Source Files\Network</Filter>
     </None>
+    <None Include="..\..\Users\PeakB\Downloads\MCLCE-StringTable-Compiler-master\MCLCE-StringTable-Compiler-master\languages.loc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -2770,6 +2771,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Common\Audio\miniaudio.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Audio\stb_vorbis.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

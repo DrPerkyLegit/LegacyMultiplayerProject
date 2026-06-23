@@ -17,6 +17,8 @@
 
 #include "../../Minecraft.Client/Windows64/Windows64_App.h"
 
+#include "stb_vorbis.h"
+
 #define MA_NO_DSOUND
 #define MA_NO_WINMM
 #define MINIAUDIO_IMPLEMENTATION
