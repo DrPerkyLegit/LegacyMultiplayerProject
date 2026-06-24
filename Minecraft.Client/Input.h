@@ -10,6 +10,7 @@ public:
     bool wasJumping;
     bool jumping;
     bool sneaking;
+    bool m_gamepadSneaking;
     
 	Input();	// 4J - added
 

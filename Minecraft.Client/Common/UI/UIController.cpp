@@ -919,6 +919,25 @@ void UIController::handleKeyPress(unsigned int iPad, unsigned int key)
 	pressed = InputManager.ButtonPressed(iPad,key); // Toggle
 	released = InputManager.ButtonReleased(iPad,key); // Toggle
 
+	// Keyboard menu input for player 0
+	if (iPad == 0) {
+		bool kbDown = false, kbPressed = false, kbReleased = false;
+		switch (key) {
+			case ACTION_MENU_UP:        kbDown = Windows64KeyboardInput::IsKeyDown(VK_UP);     kbPressed = Windows64KeyboardInput::IsKeyPressed(VK_UP);     kbReleased = Windows64KeyboardInput::IsKeyReleased(VK_UP);     break;
+			case ACTION_MENU_DOWN:      kbDown = Windows64KeyboardInput::IsKeyDown(VK_DOWN);   kbPressed = Windows64KeyboardInput::IsKeyPressed(VK_DOWN);   kbReleased = Windows64KeyboardInput::IsKeyReleased(VK_DOWN);   break;
+			case ACTION_MENU_LEFT:      kbDown = Windows64KeyboardInput::IsKeyDown(VK_LEFT);   kbPressed = Windows64KeyboardInput::IsKeyPressed(VK_LEFT);   kbReleased = Windows64KeyboardInput::IsKeyReleased(VK_LEFT);   break;
+			case ACTION_MENU_RIGHT:     kbDown = Windows64KeyboardInput::IsKeyDown(VK_RIGHT);  kbPressed = Windows64KeyboardInput::IsKeyPressed(VK_RIGHT);  kbReleased = Windows64KeyboardInput::IsKeyReleased(VK_RIGHT);  break;
+			case ACTION_MENU_OK:        kbDown = Windows64KeyboardInput::IsKeyDown(VK_RETURN); kbPressed = Windows64KeyboardInput::IsKeyPressed(VK_RETURN); kbReleased = Windows64KeyboardInput::IsKeyReleased(VK_RETURN); break;
+			case ACTION_MENU_A:         kbDown = Windows64KeyboardInput::IsKeyDown(VK_RETURN); kbPressed = Windows64KeyboardInput::IsKeyPressed(VK_RETURN); kbReleased = Windows64KeyboardInput::IsKeyReleased(VK_RETURN); break;
+			case ACTION_MENU_CANCEL:    kbDown = Windows64KeyboardInput::IsKeyDown(VK_ESCAPE); kbPressed = Windows64KeyboardInput::IsKeyPressed(VK_ESCAPE); kbReleased = Windows64KeyboardInput::IsKeyReleased(VK_ESCAPE); break;
+			case ACTION_MENU_B:         kbDown = Windows64KeyboardInput::IsKeyDown(VK_ESCAPE); kbPressed = Windows64KeyboardInput::IsKeyPressed(VK_ESCAPE); kbReleased = Windows64KeyboardInput::IsKeyReleased(VK_ESCAPE); break;
+			case ACTION_MENU_PAUSEMENU: kbDown = Windows64KeyboardInput::IsKeyDown(VK_ESCAPE); kbPressed = Windows64KeyboardInput::IsKeyPressed(VK_ESCAPE); kbReleased = Windows64KeyboardInput::IsKeyReleased(VK_ESCAPE); break;
+		}
+		pressed = pressed || kbPressed;
+		released = released || kbReleased;
+		down = down || kbDown;
+	}
+
 	if(pressed) app.DebugPrintf("Pressed %d\n",key);
 	if(released) app.DebugPrintf("Released %d\n",key);
 	// Repeat handling

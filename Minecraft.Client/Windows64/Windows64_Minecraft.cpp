@@ -339,6 +339,61 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		break;
+
+	// Keyboard/Mouse input handling
+	case WM_KEYDOWN:
+		if (!(lParam & 0x40000000)) // ignore auto-repeat
+			Windows64KeyboardInput::OnKeyEvent(wParam, true);
+		break;
+	case WM_KEYUP:
+		Windows64KeyboardInput::OnKeyEvent(wParam, false);
+		break;
+	case WM_SYSKEYDOWN:
+		// Alt key
+		if (wParam == VK_MENU) {
+			if (!(lParam & 0x40000000))
+				Windows64KeyboardInput::OnKeyEvent(wParam, true);
+			return 0; // prevent default Alt behavior
+		}
+		return DefWindowProc(hWnd, message, wParam, lParam);
+	case WM_SYSKEYUP:
+		if (wParam == VK_MENU) {
+			Windows64KeyboardInput::OnKeyEvent(wParam, false);
+			return 0;
+		}
+		return DefWindowProc(hWnd, message, wParam, lParam);
+	case WM_INPUT:
+		Windows64KeyboardInput::OnRawMouseInput(lParam);
+		break;
+	case WM_LBUTTONDOWN:
+		Windows64KeyboardInput::OnMouseEvent(0, true);
+		break;
+	case WM_LBUTTONUP:
+		Windows64KeyboardInput::OnMouseEvent(0, false);
+		break;
+	case WM_RBUTTONDOWN:
+		Windows64KeyboardInput::OnMouseEvent(1, true);
+		break;
+	case WM_RBUTTONUP:
+		Windows64KeyboardInput::OnMouseEvent(1, false);
+		break;
+	case WM_MBUTTONDOWN:
+		Windows64KeyboardInput::OnMouseEvent(2, true);
+		break;
+	case WM_MBUTTONUP:
+		Windows64KeyboardInput::OnMouseEvent(2, false);
+		break;
+	case WM_MOUSEWHEEL:
+		Windows64KeyboardInput::OnRawMouseWheel(GET_WHEEL_DELTA_WPARAM(wParam));
+		break;
+	case WM_ACTIVATE:
+		if (LOWORD(wParam) == WA_INACTIVE)
+			Windows64KeyboardInput::SetCapture(false);
+		break;
+	case WM_KILLFOCUS:
+		Windows64KeyboardInput::SetCapture(false);
+		Windows64KeyboardInput::ResetStates();
+		break;
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
@@ -717,6 +772,8 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 	// Set the number of possible joypad layouts that the user can switch between, and the number of actions
 	InputManager.Initialise(1,3,MINECRAFT_ACTION_MAX, ACTION_MAX_MENU);
 
+	Windows64KeyboardInput::Init(g_hWnd);
+
 	// Set the default joypad action mappings for Minecraft
 	DefineActions();
 	InputManager.SetJoypadMapVal(0,0);
@@ -942,6 +999,7 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 		app.UpdateTime();
 		PIXBeginNamedEvent(0,"Input manager tick");
 		InputManager.Tick();
+		Windows64KeyboardInput::PreTick();
 		PIXEndNamedEvent();
 		PIXBeginNamedEvent(0,"Profile manager tick");
 		//		ProfileManager.Tick();
@@ -1069,6 +1127,16 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 		RenderManager.Present();
 
 		ui.CheckMenuDisplayed();
+
+		// Update mouse capture: capture when in-game and no menu is open
+		{
+			bool shouldCapture = app.GetGameStarted() && !ui.GetMenuDisplayed(0);
+			if (!shouldCapture) {
+				if (Windows64KeyboardInput::IsCaptured()) Windows64KeyboardInput::SetCapture(false);
+			} else if (shouldCapture && !Windows64KeyboardInput::IsCaptured() && GetFocus() == g_hWnd) {
+				Windows64KeyboardInput::SetCapture(true);
+			}
+		}
 #if 0
 		PIXBeginNamedEvent(0,"Profile load check");
 		// has the game defined profile data been changed (by a profile load)
@@ -1160,6 +1228,8 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 		// Fix for #7318 - Title crashes after short soak in the leaderboards menu
 		// A memory leak was caused because the icon renderer kept creating new Vec3's because the pool wasn't reset
 		Vec3::resetPool();
+
+		Windows64KeyboardInput::PostTick();
 	}
 
 	// Free resources, unregister custom classes, and exit.

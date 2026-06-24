@@ -178,6 +178,8 @@ typedef XUID GameSessionUID;
 	#include "Windows64\4JLibs\inc\4J_Profile.h"
 	#include "Windows64\4JLibs\inc\4J_Render.h"
 	#include "Windows64\4JLibs\inc\4J_Storage.h"
+
+	#include "Windows64\Windows64_KeyboardInput.h"
 #elif defined __PSVITA__
 	#include "PSVita\4JLibs\inc\4J_Input.h"	
 	#include "PSVita\4JLibs\inc\4J_Profile.h"

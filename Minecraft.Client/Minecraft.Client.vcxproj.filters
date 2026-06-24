@@ -186,9 +186,6 @@
     <Filter Include="net\minecraft\client\model\dragon">
       <UniqueIdentifier>{26661545-d0a0-438a-a775-31cec1fb7849}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Windows">
-      <UniqueIdentifier>{5f5f5678-57b0-4f7f-b7dc-1ddd01ea2774}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Common">
       <UniqueIdentifier>{33341824-5702-4a56-b75c-9dac57e49349}</UniqueIdentifier>
     </Filter>
@@ -246,9 +243,6 @@
     <Filter Include="Windows64\GameConfig">
       <UniqueIdentifier>{71d6ccac-7a6e-4399-987b-06b606056f59}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Windows64\res">
-      <UniqueIdentifier>{05765c7e-26d6-4760-b0f6-7aa9f374d163}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Windows64\Source Files">
       <UniqueIdentifier>{02363026-02fd-4efc-a115-6ae3dc652546}</UniqueIdentifier>
     </Filter>
@@ -269,24 +263,6 @@
     </Filter>
     <Filter Include="Xbox\Source Files\Audio">
       <UniqueIdentifier>{6ec99327-b465-4e61-b064-023a09bdf907}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Windows64\Miles Sound System">
-      <UniqueIdentifier>{4c9eb137-a48c-44a4-be08-ef1745834ece}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Windows64\Miles Sound System\Include">
-      <UniqueIdentifier>{2bae7445-385f-4b0e-a3ec-11c1c584f930}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Windows64\Miles Sound System\lib">
-      <UniqueIdentifier>{7c655cf2-f74e-4e6a-9114-405f5bc28a56}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Windows64\Miles Sound System\dll">
-      <UniqueIdentifier>{a36a05f3-bc99-4097-b7a8-f81c37eec6e3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Windows64\Miles Sound System\dll\Debug">
-      <UniqueIdentifier>{c9fd57aa-ede6-46f3-b968-0f4a7c64f7f1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Windows64\Miles Sound System\dll\Release">
-      <UniqueIdentifier>{bcd2eaff-60b9-41f4-8e1a-258639b27f99}</UniqueIdentifier>
     </Filter>
     <Filter Include="Common\Source Files\Localisation">
       <UniqueIdentifier>{d7537fdd-877b-461c-9c86-3235843fcfc0}</UniqueIdentifier>
@@ -2292,6 +2268,9 @@
     <ClInclude Include="Xbox\Resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Windows64\Windows64_KeyboardInput.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -3951,6 +3930,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FolderFile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows64\Windows64_KeyboardInput.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
