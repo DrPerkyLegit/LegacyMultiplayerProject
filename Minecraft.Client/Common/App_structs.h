@@ -113,21 +113,12 @@ typedef struct
 }
 GAME_SETTINGS;
 
-#ifdef _XBOX_ONE
-typedef struct 
-{
-	WCHAR wchPlayerUID[64];
-	char pszLevelName[14];
-}
-BANNEDLISTDATA,*PBANNEDLISTDATA;
-#else
 typedef struct 
 {
 	PlayerUID xuid;
 	char pszLevelName[14];
 }
 BANNEDLISTDATA,*PBANNEDLISTDATA;
-#endif
 
 typedef std::vector <PBANNEDLISTDATA> VBANNEDLIST;
 
@@ -158,26 +149,12 @@ MOJANG_DATA;
 typedef struct  
 {
 	eDLCContentType eDLCType;
-#if defined( __PS3__) || defined(__ORBIS__) || defined (__PSVITA__)
-	char chImageURL[256];//SCE_NP_COMMERCE2_URL_LEN
-#else
 
-#ifdef _XBOX_ONE
-
-	wstring wsProductId;
-	wstring wsDisplayName;
-
-	// add a store for the local DLC image
-	PBYTE pbImageData;
-	DWORD dwImageBytes;
-#else
 	ULONGLONG	ullOfferID_Full;
 	ULONGLONG	ullOfferID_Trial;
-#endif
 	WCHAR wchBanner[MAX_BANNERNAME_SIZE];
 	WCHAR wchDataFile[MAX_BANNERNAME_SIZE];
 	int iGender;
-#endif
 	int iConfig;
 	unsigned int uiSortIndex;
 }
@@ -213,11 +190,7 @@ typedef struct _TMSPPRequest
 	C4JStorage::eGlobalStorage eStorageFacility;
 	C4JStorage::eTMS_FILETYPEVAL eFileTypeVal;
 	//char szFilename[MAX_TMSFILENAME_SIZE];
-#ifdef _XBOX_ONE
-	int( *CallbackFunc)(LPVOID,int,int,LPVOID, WCHAR *);
-#else
 	int( *CallbackFunc)(LPVOID,int,int,C4JStorage::PTMSPP_FILEDATA, LPCSTR szFilename);
-#endif
  	WCHAR wchFilename[MAX_TMSFILENAME_SIZE];
 
 	LPVOID lpCallbackParam;

@@ -355,13 +355,7 @@ void ServerPlayer::doChunkSendingTick(bool dontDelayChunks)
 				if( dontDelayChunks || 
 					(canSendOnSlowQueue &&
 					(connection->countDelayedPackets() < 4 )&&
-#ifdef _XBOX_ONE
-					// The network manager on xbox one doesn't currently split data into slow & fast queues - since we can only measure
-					// both together then bytes provides a better metric than count of data items to determine if we should avoid queueing too much up
-					(g_NetworkManager.GetHostPlayer()->GetSendQueueSizeBytes( NULL, true ) < 8192 )&&
-#else
 					(g_NetworkManager.GetHostPlayer()->GetSendQueueSizeMessages( NULL, true ) < 4 )&&
-#endif 
 					//(tickCount - lastBrupSendTickCount) > (connection->getNetworkPlayer()->GetCurrentRtt()>>4) &&
 					!connection->done) )
 				{
@@ -445,7 +439,7 @@ void ServerPlayer::doChunkSendingTick(bool dontDelayChunks)
 					for (unsigned int i = 0; i < tes->size(); i++)
 					{
 						// 4J Stu - Added delay param to ensure that these arrive after the BRUPs from above
-						// Fix for #9169 - ART : Sign text is replaced with the words “Awaiting approval”.
+						// Fix for #9169 - ART : Sign text is replaced with the words ï¿½Awaiting approvalï¿½.
 						broadcast(tes->at(i), !connection->isLocal() && !dontDelayChunks);
 					}
 					delete tes;
@@ -1081,7 +1075,6 @@ void ServerPlayer::awardStat(Stat *stat, byteArray param)
 
     if (!stat->awardLocallyOnly)
 	{
-#ifndef _DURANGO
 		int count = *((int*)param.data);
 		delete [] param.data;
 
@@ -1091,10 +1084,6 @@ void ServerPlayer::awardStat(Stat *stat, byteArray param)
             count -= 100;
         }
 		connection->send( shared_ptr<AwardStatPacket>( new AwardStatPacket(stat->id, count) ) );
-#else
-		connection->send( shared_ptr<AwardStatPacket>( new AwardStatPacket(stat->id, param) ) );
-		// byteArray deleted in AwardStatPacket destructor.
-#endif
     }
 	else delete [] param.data;
 }

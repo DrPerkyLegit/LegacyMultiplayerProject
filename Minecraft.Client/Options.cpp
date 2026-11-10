@@ -211,20 +211,12 @@ void Options::set(const Options::Option *item, float fVal)
     if (item == Option::MUSIC)
 	{
         music = fVal;
-#ifdef _XBOX
-        minecraft->soundEngine->updateMusicVolume(fVal*2.0f);
-#else
 		minecraft->soundEngine->updateMusicVolume(fVal);
-#endif
     }
     if (item == Option::SOUND)
 	{
         sound = fVal;
-#ifdef _XBOX
-        minecraft->soundEngine->updateSoundEffectVolume(fVal*2.0f);
-#else
 		minecraft->soundEngine->updateSoundEffectVolume(fVal);
-#endif
     }
     if (item == Option::SENSITIVITY)
 	{

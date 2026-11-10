@@ -47,7 +47,6 @@ ArchiveFile::ArchiveFile(File file)
 
 	FileInputStream fis(file);
 
-#if defined _XBOX_ONE || defined __ORBIS__ || defined _WINDOWS64
 	byteArray readArray(file.length());
 	fis.read(readArray,0,file.length());
 
@@ -55,17 +54,12 @@ ArchiveFile::ArchiveFile(File file)
 	DataInputStream dis(&bais);
 
 	m_cachedData = readArray.data;
-#else
-	DataInputStream dis(&fis);
-#endif
 
 	_readHeader(&dis);
 
 	dis.close();
 	fis.close();
-#if defined _XBOX_ONE || defined __ORBIS__ || defined _WINDOWS64
 	bais.reset();
-#endif
 	app.DebugPrintf("Finished loading archive file\n");
 }
 
@@ -115,74 +109,9 @@ byteArray ArchiveFile::getFile(const wstring &filename)
 	{
 		PMetaData data = it->second;
 
-#if defined _XBOX_ONE || defined __ORBIS__ || defined _WINDOWS64
 		out = byteArray(data->filesize );
 
 		memcpy( out.data, m_cachedData + data->ptr, data->filesize );
-#else
-
-#ifdef _UNICODE
-		HANDLE hfile = CreateFile(	m_sourcefile.getPath().c_str(), 
-			GENERIC_READ,
-			0,
-			NULL,
-			OPEN_EXISTING,
-			FILE_ATTRIBUTE_NORMAL,
-			NULL
-			);
-#else
-		app.DebugPrintf("Createfile archive\n");
-		HANDLE hfile = CreateFile(	wstringtofilename(m_sourcefile.getPath()), 
-			GENERIC_READ,
-			0,
-			NULL,
-			OPEN_EXISTING,
-			FILE_ATTRIBUTE_NORMAL,
-			NULL
-			);
-#endif
-
-		if (hfile != INVALID_HANDLE_VALUE)
-		{
-			app.DebugPrintf("hfile ok\n");
-			DWORD ok = SetFilePointer(	hfile,
-				data->ptr,
-				NULL,
-				FILE_BEGIN
-				);
-
-			if (ok != INVALID_SET_FILE_POINTER)
-			{
-				PBYTE pbData = new BYTE[ data->filesize ];
-
-				DWORD bytesRead = -1;
-				BOOL bSuccess = ReadFile(	hfile,
-					(LPVOID) pbData,
-					data->filesize,
-					&bytesRead,
-					NULL
-					);
-
-				if(bSuccess==FALSE)
-				{
-					app.FatalLoadError();
-				}
-				assert(bytesRead == data->filesize);
-				out = byteArray(pbData, data->filesize);
-			}
-			else
-			{
-				app.FatalLoadError();
-			}
-
-			CloseHandle(hfile);
-		}
-		else
-		{
-			app.DebugPrintf("bad hfile\n");
-			app.FatalLoadError();
-		}
-#endif
 
 		// Compressed filenames are preceeded with an asterisk.
 		if ( data->isCompressed && out.data != NULL )

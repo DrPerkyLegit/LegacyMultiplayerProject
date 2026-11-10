@@ -5,12 +5,6 @@
 class LevelGenerationOptions;
 
 
-#if defined __PS3__ || defined __ORBIS__ || defined(__PSVITA__)
-#define SONY_REMOTE_STORAGE_DOWNLOAD
-#endif 
-#if defined __PS3__ || __PSVITA__
-#define SONY_REMOTE_STORAGE_UPLOAD
-#endif
 
 
 class UIScene_LoadOrJoinMenu : public UIScene
@@ -20,9 +14,6 @@ private:
 	{
 		eControl_SavesList,
 		eControl_GamesList,
-#if defined(_XBOX_ONE) || defined(__ORBIS__)
-		eControl_SpaceIndicator,
-#endif
 	};
 
 	enum EState
@@ -52,9 +43,6 @@ protected:
 	UIControl_SaveList m_buttonListGames;
 	UIControl_Label m_labelSavesListTitle, m_labelJoinListTitle, m_labelNoGames;
 	UIControl m_controlSavesTimer, m_controlJoinTimer;
-#if defined(_XBOX_ONE) || defined(__ORBIS__)
-	UIControl_SpaceIndicatorBar m_spaceIndicatorSaves;
-#endif
 
 private:
 	UI_BEGIN_MAP_ELEMENTS_AND_NAMES(UIScene)		
@@ -68,9 +56,6 @@ private:
 		UI_MAP_ELEMENT( m_controlSavesTimer, "SavesTimer")
 		UI_MAP_ELEMENT( m_controlJoinTimer, "JoinTimer")
 
-#if defined(_XBOX_ONE) || defined(__ORBIS__)
-		UI_MAP_ELEMENT( m_spaceIndicatorSaves, "SaveSizeBar")
-#endif
 	UI_END_MAP_ELEMENTS_AND_NAMES()
 
 	int m_iDefaultButtonsC;
@@ -100,10 +85,8 @@ private:
 	int m_iSaveListIndex;
 	int m_iGameListIndex;
 	//int *m_iConfigA; // track the texture packs that we don't have installed
-#ifndef _XBOX_ONE
 	bool m_bSaveTransferInProgress;
 	bool m_bSaveTransferCancelled;
-#endif
 	bool m_bUpdateSaveSize;
 
 public:
@@ -125,9 +108,6 @@ public:
 	virtual EUIScene getSceneType() { return eUIScene_LoadOrJoinMenu;}
 
 	static void UpdateGamesListCallback(LPVOID pParam);
-#ifdef _XBOX_ONE
-	void HandleDLCLicenseChange();
-#endif
 	virtual void tick();
 
 private:
@@ -157,144 +137,16 @@ protected:
 	void handlePress(F64 controlId, F64 childId);
 	void LoadLevelGen(LevelGenerationOptions *levelGen);
 	void LoadSaveFromDisk(File *saveFile, ESavePlatform savePlatform = SAVE_FILE_PLATFORM_LOCAL);
-#if defined(__PS3__) || defined(__PSVITA__) || defined(__ORBIS__)
-	void LoadSaveFromCloud();
-#endif
 public:
 	virtual void HandleDLCMountingComplete();
 
-#ifdef __ORBIS__
-	void LoadRemoteFileFromDisk(char* remoteFilename);
-#endif
 
 private:
 	void CheckAndJoinGame(int gameIndex);
-#if defined(__PS3__) || defined(__PSVITA__) || defined(__ORBIS__)
-	static int MustSignInReturnedPSN(void *pParam,int iPad,C4JStorage::EMessageResult result);
-	static int PSN_SignInReturned(void *pParam,bool bContinue, int iPad);
-	static void remoteStorageGetSaveCallback(LPVOID lpParam, SonyRemoteStorage::Status s, int error_code);
-#endif
  
-#ifdef __ORBIS__
-	//static int PSPlusReturned(void *pParam,int iPad,C4JStorage::EMessageResult result);
-#endif
-#ifdef _XBOX_ONE
-	typedef struct _SaveTransferStateContainer
-	{
-		int m_iProgress;
-		bool m_bSaveTransferInProgress;
-		bool m_bSaveTransferCancelled;
-		int m_iPad;
-		C4JStorage::eSaveTransferState m_eSaveTransferState;
-		UIScene_LoadOrJoinMenu *m_pClass;
-	} SaveTransferStateContainer;
-	enum ESaveTransferFiles
-	{
-		eSaveTransferFile_Marker,
-		eSaveTransferFile_Metadata,
-		eSaveTransferFile_SaveData,
-	};
-	static ESaveTransferFiles s_eSaveTransferFile;
-	static unsigned long s_ulFileSize;
-	static byteArray s_transferData;
-	static wstring m_wstrStageText;
-	LoadMenuInitData *m_loadMenuInitData;
-
-#ifdef _DEBUG_MENUS_ENABLED
-	static C4JStorage::SAVETRANSFER_FILE_DETAILS m_debugTransferDetails;
-#endif
-
-	void LaunchSaveTransfer();
-	static int DownloadXbox360SaveThreadProc( LPVOID lpParameter );
-	static void RequestFileSize( SaveTransferStateContainer *pClass, wchar_t *filename );
-	static void RequestFileData( SaveTransferStateContainer *pClass, wchar_t *filename );
-	static int SaveTransferReturned(LPVOID lpParam,C4JStorage::SAVETRANSFER_FILE_DETAILS *pSaveTransferDetails);
-	static int SaveTransferUpdateProgress(LPVOID lpParam,unsigned long ulBytesReceived);
-	static void CancelSaveTransferCallback(LPVOID lpParam);
-	static int NeedSyncMessageReturned(void *pParam,int iPad,C4JStorage::EMessageResult result);
-	static int CancelSaveTransferCompleteCallback(LPVOID lpParam);
-
-#endif
 
 
 
-#ifdef SONY_REMOTE_STORAGE_DOWNLOAD
-	enum eSaveTransferState
-	{
-		eSaveTransfer_Idle,
-		eSaveTransfer_Busy,
-		eSaveTransfer_GetRemoteSaveInfo,
-		eSaveTransfer_GettingRemoteSaveInfo,
-		eSaveTransfer_CreateDummyFile,
-		eSaveTransfer_CreatingDummyFile,
-		eSaveTransfer_GettingFileSize,
-		eSaveTransfer_FileSizeRetrieved,
-		eSaveTransfer_GetFileData,
-		eSaveTransfer_GettingFileData,
-		eSaveTransfer_FileDataRetrieved,
-		eSaveTransfer_GetSavesInfo,
-		eSaveTransfer_GettingSavesInfo,
-		eSaveTransfer_LoadSaveFromDisc,
-		eSaveTransfer_LoadingSaveFromDisc,
-		eSaveTransfer_CreatingNewSave,
-		eSaveTransfer_Converting,
-		eSaveTransfer_Saving,
-		eSaveTransfer_Succeeded,
-		eSaveTransfer_Cancelled,
-		eSaveTransfer_Error,
-		eSaveTransfer_ErrorDeletingSave,
-		eSaveTransfer_ErrorMesssage,
-		eSaveTransfer_Finished,
 
-	};
-	eSaveTransferState m_eSaveTransferState;
-	static unsigned long m_ulFileSize;
-	static wstring m_wstrStageText;
-	int m_iProgress;
-	char m_downloadedUniqueFilename[64];//SCE_SAVE_DATA_DIRNAME_DATA_MAXSIZE];
-	bool m_saveTransferDownloadCancelled;
-	void LaunchSaveTransfer();
-	static int CreateDummySaveDataCallback(LPVOID lpParam,bool bRes);
-	static int CrossSaveGetSavesInfoCallback(LPVOID lpParam, SAVE_DETAILS *pSaveDetails,bool bRes);
-	static int LoadCrossSaveDataCallback(void *pParam,bool bIsCorrupt, bool bIsOwner);
-	static int CrossSaveFinishedCallback(void *pParam,int iPad,C4JStorage::EMessageResult result);
-	static int CrossSaveDeleteOnErrorReturned(LPVOID lpParam,bool bRes);
-	static int RemoteSaveNotFoundCallback(void *pParam,int iPad,C4JStorage::EMessageResult result);
-	static int DownloadSonyCrossSaveThreadProc( LPVOID lpParameter );
-	static void SaveTransferReturned(LPVOID lpParam, SonyRemoteStorage::Status s, int error_code);
-	static ConsoleSaveFile* SonyCrossSaveConvert();
 
-	static void CancelSaveTransferCallback(LPVOID lpParam);
-#endif
-
-#ifdef SONY_REMOTE_STORAGE_UPLOAD
-	enum eSaveUploadState
-	{
-		eSaveUpload_Idle,
-		eSaveUpload_UploadingFileData,
-		eSaveUpload_FileDataUploaded,
-		eSaveUpload_Cancelled,
-		eSaveUpload_Error,
-		esaveUpload_Finished
-	};
-
-	eSaveUploadState m_eSaveUploadState;
-	bool m_saveTransferUploadCancelled;
-
-	void LaunchSaveUpload();
-	static int UploadSonyCrossSaveThreadProc( LPVOID lpParameter );
-	static void SaveUploadReturned(LPVOID lpParam, SonyRemoteStorage::Status s, int error_code);
-	static void CancelSaveUploadCallback(LPVOID lpParam);
-	static int SaveTransferDialogReturned(void *pParam,int iPad,C4JStorage::EMessageResult result);
-	static int CrossSaveUploadFinishedCallback(void *pParam,int iPad,C4JStorage::EMessageResult result);
-#endif
-
-#if defined _XBOX_ONE || defined __ORBIS__
-	static int CopySaveDialogReturned(void *pParam,int iPad,C4JStorage::EMessageResult result);
-	static int CopySaveThreadProc( LPVOID lpParameter );
-	static int CopySaveDataReturned( LPVOID lpParameter, bool success, C4JStorage::ESaveGameState state );
-	static bool CopySaveDataProgress(LPVOID lpParam, int percent);
-	static void CancelCopySaveCallback(LPVOID lpParam);
-	static int CopySaveErrorDialogFinishedCallback(void *pParam,int iPad,C4JStorage::EMessageResult result);
-#endif
 };

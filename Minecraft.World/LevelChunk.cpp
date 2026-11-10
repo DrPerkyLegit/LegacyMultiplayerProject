@@ -16,9 +16,6 @@
 #include "..\Minecraft.Client\ServerChunkCache.h"
 #include "..\Minecraft.Client\GameRenderer.h"
 
-#ifdef __PS3__
-#include "C4JSpursJob.h"
-#endif //__PS3__
 
 
 #ifdef SHARING_ENABLED
@@ -482,11 +479,6 @@ void LevelChunk::recalcBlockLights()
 
 void LevelChunk::recalcHeightmapOnly()
 {
-#ifdef __PSVITA__
-	// AP - lets fetch ALL the chunk data at the same time for a good speed up
-	byteArray blockData = byteArray(Level::CHUNK_TILE_COUNT);
-	getBlockData(blockData);
-#endif
 
 	int min = Level::maxBuildHeight - 1;
 	for (int x = 0; x < 16; x++)
@@ -496,35 +488,12 @@ void LevelChunk::recalcHeightmapOnly()
 
 			int y = Level::maxBuildHeight - 1;
 			//            int p = x << level->depthBitsPlusFour | z << level->depthBits;		// 4J - removed
-#ifdef __PSVITA__
-			int Index = ( x << 11 ) + ( z << 7 );
-			int offset = Level::COMPRESSED_CHUNK_SECTION_TILES;
-            y = 127;
-			while (y > 0 && Tile::lightBlock[blockData[Index + offset + (y - 1)]] == 0)		// 4J - was blocks->get() was blocks[p + y - 1]
-			{
-				y--;
-			}
-			if( y == 0 )
-			{
-				offset = 0;
-				y = 127;
-				while (y > 0 && Tile::lightBlock[blockData[Index + offset + (y - 1)]] == 0)		// 4J - was blocks->get() was blocks[p + y - 1]
-				{
-					y--;
-				}
-			}
-			else
-			{
-				y += 128;
-			}
-#else
 			CompressedTileStorage *blocks = (y-1) >= Level::COMPRESSED_CHUNK_SECTION_HEIGHT?upperBlocks : lowerBlocks;
 			while (y > 0 && Tile::lightBlock[blocks->get(x,(y - 1) % Level::COMPRESSED_CHUNK_SECTION_HEIGHT,z) & 0xff] == 0)		// 4J - was blocks->get() was blocks[p + y - 1]
 			{
 				y--;
 				blocks = (y-1) >= Level::COMPRESSED_CHUNK_SECTION_HEIGHT?upperBlocks : lowerBlocks;
 			}
-#endif
 			heightmap[z << 4 | x] = (byte) y;
 			if (y < min) min = y;
 		}
@@ -532,18 +501,10 @@ void LevelChunk::recalcHeightmapOnly()
 		this->minHeight = min;
 		this->setUnsaved(true);
 
-#ifdef __PSVITA__
-	delete blockData.data;
-#endif
 }
 
 void LevelChunk::recalcHeightmap()
 {
-#ifdef __PSVITA__
-	// AP - lets fetch ALL the chunk data at the same time for a good speed up
-	byteArray blockData = byteArray(Level::CHUNK_TILE_COUNT);
-	getBlockData(blockData);
-#endif
 
     int min = Level::maxBuildHeight - 1;
     for (int x = 0; x < 16; x++)
@@ -552,35 +513,12 @@ void LevelChunk::recalcHeightmap()
             int y = Level::maxBuildHeight - 1;
 //            int p = x << level->depthBitsPlusFour | z << level->depthBits;			// 4J - removed
 			
-#ifdef __PSVITA__
-			int Index = ( x << 11 ) + ( z << 7 );
-			int offset = Level::COMPRESSED_CHUNK_SECTION_TILES;
-            y = 127;
-			while (y > 0 && Tile::lightBlock[blockData[Index + offset + (y - 1)]] == 0)		// 4J - was blocks->get() was blocks[p + y - 1]
-			{
-				y--;
-			}
-			if( y == 0 )
-			{
-				offset = 0;
-				y = 127;
-				while (y > 0 && Tile::lightBlock[blockData[Index + offset + (y - 1)]] == 0)		// 4J - was blocks->get() was blocks[p + y - 1]
-				{
-					y--;
-				}
-			}
-			else
-			{
-				y += 128;
-			}
-#else
 			CompressedTileStorage *blocks = (y-1) >= Level::COMPRESSED_CHUNK_SECTION_HEIGHT?upperBlocks : lowerBlocks;
             while (y > 0 && Tile::lightBlock[blocks->get(x,(y-1) % Level::COMPRESSED_CHUNK_SECTION_HEIGHT,z) & 0xff] == 0)			// 4J - was blocks->get() was blocks[p + y - 1]
 			{
                 y--;
 				blocks = (y-1) >= Level::COMPRESSED_CHUNK_SECTION_HEIGHT?upperBlocks : lowerBlocks;
 			}
-#endif
             heightmap[z << 4 | x] = (byte) y;
             if (y < min) min = y;
 
@@ -588,36 +526,6 @@ void LevelChunk::recalcHeightmap()
 			{
                 int br = Level::MAX_BRIGHTNESS;
 				int yy = Level::maxBuildHeight - 1;
-#ifdef __PSVITA__
-				int offset = Level::COMPRESSED_CHUNK_SECTION_TILES;
-				SparseLightStorage *skyLight = upperSkyLight;
-				yy = 127;
-                do
-				{
-                    br -= Tile::lightBlock[blockData[Index + offset + yy]];					// 4J - blocks->get() was blocks[p + yy]
-                    if (br > 0)
-					{
-                        skyLight->set(x, yy, z, br);
-                    }
-                    yy--;
-                } while (yy > 0 && br > 0);
-
-				if( yy == 0 && br > 0 )
-				{
-					offset = 0;
-					skyLight = lowerSkyLight;
-					yy = 127;
-					do
-					{
-						br -= Tile::lightBlock[blockData[Index + offset + yy]];					// 4J - blocks->get() was blocks[p + yy]
-						if (br > 0)
-						{
-							skyLight->set(x, yy, z, br);
-						}
-						yy--;
-					} while (yy > 0 && br > 0);
-				}
-#else
 				CompressedTileStorage *blocks = yy >= Level::COMPRESSED_CHUNK_SECTION_HEIGHT?upperBlocks : lowerBlocks;
 				SparseLightStorage *skyLight = yy >= Level::COMPRESSED_CHUNK_SECTION_HEIGHT? upperSkyLight : lowerSkyLight;
                 do
@@ -631,7 +539,6 @@ void LevelChunk::recalcHeightmap()
 					blocks = yy >= Level::COMPRESSED_CHUNK_SECTION_HEIGHT?upperBlocks : lowerBlocks;
 					skyLight = yy >= Level::COMPRESSED_CHUNK_SECTION_HEIGHT? upperSkyLight : lowerSkyLight;
                 } while (yy > 0 && br > 0);
-#endif
             }
         }
 
@@ -645,9 +552,6 @@ void LevelChunk::recalcHeightmap()
 
     this->setUnsaved(true);
 
-#ifdef __PSVITA__
-	delete blockData.data;
-#endif
 }
 
 // 4J - this code is fully commented out in the java version, but we have reimplemented something here to try and light
@@ -1223,17 +1127,7 @@ void LevelChunk::removeEntity(shared_ptr<Entity> e, int yc)
 		entityBlocks[yc]->erase(it);
 		// 4J - we don't want storage creeping up here as thinkgs move round the world accumulating up spare space
 		MemSect(31);
-#ifdef __PS3__
-		// MGH - have to sort this C++11 code
-		static bool bShowMsg = true;
-		if(bShowMsg)
-		{ 
-			app.DebugPrintf("Need to add C++11 shrink_to_fit for PS3\n");
-			bShowMsg = false;
-		}
-#else
 		entityBlocks[yc]->shrink_to_fit();
-#endif
 		MemSect(0);
 	}
 
@@ -1567,10 +1461,8 @@ void LevelChunk::getEntities(shared_ptr<Entity> except, AABB *bb, vector<shared_
     if (yc0 < 0) yc0 = 0;
     if (yc1 >= ENTITY_BLOCKS_LENGTH) yc1 = ENTITY_BLOCKS_LENGTH - 1;
 
-#ifndef __PSVITA__
 	// AP - RW critical sections are expensive so enter once in Level::getEntities
 	EnterCriticalSection(&m_csEntities);
-#endif
     for (int yc = yc0; yc <= yc1; yc++)
 	{
         vector<shared_ptr<Entity> > *entities = entityBlocks[yc];
@@ -1597,9 +1489,7 @@ void LevelChunk::getEntities(shared_ptr<Entity> except, AABB *bb, vector<shared_
 			}
         }
     }
-#ifndef __PSVITA__
 	LeaveCriticalSection(&m_csEntities);
-#endif
 }
 
 void LevelChunk::getEntitiesOfClass(const type_info& ec, AABB *bb, vector<shared_ptr<Entity> > &es)
@@ -1624,10 +1514,8 @@ void LevelChunk::getEntitiesOfClass(const type_info& ec, AABB *bb, vector<shared
         yc1 = 0;
     }
 
-#ifndef __PSVITA__
 	// AP - RW critical sections are expensive so enter once in Level::getEntitiesOfClass
 	EnterCriticalSection(&m_csEntities);
-#endif
     for (int yc = yc0; yc <= yc1; yc++)
 	{
         vector<shared_ptr<Entity> > *entities = entityBlocks[yc];
@@ -1648,9 +1536,7 @@ void LevelChunk::getEntitiesOfClass(const type_info& ec, AABB *bb, vector<shared
 			// 4J - note needs to be equivalent to baseClass.isAssignableFrom(e.getClass())
         }
     }
-#ifndef __PSVITA__
 	LeaveCriticalSection(&m_csEntities);
-#endif
 }
 
 int LevelChunk::countEntities()

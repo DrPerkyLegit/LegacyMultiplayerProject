@@ -32,12 +32,7 @@ TilePos MobSpawner::getRandomPosWithin(Level *level, int cx, int cz)
 	return TilePos(x, y, z);
 }
 
-#ifdef __PSVITA__
-	// AP - See CustomMap.h for an explanation of this
-	CustomMap MobSpawner::chunksToPoll;
-#else
 	unordered_map<ChunkPos,bool,ChunkPosKeyHash,ChunkPosKeyEq> MobSpawner::chunksToPoll;
-#endif
 
 const int MobSpawner::tick(ServerLevel *level, bool spawnEnemies, bool spawnFriendlies)
 {
@@ -128,11 +123,7 @@ const int MobSpawner::tick(ServerLevel *level, bool spawnEnemies, bool spawnFrie
 		shared_ptr<Player> player = level->players[i];
 		xx[i] = Mth::floor(player->x / 16);
 		zz[i] = Mth::floor(player->z / 16);
-#ifdef __PSVITA__
-		chunksToPoll.insert(ChunkPos(xx[i], zz[i] ),false);
-#else
 		chunksToPoll.insert(std::pair<ChunkPos,bool>(ChunkPos(xx[i], zz[i] ),false));
-#endif
 	}
 
 	for( int r = 1; r <= 8; r++ )
@@ -147,30 +138,13 @@ const int MobSpawner::tick(ServerLevel *level, bool spawnEnemies, bool spawnFrie
 				// so that if it was at the edge of another player, then this will remove that
 				if( !edgeChunk )
 				{
-#ifdef __PSVITA__
-					chunksToPoll.insert(ChunkPos( ( xx[i] - r ) + l , ( zz[i] - r )		), false);
-					chunksToPoll.insert(ChunkPos( ( xx[i] + r )	 , ( zz[i] - r ) + l    ), false);
-					chunksToPoll.insert(ChunkPos( ( xx[i] + r ) - l , ( zz[i] + r )		), false);
-					chunksToPoll.insert(ChunkPos( ( xx[i] - r )	 , ( zz[i] + r ) - l    ), false);
-#else
 					chunksToPoll.insert(std::pair<ChunkPos,bool>(ChunkPos( ( xx[i] - r ) + l , ( zz[i] - r )		), false));
 					chunksToPoll.insert(std::pair<ChunkPos,bool>(ChunkPos( ( xx[i] + r )	 , ( zz[i] - r ) + l    ), false));
 					chunksToPoll.insert(std::pair<ChunkPos,bool>(ChunkPos( ( xx[i] + r ) - l , ( zz[i] + r )		), false));
 					chunksToPoll.insert(std::pair<ChunkPos,bool>(ChunkPos( ( xx[i] - r )	 , ( zz[i] + r ) - l    ), false));
-#endif
 				}
 				else
 				{
-#ifdef __PSVITA__
-					ChunkPos cp = ChunkPos( ( xx[i] - r  ) + l , ( zz[i] - r ));
-					if( chunksToPoll.find( cp ) )	chunksToPoll.insert(cp, true);
-					cp = ChunkPos( ( xx[i] + r ), ( zz[i] - r ) + l    );												 
-					if( chunksToPoll.find( cp ) )	chunksToPoll.insert(cp, true);
-					cp = ChunkPos( ( xx[i] + r ) - l , ( zz[i] + r ));													 
-					if( chunksToPoll.find( cp ) )	chunksToPoll.insert(cp, true);
-					cp = ChunkPos( ( xx[i] - r ), ( zz[i] + r ) - l);													 
-					if( chunksToPoll.find( cp ) )	chunksToPoll.insert(cp, true);
-#else
 					ChunkPos cp = ChunkPos( ( xx[i] - r  ) + l , ( zz[i] - r ));
 					if( chunksToPoll.find( cp ) == chunksToPoll.end() )	chunksToPoll.insert(std::pair<ChunkPos,bool>(cp, true));
 					cp = ChunkPos( ( xx[i] + r ), ( zz[i] - r ) + l    );												 
@@ -179,7 +153,6 @@ const int MobSpawner::tick(ServerLevel *level, bool spawnEnemies, bool spawnFrie
 					if( chunksToPoll.find( cp ) == chunksToPoll.end() )	chunksToPoll.insert(std::pair<ChunkPos,bool>(cp, true));
 					cp = ChunkPos( ( xx[i] - r ), ( zz[i] + r ) - l);													 
 					if( chunksToPoll.find( cp ) == chunksToPoll.end() )	chunksToPoll.insert(std::pair<ChunkPos,bool>(cp, true));
-#endif
 
 				}
 			}
@@ -210,15 +183,9 @@ const int MobSpawner::tick(ServerLevel *level, bool spawnEnemies, bool spawnFrie
 			continue;
 		}
 
-#ifdef __PSVITA__
-		for( int i = 0;i < chunksToPoll.end();i += 1 )
-		{
-			SCustomMapNode *it = chunksToPoll.get(i);
-#else
 		AUTO_VAR(itEndCTP, chunksToPoll.end());
 		for (AUTO_VAR(it, chunksToPoll.begin()); it != itEndCTP; it++)
 		   {
-#endif
 			   if( it->second )
 			   {
                     // don't add mobs to edge chunks, to prevent adding mobs
@@ -376,15 +343,6 @@ bool MobSpawner::isSpawnPositionOk(MobCategory *category, Level *level, int x, i
 	// 4J - don't let this actually create/load a chunk that isn't here already - we'll let the normal updateDirtyChunks etc. processes do that, so it can happen on another thread
 	if( !level->hasChunkAt(x, y, z ) ) return false;
 
-#ifdef __PSVITA__
-	// AP - added this for Vita. Make sure a new spawn point has 2 chunks around it. This will make sure monsters don't keep getting spawned on the edge preventing other new monsters
-	// from being spawned
-	int r = 32;
-	if( !level->hasChunksAt(x - r, 0, z - r, x + r, 0, z + r))
-	{
-		return false;
-	}
-#endif
 
 	if (category->getSpawnPositionMaterial() == Material::water)
 	{

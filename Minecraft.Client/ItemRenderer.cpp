@@ -320,9 +320,6 @@ void ItemRenderer::renderGuiItem(Font *font, Textures *textures, shared_ptr<Item
 	renderGuiItem(font,textures,item,x,y,fScale,fScale,fAlpha, true);
 }
 
-#ifdef _XBOX
-extern IDirect3DDevice9 *g_pD3DDevice;
-#endif
 
 // 4J - this used to take x and y as ints, and no scale and alpha - but this interface is now implemented as a wrapper round this more fully featured one
 void ItemRenderer::renderGuiItem(Font *font, Textures *textures, shared_ptr<ItemInstance> item, float x, float y, float fScaleX,float fScaleY, float fAlpha, bool useCompiled)
@@ -408,11 +405,6 @@ void ItemRenderer::renderGuiItem(Font *font, Textures *textures, shared_ptr<Item
 		else
 		{
             textures->bindTexture(TN_GUI_ITEMS);//L"/gui/items.png"));
-#ifdef _XBOX
-			// 4J - make sure we've got linear sampling on minification here as non-mipmapped things like this currently
-			// default to having point sampling, which makes very small icons render rather badly
-			g_pD3DDevice->SetSamplerState( 0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR );
-#endif
 
 		}
 		MemSect(0);

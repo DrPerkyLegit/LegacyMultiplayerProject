@@ -39,11 +39,7 @@
 #include "Villager.h"
 #include "LevelSettings.h"
 
-#ifdef _DURANGO
-#include "DurangoStats.h"
-#else
 #include "CommonStats.h"
-#endif
 
 void MinecraftWorld_RunStaticCtors()
 {
@@ -64,12 +60,8 @@ void MinecraftWorld_RunStaticCtors()
 		Item::staticCtor();
 		FurnaceRecipes::staticCtor();
 		Recipes::staticCtor();	
-#ifdef _DURANGO
-		GenericStats::setInstance(new DurangoStats());
-#else
 		GenericStats::setInstance(new CommonStats());
 		Stats::staticCtor();
-#endif
 		//Achievements::staticCtor(); // 4J Stu - This is now called from within the Stats::staticCtor()
 		Skeleton::staticCtor();
 		PigZombie::staticCtor();

@@ -69,11 +69,6 @@ HRESULT CScene_DebugSchematicCreator::OnNotifyPressEx(HXUIOBJ hObjPressed, XUINo
 
 		m_data->bSaveMobs = m_saveMobs.IsChecked();
 
-#ifdef _XBOX
-		if (m_useXboxCompr.IsChecked())
-			m_data->compressionType = Compression::eCompressionType_LZXRLE;
-		else
-#endif
 			m_data->compressionType = Compression::eCompressionType_RLE;
 
 		app.SetXuiServerAction(ProfileManager.GetPrimaryPad(), eXuiServerAction_ExportSchematic, (void *)m_data);

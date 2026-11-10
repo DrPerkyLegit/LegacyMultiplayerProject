@@ -105,11 +105,9 @@ shared_ptr<ItemInstance> ContainerMenu::clicked(int slotIndex, int buttonNum, in
 		}
 
 		// 4J-JEV: This check performed on XboxOne servers, for other platforms check here.
-#ifndef _DURANGO
 		StatsCounter *sc = Minecraft::GetInstance()->stats[localPlayer->GetXboxPad()];
 		int minedCount = sc->getTotalValue(GenericStats::blocksMined(Tile::rock_Id)) + sc->getTotalValue(GenericStats::blocksMined(Tile::stoneBrick_Id));
 		if (cobblecount >= 1728 && minedCount >= 1728 )
-#endif
 		{
 			localPlayer->awardStat(GenericStats::chestfulOfCobblestone(),GenericStats::param_chestfulOfCobblestone(cobblecount));
 		}

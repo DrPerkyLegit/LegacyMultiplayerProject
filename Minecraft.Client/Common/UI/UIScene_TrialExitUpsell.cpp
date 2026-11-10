@@ -31,9 +31,6 @@ void UIScene_TrialExitUpsell::handleInput(int iPad, int key, bool repeat, bool p
 		navigateBack();
 		break;
 	case ACTION_MENU_OK:
-#ifdef __ORBIS__
-	case ACTION_MENU_TOUCHPAD_PRESS:
-#endif
 		if(pressed)
 		{
 			//CD - Added for audio
@@ -48,17 +45,6 @@ void UIScene_TrialExitUpsell::handleInput(int iPad, int key, bool repeat, bool p
 			ui.PlayUISFX(eSFX_Press);
 
 			// 4J-PB - need to check this user can access the store
-#if defined(__PS3__) || defined(__PSVITA__)
-			bool bContentRestricted;
-			ProfileManager.GetChatAndContentRestrictions(ProfileManager.GetPrimaryPad(),true,NULL,&bContentRestricted,NULL);
-			if(bContentRestricted)
-			{
-				UINT uiIDA[1];
-				uiIDA[0]=IDS_CONFIRM_OK;
-				ui.RequestMessageBox(IDS_ONLINE_SERVICE_TITLE, IDS_CONTENT_RESTRICTION, uiIDA, 1, ProfileManager.GetPrimaryPad(),NULL,this, app.GetStringTable());
-			}
-			else
-#endif
 			{
 				TelemetryManager->RecordUpsellPresented(iPad, eSen_UpsellID_Full_Version_Of_Game, app.m_dwOfferID);
 				ProfileManager.DisplayFullVersionPurchase(false,iPad,eSen_UpsellID_Full_Version_Of_Game);

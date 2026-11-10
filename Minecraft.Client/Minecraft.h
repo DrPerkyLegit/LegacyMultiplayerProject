@@ -204,9 +204,6 @@ public:
 private:
 	void checkGlError(const wstring& string);
 
-#ifdef __ORBIS__
-	PsPlusUpsellWrapper *m_pPsPlusUpsell;
-#endif
 
 public:
 	void destroy();
@@ -300,9 +297,6 @@ public:
 	void delayTextureReload();
 	static __int64 currentTimeMillis();
 
-#ifdef _DURANGO
-	static void inGameSignInCheckAllPrivilegesCallback(LPVOID lpParam, bool hasPrivileges, int iPad);
-#endif
 	static int InGame_SignInReturned(void *pParam,bool bContinue, int iPad);
 	// 4J-PB
 	Screen * getScreen();
@@ -341,7 +335,4 @@ public:
 	unsigned int getCurrentTexturePackId();
 	ColourTable *getColourTable();
 
-#if defined __ORBIS__
-	static int MustSignInReturnedPSN(void *pParam, int iPad, C4JStorage::EMessageResult result);
-#endif
 };

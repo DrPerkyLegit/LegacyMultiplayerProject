@@ -54,11 +54,6 @@ void CPlatformNetworkManagerSony::HandleStateChange(SQRNetworkManager::eSQRNetwo
 	else if( newState == SQRNetworkManager::SNM_STATE_JOINING )
 	{
 		// 4J Stu - We may be accepting an invite from the DLC menu, so hide the icon
-#ifdef __ORBIS__
-	sceNpCommerceHidePsStoreIcon();
-#elif defined __PSVITA__
-	sceNpCommerce2HidePsStoreIcon();
-#endif
 		m_bLeavingGame = false;
 		m_bLeaveGameOnTick = false;
 		m_bHostChanged = false;
@@ -373,13 +368,6 @@ extern SQRNetworkManager *testSQRNetworkManager;
 bool CPlatformNetworkManagerSony::Initialise(CGameNetworkManager *pGameNetworkManager, int flagIndexSize)
 {
 	// Create a sony network manager, and go online
-#ifdef __ORBIS__
-	m_pSQRNet = new SQRNetworkManager_Orbis(this);
-	m_pSQRNet->Initialise();
-#elif defined __PS3__ 	
-	m_pSQRNet = new SQRNetworkManager_PS3(this);
-	m_pSQRNet->Initialise();
-#else // __PSVITA__
 	//	m_pSQRNet = new SQRNetworkManager_Vita(this);
 	m_bUsingAdhocMode = false;
 	m_pSQRNet_Vita_Adhoc = new SQRNetworkManager_AdHoc_Vita(this);
@@ -398,7 +386,6 @@ bool CPlatformNetworkManagerSony::Initialise(CGameNetworkManager *pGameNetworkMa
 	}
 
 
-#endif
 
 	m_pGameNetworkManager = pGameNetworkManager;
 	m_flagIndexSize = flagIndexSize;
@@ -459,16 +446,6 @@ int CPlatformNetworkManagerSony::CorrectErrorIDS(int IDS)
 	// Determine if we'd prefer to present errors as a signing out issue, rather than a network issue, based on whether we have a network connection at all or not
 	bool preferSignoutError = false;
 	int state;
-#ifdef __PS3__
-	int ret = cellNetCtlGetState( &state );
-	int IPObtainedState = CELL_NET_CTL_STATE_IPObtained;
-#elif defined __ORBIS__
-	int ret = sceNetCtlGetState( &state );
-	int IPObtainedState = SCE_NET_CTL_STATE_IPOBTAINED;
-#elif defined __PSVITA__
-	int ret = sceNetCtlInetGetState( &state );
-	int IPObtainedState = SCE_NET_CTL_STATE_IPOBTAINED;
-#endif
 	if( ret == 0 )
 	{
 		if( state == IPObtainedState )
@@ -477,10 +454,6 @@ int CPlatformNetworkManagerSony::CorrectErrorIDS(int IDS)
 		}
 	}
 
-#ifdef __PSVITA__
-	// If we're in ad-hoc mode this problem definitely wasn't PSN related
-	if (usingAdhocMode()) preferSignoutError = false;
-#endif
 
 	// If we're the host we haven't lost connection to the server
 	if (IDS == IDS_CONNECTION_LOST_SERVER && g_NetworkManager.IsHost())
@@ -512,14 +485,6 @@ int CPlatformNetworkManagerSony::CorrectErrorIDS(int IDS)
 				return IDS_ERROR_NETWORK_TITLE;
 			}
 			break;
-#ifdef __PSVITA__
-		case IDS_CONNECTION_LOST_SERVER:
-			if(preferSignoutError)
-			{
-				if(ProfileManager.IsSignedInPSN(ProfileManager.GetPrimaryPad()) == false)
-					return IDS_ERROR_PSN_SIGN_OUT_EXIT;
-			}
-#endif
 		default:
 			return IDS;
 	}
@@ -926,12 +891,6 @@ void CPlatformNetworkManagerSony::UpdateAndSetGameSessionData(INetworkPlayer *pN
 		return;
 
 	m_hostGameSessionData.hostPlayerUID = GetHostPlayer()->GetUID();
-#ifdef __PSVITA__
-	if(usingAdhocMode())
-	{
-		m_hostGameSessionData.hostPlayerUID.setForAdhoc();
-	}
-#endif 
 
 	m_hostGameSessionData.m_uiGameHostSettings = app.GetGameHostOption(eGameHostOption_All);
 
@@ -1123,12 +1082,6 @@ void CPlatformNetworkManagerSony::TickSearch()
 		{
 			// Don't start searches unless we have registered a callback
 			int searchDelay = MINECRAFT_PS3ROOM_SEARCH_DELAY_MILLISECONDS;
-#ifdef __PSVITA__
-			// in adhoc mode we can keep searching, as the friend list is populated in callbacks
-			// 4J Stu - Every second seems a bit much as it makes the friend list flash every time it updates. Changed this to 5 seconds.
-			if( usingAdhocMode())
-				searchDelay = 5000;
-#endif
 			if( m_SessionsUpdatedCallback != NULL && (m_lastSearchStartTime + searchDelay) < GetTickCount() )
 			{
 				if( m_pSQRNet->FriendRoomManagerSearch() )
@@ -1395,68 +1348,3 @@ void CPlatformNetworkManagerSony::MallocAndSetExtDataFromSQRPresenceInfo(void **
 	}
 	*pExtData = gsd;
 }
-
-#ifdef __PSVITA__
-bool CPlatformNetworkManagerSony::setAdhocMode( bool bAdhoc )
-{
-	if(m_bUsingAdhocMode != bAdhoc)
-	{
-		m_bUsingAdhocMode = bAdhoc; 
-		if(m_bUsingAdhocMode)
-		{
-			// uninit the PSN, and init adhoc
-			if(m_pSQRNet_Vita->IsInitialised())
-			{
-				m_pSQRNet_Vita->UnInitialise();
-			}
-
-			if(m_pSQRNet_Vita_Adhoc->IsInitialised()==false)
-			{
-				m_pSQRNet_Vita_Adhoc->Initialise();
-			}
-
-			m_pSQRNet = m_pSQRNet_Vita_Adhoc;
-		}
-		else
-		{
-			if(m_pSQRNet_Vita_Adhoc->IsInitialised())
-			{			
-				int ret = sceNetCtlAdhocDisconnect(); 
-				// uninit the adhoc, and init psn
-				m_pSQRNet_Vita_Adhoc->UnInitialise();
-			}
-
-			if(m_pSQRNet_Vita->IsInitialised()==false)
-			{			
-				m_pSQRNet_Vita->Initialise();
-			}
-
-			m_pSQRNet = m_pSQRNet_Vita;
-		}
-	}
-
-	return true;
-}
-
-void CPlatformNetworkManagerSony::startAdhocMatching( )
-{
-	assert(m_pSQRNet == m_pSQRNet_Vita_Adhoc);
-	((SQRNetworkManager_AdHoc_Vita*)m_pSQRNet_Vita_Adhoc)->startMatching();
-}
-
-bool CPlatformNetworkManagerSony::checkValidInviteData(const INVITE_INFO* pInviteInfo)
-{
-	if(((SQRNetworkManager_Vita*)m_pSQRNet_Vita)->GetHostUID() == pInviteInfo->hostPlayerUID)
-	{
-		// we're trying to join a game we're already in, so we just ignore this
-		return false;
-	}
-	else
-	{
-		return true;
-	}
-}
-
-
-
-#endif // __PSVITA__

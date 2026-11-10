@@ -3,19 +3,9 @@
 #include "McRegionLevelStorageSource.h"
 #include "File.h"
 
-#ifdef __PS3__
-#include <cell/cell_fs.h>
-#endif
-#ifdef __PSVITA__
-#include <fios2.h>
-#endif
 
 const wchar_t File::pathSeparator = L'\\';
-#ifdef _XBOX
-const wstring File::pathRoot = L"GAME:"; // Path root after pathSeparator has been removed
-#else
 const wstring File::pathRoot = L""; // Path root after pathSeparator has been removed
-#endif
 
 //Creates a new File instance from a parent abstract pathname and a child pathname string.
 File::File( const File &parent, const wstring& child )
@@ -36,16 +26,10 @@ File::File( const wstring& pathname ) //: parent( NULL )
 	else
 		m_abstractPathName = pathname;
 
-#ifdef _WINDOWS64
 	string path = wstringtofilename(m_abstractPathName);
 	string finalPath = StorageManager.GetMountedPath(path.c_str());
 	if(finalPath.size() == 0) finalPath = path;
 	m_abstractPathName = convStringToWstring(finalPath);
-#elif defined(_DURANGO)
-	wstring finalPath = StorageManager.GetMountedPath(m_abstractPathName.c_str());
-	if(finalPath.size() == 0) finalPath = m_abstractPathName;
-	m_abstractPathName = finalPath;
-#endif
 	/*
 	vector<wstring> path = stringSplit( pathname, pathSeparator );
 
@@ -239,12 +223,7 @@ bool File::renameTo(File dest)
 	// make a copy of the sourcePath by storing it in a std::string
 	string sourcePath = wstringtofilename(getPath());
 	const char *destPath = wstringtofilename(dest.getPath());
-#ifdef _DURANGO
-	__debugbreak();	// TODO
-	BOOL result = false;
-#else
 	BOOL result = MoveFile(sourcePath.c_str(), destPath);
-#endif
 
 	if( result == 0 )
 	{
@@ -280,93 +259,6 @@ vector<File *> *File::listFiles() const
 	if( !isDirectory() )
 		return vOutput;
 
-#ifdef __PS3__
-	const char *lpFileName=wstringtofilename(getPath());
-	char filePath[256];
-
-	std::string mountedPath = StorageManager.GetMountedPath(lpFileName);
-	if(mountedPath.length() > 0)
-	{
-		strcpy(filePath, mountedPath.c_str());
-	}
-	else if(lpFileName[0] == '/') // already fully qualified path
-		strcpy(filePath, lpFileName );
-	else
-		sprintf(filePath,"%s/%s",getUsrDirPath(), lpFileName );
-	int fd;
-	CellFsErrno err = cellFsOpendir(filePath , &fd);
-
-	CellFsDirectoryEntry de;
-	uint32_t count = 0;
-	err = cellFsGetDirectoryEntries(fd, &de, sizeof(CellFsDirectoryEntry), &count);
-	if(count != 0)
-	{
-		do
-		{
-			if(de.attribute.st_mode & CELL_FS_S_IFREG) vOutput->push_back( new File( *this, filenametowstring( de.entry_name.d_name ) ) );
-			err = cellFsGetDirectoryEntries(fd, &de, sizeof(CellFsDirectoryEntry), &count);
-		} while( count );
-	}
-	err = cellFsClose(fd);
-#elif defined __ORBIS__ || defined __PSVITA__
-	const char *lpFileName=wstringtofilename(getPath());
-	char filePath[256];
-
-	std::string mountedPath = StorageManager.GetMountedPath(lpFileName);
-	if(mountedPath.length() > 0)
-	{
-		strcpy(filePath, mountedPath.c_str());
-	}
-	else if(lpFileName[0] == '/') // already fully qualified path
-		strcpy(filePath, lpFileName );
-	else
-		sprintf(filePath,"%s/%s",getUsrDirPath(), lpFileName );
-
-	bool exists = sceFiosDirectoryExistsSync( NULL, filePath );
-	if( !exists  )
-	{
-		app.DebugPrintf("\nsceFiosDirectoryExistsSync - Directory doesn't exist\n");
-	}
-
-	//CD - Vita note: sceFiosDHOpenSync returns SCE_FIOS_ERROR_UNIMPLEMENTED
-	//CD - The Handle also returns as 0 [dh], sceFiosDHOpen could also be failing
-	//CD - Hence, this fails stating 0 files in directory
-
-	SceFiosDH dh = SCE_FIOS_DH_INVALID;
-	SceFiosBuffer buf;
-	buf.length = 0;
-	SceFiosOp op = sceFiosDHOpen(NULL, &dh, filePath, buf);
-
-	int err = sceFiosOpWait(op);
-	if( err != SCE_FIOS_OK  )
-	{
-		app.DebugPrintf("\nsceFiosOpWait = 0x%x\n",err);
-	}
-	SceFiosSize size = sceFiosOpGetActualCount(op);
-	char *pBuf = new char[size];
-	buf.set(pBuf, (size_t)size);
-
-	sceFiosOpDelete( op );
-	sceFiosDHClose(NULL, dh);
-
-	err = sceFiosDHOpenSync(NULL, &dh, filePath, buf);
-	if( err != SCE_FIOS_OK  )
-	{
-		app.DebugPrintf("\nsceFiosDHOpenSync = 0x%x\n",err);
-	}
-	SceFiosDirEntry entry;
-	ZeroMemory(&entry, sizeof(SceFiosDirEntry));
-	err = sceFiosDHReadSync(NULL, dh, &entry);
-	while( err == SCE_FIOS_OK)
-	{
-		vOutput->push_back( new File( *this, filenametowstring( entry.fullPath + entry.offsetToName ) ) );
-		ZeroMemory(&entry, sizeof(SceFiosDirEntry));
-		err = sceFiosDHReadSync(NULL, dh, &entry);
-	};
-
-	sceFiosDHClose(NULL, dh);
-	delete pBuf;
-#else
 
 	WIN32_FIND_DATA wfd;
 
@@ -401,7 +293,6 @@ vector<File *> *File::listFiles() const
 		FindClose( hFind);
 	}
 #endif
-#endif
 	return vOutput;
 }
 
@@ -423,40 +314,6 @@ vector<File *> *File::listFiles(FileFilter *filter) const
 
 	vector<File *> *vOutput = new vector<File *>();
 
-#ifdef __PS3__
-	const char *lpFileName=wstringtofilename(getPath());
-	char filePath[256];
-
-	std::string mountedPath = StorageManager.GetMountedPath(lpFileName);
-	if(mountedPath.length() > 0)
-	{
-		strcpy(filePath, mountedPath.c_str());
-	}
-	else if(lpFileName[0] == '/') // already fully qualified path
-		strcpy(filePath, lpFileName );
-	else
-		sprintf(filePath,"%s/%s",getUsrDirPath(), lpFileName );
-	int fd;
-	CellFsErrno err = cellFsOpendir(filePath, &fd);
-
-	CellFsDirectoryEntry de;
-	uint32_t count = 0;
-	err = cellFsGetDirectoryEntries(fd, &de, sizeof(CellFsDirectoryEntry), &count);
-	if(count != 0)
-	{
-		do
-		{
-			File thisFile = File( *this, filenametowstring( de.entry_name.d_name ) );
-			if( filter->accept( &thisFile ) )
-			{
-				File storageFile = thisFile;
-				if(de.attribute.st_mode & CELL_FS_S_IFREG) vOutput->push_back( &storageFile );
-			}
-			err = cellFsGetDirectoryEntries(fd, &de, sizeof(CellFsDirectoryEntry), &count);
-		} while( count );
-	}
-	err = cellFsClose(fd);
-#else
 
 #ifdef _UNICODE
 
@@ -502,7 +359,6 @@ vector<File *> *File::listFiles(FileFilter *filter) const
 		FindClose( hFind);
 	}
 #endif
-#endif
 	return vOutput;
 }
 
@@ -523,70 +379,6 @@ bool File::isDirectory() const
 //The length, in bytes, of the file denoted by this abstract pathname, or 0L if the file does not exist
 __int64 File::length()
 {
-#ifdef __PS3__
-	//extern const char* getPS3HomePath();
-	CellFsErrno err=0;
-	const char *lpFileName=wstringtofilename(getPath());
-	char filePath[256];
-
-	std::string mountedPath = StorageManager.GetMountedPath(lpFileName);
-	if(mountedPath.length() > 0)
-	{
-		strcpy(filePath, mountedPath.c_str());
-	}
-	else if(lpFileName[0] == '/') // already fully qualified path
-		strcpy(filePath, lpFileName );
-	else
-		sprintf(filePath,"%s/%s",getUsrDirPath(), lpFileName );
-
-#ifndef _CONTENT_PACKAGE
-	//printf("+++File::length - %s\n",filePath);
-#endif
-	// check if the file exists first
-	CellFsStat statData;
-	err=cellFsStat(filePath, &statData);
-
-	if( err != CELL_FS_SUCCEEDED)
-	{
-		//printf("+++File::length FAILED with %d\n",err);
-		return 0;
-	}
-	if(statData.st_mode == CELL_FS_S_IFDIR)
-	{
-		//printf("+++File::length FAILED with %d\n",err);
-		return 0;
-	}
-
-	//printf("+++File::length - %ll\n",statData.st_size);
-
-	return statData.st_size;
-#elif defined __ORBIS__ || defined __PSVITA__
-
-	char filePath[256];
-	const char *lpFileName=wstringtofilename(getPath());
-
-	std::string mountedPath = StorageManager.GetMountedPath(lpFileName);
-	if(mountedPath.length() > 0)
-	{
-		strcpy(filePath, mountedPath.c_str());
-	}
-	else if(lpFileName[0] == '/') // already fully qualified path
-		strcpy(filePath, lpFileName );
-	else
-		sprintf(filePath,"%s/%s",getUsrDirPath(), lpFileName );
-
-	// check if the file exists first
-	SceFiosStat  statData;
-	if(sceFiosStatSync(NULL, filePath, &statData) != SCE_FIOS_OK)
-	{
-		return 0;
-	}
-	if(statData.statFlags & SCE_FIOS_STATUS_DIRECTORY  )
-	{
-		return 0;
-	}
-	return statData.fileSize;
-#else
 	WIN32_FILE_ATTRIBUTE_DATA fileInfoBuffer;
 
 #ifdef _UNICODE
@@ -617,7 +409,6 @@ __int64 File::length()
 		//Fail or a Directory
 		return 0l;
 	}
-#endif
 }
 
 //Returns the time that the file denoted by this abstract pathname was last modified.

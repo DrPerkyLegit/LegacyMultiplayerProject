@@ -523,33 +523,6 @@ HRESULT CScene_MultiGameCreate::OnNotifyPressEx(HXUIOBJ hObjPressed, XUINotifyPr
 int CScene_MultiGameCreate::UnlockTexturePackReturned(void *pParam,int iPad,C4JStorage::EMessageResult result)
 {
 	CScene_MultiGameCreate* pScene = (CScene_MultiGameCreate*)pParam;
-#ifdef _XBOX
-	if(result==C4JStorage::EMessage_ResultAccept)
-	{
-		if(ProfileManager.IsSignedIn(iPad))
-		{	
-			ULONGLONG ullIndexA[1];
-			DLC_INFO *pDLCInfo = app.GetDLCInfoForTrialOfferID(pScene->m_pDLCPack->getPurchaseOfferId());
-
-			if(pDLCInfo!=NULL)
-			{
-				ullIndexA[0]=pDLCInfo->ullOfferID_Full;
-			}
-			else
-			{
-				ullIndexA[0]=pScene->m_pDLCPack->getPurchaseOfferId();
-			}
-
-			StorageManager.InstallOffer(1,ullIndexA,NULL,NULL);
-
-			// the license change coming in when the offer has been installed will cause this scene to refresh	
-		}
-	}
-	else
-	{
-		TelemetryManager->RecordUpsellResponded(iPad, eSet_UpsellID_Texture_DLC, ( pScene->m_pDLCPack->getPurchaseOfferId() & 0xFFFFFFFF ), eSen_UpsellOutcome_Declined);
-	}
-#endif
 	pScene->m_bIgnoreInput = false;
 	pScene->SetShow( TRUE );
 

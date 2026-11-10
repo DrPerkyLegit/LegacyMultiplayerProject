@@ -1,54 +1,22 @@
 #include "stdafx.h"
-#ifndef __PS3__
 //#include <compressapi.h>
-#endif // __PS3__
 
-#ifdef __PS3__
-#include "PS3\Sentient\SentientManager.h"
-#include "StatsCounter.h"
-#include "PS3\Social\SocialManager.h"
-#include <libsn.h>
-#include <libsntuner.h>
-#elif defined _DURANGO
-#include "Durango\Sentient\SentientManager.h"
-#include "StatsCounter.h"
-#include "Durango\Social\SocialManager.h"
-#include "Durango\Sentient\DynamicConfigurations.h"
-#include "Durango\DurangoExtras\xcompress.h"
-#elif defined _WINDOWS64
 #include "Windows64\Sentient\SentientManager.h"
 #include "StatsCounter.h"
 #include "Windows64\Social\SocialManager.h"
 #include "Windows64\Sentient\DynamicConfigurations.h"
-#elif defined __PSVITA__
-#include "PSVita\Sentient\SentientManager.h"
-#include "StatsCounter.h"
-#include "PSVita\Social\SocialManager.h"
-#include "PSVita\Sentient\DynamicConfigurations.h"
-#include <libperf.h>
-#else
-#include "Orbis\Sentient\SentientManager.h"
-#include "StatsCounter.h"
-#include "Orbis\Social\SocialManager.h"
-#include "Orbis\Sentient\DynamicConfigurations.h"
-#include <perf.h>
-#endif
 
-#if !defined(__PS3__) && !defined(__ORBIS__) && !defined(__PSVITA__)
 #ifdef _WINDOWS64
 //C4JStorage StorageManager;
 C_4JProfile ProfileManager;
 #endif
-#endif // __PS3__
 CSentientManager SentientManager;
 CXuiStringTable StringTable;
 
-#ifndef _XBOX_ONE
 ATG::XMLParser::XMLParser() {}
 ATG::XMLParser::~XMLParser() {}
 HRESULT    ATG::XMLParser::ParseXMLBuffer( CONST CHAR* strBuffer, UINT uBufferSize ) { return S_OK; }   
 VOID ATG::XMLParser::RegisterSAXCallbackInterface( ISAXCallback *pISAXCallback ) {}
-#endif
 
 bool	CSocialManager::IsTitleAllowedToPostAnything() { return false; }
 bool	CSocialManager::AreAllUsersAllowedToPostImages() { return false; }
@@ -66,32 +34,11 @@ DWORD XContentGetThumbnail(DWORD dwUserIndex, const XCONTENT_DATA *pContentData,
 void XShowAchievementsUI(int i) {}
 DWORD XBackgroundDownloadSetMode(XBACKGROUND_DOWNLOAD_MODE Mode) { return 0; }
 
-#ifndef _DURANGO
 void PIXAddNamedCounter(int a, char *b, ...) {}
 //#define PS3_USE_PIX_EVENTS 
 //#define PS4_USE_PIX_EVENTS 
 void PIXBeginNamedEvent(int a, char *b, ...)
 {
-#ifdef PS4_USE_PIX_EVENTS
-	char buf[512];
-    va_list args;
-    va_start(args,b);
-    vsprintf(buf,b,args);
-	sceRazorCpuPushMarker(buf, 0xffffffff, SCE_RAZOR_MARKER_ENABLE_HUD);
-
-#endif
-#ifdef PS3_USE_PIX_EVENTS
-	char buf[256];
-	wchar_t wbuf[256];
-    va_list args;
-    va_start(args,b);
-    vsprintf(buf,b,args);
-	snPushMarker(buf);
-
-// 	mbstowcs(wbuf,buf,256);
-// 	RenderManager.BeginEvent(wbuf);
-    va_end(args);
-#endif
 }
 #if 0//__PSVITA__
 	if( PixDepth < 64 )
@@ -108,13 +55,6 @@ void PIXBeginNamedEvent(int a, char *b, ...)
 
 void PIXEndNamedEvent()
 {
-#ifdef PS4_USE_PIX_EVENTS
-	sceRazorCpuPopMarker();
-#endif
-#ifdef PS3_USE_PIX_EVENTS
-	snPopMarker();
-// 	RenderManager.EndEvent();
-#endif
 #if 0//__PSVITA__
 	if( PixDepth <= 64 )
 	{
@@ -124,38 +64,6 @@ void PIXEndNamedEvent()
 #endif
 }
 void PIXSetMarkerDeprecated(int a, char *b, ...) {}
-#else
-// 4J Stu - Removed this implementation in favour of a macro that will convert our string format
-// conversion at compile time rather than at runtime
-//void PIXBeginNamedEvent(int a, char *b, ...)
-//{
-//	char buf[256];
-//	wchar_t wbuf[256];
-//	va_list args;
-//	va_start(args,b);
-//	vsprintf(buf,b,args);
-//
-//	mbstowcs(wbuf,buf,256);
-//	PIXBeginEvent(a,wbuf);
-//}
-//
-//void PIXEndNamedEvent()
-//{
-//	PIXEndEvent();
-//}
-//
-//void PIXSetMarkerDeprecated(int a, char *b, ...)
-//{
-//	char buf[256];
-//	wchar_t wbuf[256];
-//	va_list args;
-//	va_start(args,b);
-//	vsprintf(buf,b,args);
-//
-//	mbstowcs(wbuf,buf,256);
-//	PIXSetMarker(a, wbuf);
-//}
-#endif
 
 // void *D3DXBUFFER::GetBufferPointer() { return NULL; }
 // int D3DXBUFFER::GetBufferSize() { return 0; }
@@ -168,11 +76,7 @@ void PIXSetMarkerDeprecated(int a, char *b, ...) {}
 
 bool IsEqualXUID(PlayerUID a, PlayerUID b)
 {
-#if defined(__PS3__) || defined(__ORBIS__) || defined (__PSVITA__) || defined(_DURANGO)
-	return (a == b);
-#else
 	return false;
-#endif
 }
 
 void XMemCpy(void *a, const void *b, size_t s) { memcpy(a, b, s); }
@@ -251,8 +155,6 @@ HRESULT CXuiStringTable::Load(LPCWSTR szId) { return S_OK; }
 
 DWORD XUserAreUsersFriends( DWORD dwUserIndex, PPlayerUID pXuids, DWORD dwXuidCount, PBOOL pfResult, void *pOverlapped) { return 0; }
 
-#if defined __ORBIS__ || defined __PS3__ || defined _XBOX_ONE
-#else
 HRESULT XMemDecompress(
          XMEMDECOMPRESSION_CONTEXT Context,
          VOID *pDestination,
@@ -368,14 +270,11 @@ void XMemDestroyDecompressionContext(XMEMDECOMPRESSION_CONTEXT Context)
 //	DECOMPRESSOR_HANDLE Decompressor    = (DECOMPRESSOR_HANDLE)Context;
 //	CloseDecompressor(Decompressor);
 }
-#endif
 
 //#ifndef __PS3__
-#if !(defined _DURANGO || defined __PS3__ || defined __ORBIS__ || defined __PSVITA__)
 DWORD XGetLanguage() { return 1; }
 DWORD XGetLocale() { return 0; }
 DWORD XEnableGuestSignin(BOOL fEnable) { return 0; }
-#endif
 
 
 
@@ -465,15 +364,6 @@ BOOL				C_4JProfile::AreXUIDSEqual(PlayerUID xuid1,PlayerUID xuid2) { return fal
 BOOL				C_4JProfile::XUIDIsGuest(PlayerUID xuid) { return false; }
 bool				C_4JProfile::AllowedToPlayMultiplayer(int iProf) { return true; }
 
-#if defined(__ORBIS__)
-bool				C_4JProfile::GetChatAndContentRestrictions(int iPad, bool thisQuadrantOnly, bool *pbChatRestricted,bool *pbContentRestricted,int *piAge)
-{
-	if(pbChatRestricted) *pbChatRestricted = false;
-	if(pbContentRestricted) *pbContentRestricted = false;
-	if(piAge) *piAge = 100;
-	return true;
-}
-#endif
 
 void				C_4JProfile::StartTrialGame() {}
 void				C_4JProfile::AllowedPlayerCreatedContent(int iPad, bool thisQuadrantOnly, BOOL *allAllowed, BOOL *friendsAllowed) {}
@@ -482,14 +372,8 @@ bool				C_4JProfile::GetProfileAvatar(int iPad,int( *Func)(LPVOID lpParam,PBYTE 
 void				C_4JProfile::CancelProfileAvatarRequest() {}
 int					C_4JProfile::GetPrimaryPad() { return 0; }
 void				C_4JProfile::SetPrimaryPad(int iPad) {}
-#ifdef _DURANGO
-char fakeGamerTag[32] = "PlayerName";
-void				SetFakeGamertag(char *name){ strcpy_s(fakeGamerTag, name); }
-char*				C_4JProfile::GetGamertag(int iPad){ return fakeGamerTag; }
-#else
 char*				C_4JProfile::GetGamertag(int iPad){ return "PlayerName"; }
 wstring				C_4JProfile::GetDisplayName(int iPad){ return L"PlayerName"; }
-#endif
 bool				C_4JProfile::IsFullVersion() { return s_bProfileIsFullVersion; }
 void				C_4JProfile::SetSignInChangeCallback(void ( *Func)(LPVOID, bool, unsigned int),LPVOID lpParam) {}
 void				C_4JProfile::SetNotificationsCallback(void ( *Func)(LPVOID, DWORD, unsigned int),LPVOID lpParam) {}

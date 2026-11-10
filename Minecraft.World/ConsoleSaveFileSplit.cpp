@@ -586,11 +586,6 @@ ConsoleSaveFileSplit::~ConsoleSaveFileSplit()
 	VirtualFree( pvHeap, MAX_PAGE_COUNT * CSF_PAGE_SIZE, MEM_DECOMMIT );
 	pagesCommitted = 0;
 	// Make sure we don't have any thumbnail data still waiting round - we can't need it now we've destroyed the save file anyway
-#if defined _XBOX 
-	app.GetSaveThumbnail(NULL,NULL);
-#elif defined __PS3__
-	app.GetSaveThumbnail(NULL,NULL, NULL,NULL);
-#endif
 
 	for(AUTO_VAR(it,regionFiles.begin()); it != regionFiles.end(); it++ )
 	{
@@ -1012,12 +1007,6 @@ void ConsoleSaveFileSplit::tick()
 				totalDirtyBytes += it->second->fileEntry->getFileSize();
 			}
 		}
-#ifdef _DURANGO
-		PIXReportCounter(L"Dirty regions", (float)totalDirty);
-		PIXReportCounter(L"Dirty MB", (float)totalDirtyBytes / ( 1024 * 1024) );
-		PIXReportCounter(L"Dirty oldest age", ((float) currentTime - oldestDirty ) );
-		PIXReportCounter(L"Region writing bandwidth",((float)bytesInTimePeriod/ WRITE_BANDWIDTH_MEASUREMENT_PERIOD_SECONDS) / ( 1024 * 1024));
-#endif
 	}
 #endif
 
@@ -1311,20 +1300,10 @@ void ConsoleSaveFileSplit::Flush(bool autosave, bool updateThumbnail)
 {
 	LockSaveAccess();
 
-#ifdef _XBOX_ONE
-	MinecraftServer *server = MinecraftServer::getInstance();
-#endif
 
 	// The storage manage might potentially be busy doing a sub-file write initiated from the tick. Wait until this is totally processed.
 	while( StorageManager.GetSaveState() != C4JStorage::ESaveGame_Idle )
 	{
-#ifdef _XBOX_ONE
-		if (server && server->IsSuspending())
-		{
-			// If the server is mid-suspend we need to tick the storage manager ourselves
-			StorageManager.Tick();
-		}
-#endif
 
 		app.DebugPrintf("Flush wait\n");
 		Sleep(10);
@@ -1412,11 +1391,6 @@ void ConsoleSaveFileSplit::Flush(bool autosave, bool updateThumbnail)
 			PBYTE pbDataSaveImage=NULL;
 			DWORD dwDataSizeSaveImage=0;
 
-#if ( defined _XBOX || defined _DURANGO )
-			app.GetSaveThumbnail(&pbThumbnailData,&dwThumbnailDataSize);
-#elif ( defined __PS3__ || defined __ORBIS__ )
-			app.GetSaveThumbnail(&pbThumbnailData,&dwThumbnailDataSize,&pbDataSaveImage,&dwDataSizeSaveImage);
-#endif
 
 			BYTE bTextMetadata[88];
 			ZeroMemory(bTextMetadata,88);
@@ -1574,20 +1548,6 @@ vector<FileEntry *> *ConsoleSaveFileSplit::getRegionFilesByDimension(unsigned in
 	return files;
 }
 
-#if defined(__PS3__) || defined(__ORBIS__)
-wstring ConsoleSaveFileSplit::getPlayerDataFilenameForLoad(const PlayerUID& pUID)
-{
-	return header.getPlayerDataFilenameForLoad( pUID );
-}
-wstring ConsoleSaveFileSplit::getPlayerDataFilenameForSave(const PlayerUID& pUID)
-{
-	return header.getPlayerDataFilenameForSave( pUID );
-}
-vector<FileEntry *> *ConsoleSaveFileSplit::getValidPlayerDatFiles()
-{
-	return header.getValidPlayerDatFiles();
-}
-#endif
 
 int ConsoleSaveFileSplit::getSaveVersion()
 {

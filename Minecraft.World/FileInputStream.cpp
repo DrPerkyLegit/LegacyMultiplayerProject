@@ -187,18 +187,5 @@ void FileInputStream::close()
 //the actual number of bytes skipped.
 __int64 FileInputStream::skip(__int64 n)
 {
-#ifdef _XBOX
-	LARGE_INTEGER li;
-	li.QuadPart = n;
-	li.LowPart = SetFilePointer(m_fileHandle, li.LowPart, &li.HighPart, FILE_CURRENT);
-
-	if (li.LowPart == INVALID_SET_FILE_POINTER && GetLastError() != NO_ERROR)
-	{
-		li.QuadPart = 0;
-	}
-
-	return li.QuadPart;
-#else
 	return 0;
-#endif
 }

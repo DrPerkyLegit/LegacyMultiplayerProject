@@ -43,18 +43,6 @@ private:
 	UIBitmapFont *m_moj7, *m_moj11;
 
 	// 4J-PB - ui element type for PSVita touch control
-#ifdef __PSVITA__
-
-	typedef struct  
-	{
-		UIControl *pControl;
-		S32 x1,y1,x2,y2;
-	}
-	UIELEMENT;
-	// E3 - Fine for now, but we need to make this better!
-	vector<UIELEMENT *> m_TouchBoxes[eUIGroup_COUNT][eUILayer_COUNT][eUIScene_COUNT];
-	bool m_bTouchscreenPressed;
-#endif
 	// 4J Stu - These should be in the order that they reference each other (i.e. they can only reference one with a lower value in the enum)
 	enum ELibraries
 	{
@@ -144,20 +132,6 @@ private:
 
 public:
 	UIController();
-#ifdef __PSVITA__
-	void TouchBoxAdd(UIControl *pControl,UIScene *pUIScene);
-	bool TouchBoxHit(UIScene *pUIScene,S32 x, S32 y);
-	void TouchBoxesClear(UIScene *pUIScene);
-	void TouchBoxRebuild(UIScene *pUIScene);
-
-	void HandleTouchInput(unsigned int iPad, unsigned int key, bool bPressed, bool bRepeat, bool bReleased);
-	void SendTouchInput(unsigned int iPad, unsigned int key, bool bPressed, bool bRepeat, bool bReleased);
-
-	private:
-	void TouchBoxAdd(UIControl *pControl,EUIGroup eUIGroup,EUILayer eUILayer,EUIScene eUIscene, UIControl *pMainPanelControl);
-	UIELEMENT *m_ActiveUIElement;
-	UIELEMENT *m_HighlightedUIElement;
-#endif
 
 protected:
 	UIGroup *m_groups[eUIGroup_COUNT];
@@ -307,9 +281,6 @@ public:
 
 	virtual void HandleDLCMountingComplete();
 	virtual void HandleDLCInstalled(int iPad);
-#ifdef _XBOX_ONE
-	virtual void HandleDLCLicenseChange();
-#endif
 	virtual void HandleTMSDLCFileRetrieved(int iPad);
 	virtual void HandleTMSBanFileRetrieved(int iPad);
 	virtual void HandleInventoryUpdated(int iPad);
@@ -342,13 +313,8 @@ public:
 	void ClearPressStart();
 
 	// 4J Stu - Only because of the different StringTable type, should really fix the libraries
-#ifndef __PS3__
 	virtual C4JStorage::EMessageResult RequestMessageBox(UINT uiTitle, UINT uiText, UINT *uiOptionA,UINT uiOptionC, DWORD dwPad=XUSER_INDEX_ANY,
 						int( *Func)(LPVOID,int,const C4JStorage::EMessageResult)=NULL,LPVOID lpParam=NULL, C4JStringTable *pStringTable=NULL, WCHAR *pwchFormatString=NULL,DWORD dwFocusButton=0, bool bIsError = true);
-#else
-	virtual C4JStorage::EMessageResult RequestMessageBox(UINT uiTitle, UINT uiText, UINT *uiOptionA,UINT uiOptionC, DWORD dwPad=XUSER_INDEX_ANY,
-						int( *Func)(LPVOID,int,const C4JStorage::EMessageResult)=NULL,LPVOID lpParam=NULL, StringTable *pStringTable=NULL, WCHAR *pwchFormatString=NULL,DWORD dwFocusButton=0, bool bIsError = true);
-#endif
 
 	C4JStorage::EMessageResult RequestUGCMessageBox(UINT title = -1, UINT message = -1, int iPad = -1, int( *Func)(LPVOID,int,const C4JStorage::EMessageResult) = NULL, LPVOID lpParam = NULL);
 	C4JStorage::EMessageResult RequestContentRestrictedMessageBox(UINT title = -1, UINT message = -1, int iPad = -1, int( *Func)(LPVOID,int,const C4JStorage::EMessageResult) = NULL, LPVOID lpParam = NULL);

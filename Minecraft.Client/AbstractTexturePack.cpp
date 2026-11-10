@@ -36,34 +36,10 @@ wstring AbstractTexturePack::trim(wstring line)
 
 void AbstractTexturePack::loadIcon()
 {
-#ifdef _XBOX
-	// 4J Stu - Temporary only	
-	const DWORD LOCATOR_SIZE = 256; // Use this to allocate space to hold a ResourceLocator string 
-	WCHAR szResourceLocator[ LOCATOR_SIZE ];
-
-	const ULONG_PTR c_ModuleHandle = (ULONG_PTR)GetModuleHandle(NULL);
-	swprintf(szResourceLocator, LOCATOR_SIZE ,L"section://%X,%ls#%ls",c_ModuleHandle,L"media", L"media/Graphics/TexturePackIcon.png");
-
-	UINT size = 0;
-	HRESULT hr = XuiResourceLoadAllNoLoc(szResourceLocator, &m_iconData, &size);
-	m_iconSize = size;
-#endif
 }
 
 void AbstractTexturePack::loadComparison()
 {
-#ifdef _XBOX
-	// 4J Stu - Temporary only	
-	const DWORD LOCATOR_SIZE = 256; // Use this to allocate space to hold a ResourceLocator string 
-	WCHAR szResourceLocator[ LOCATOR_SIZE ];
-
-	const ULONG_PTR c_ModuleHandle = (ULONG_PTR)GetModuleHandle(NULL);
-	swprintf(szResourceLocator, LOCATOR_SIZE ,L"section://%X,%ls#%ls",c_ModuleHandle,L"media", L"media/Graphics/DefaultPack_Comparison.png");
-
-	UINT size = 0;
-	HRESULT hr = XuiResourceLoadAllNoLoc(szResourceLocator, &m_comparisonData, &size);
-	m_comparisonSize = size;
-#endif
 }
 
 void AbstractTexturePack::loadDescription()
@@ -225,23 +201,7 @@ BufferedImage *AbstractTexturePack::getImageResource(const wstring& File, bool f
 
 void AbstractTexturePack::loadDefaultUI()
 {
-#ifdef _XBOX
-	// load from the .xzp file
-	const ULONG_PTR c_ModuleHandle = (ULONG_PTR)GetModuleHandle(NULL);
-
-	// Load new skin
-	const DWORD LOCATOR_SIZE = 256; // Use this to allocate space to hold a ResourceLocator string 
-	WCHAR szResourceLocator[ LOCATOR_SIZE ];
-
-	swprintf(szResourceLocator, LOCATOR_SIZE,L"section://%X,%ls#%ls",c_ModuleHandle,L"media", L"media/skin_Minecraft.xur");
-	
-	XuiFreeVisuals(L"");
-	app.LoadSkin(szResourceLocator,NULL);//L"TexturePack");
-	//CXuiSceneBase::GetInstance()->SetVisualPrefix(L"TexturePack");
-	CXuiSceneBase::GetInstance()->SkinChanged(CXuiSceneBase::GetInstance()->m_hObj);
-#else
 	ui.ReloadSkin();
-#endif
 }
 
 void AbstractTexturePack::loadColourTable()
@@ -277,35 +237,6 @@ void AbstractTexturePack::loadDefaultColourTable()
 
 void AbstractTexturePack::loadDefaultHTMLColourTable()
 {
-#ifdef _XBOX
-	// load from the .xzp file
-	const ULONG_PTR c_ModuleHandle = (ULONG_PTR)GetModuleHandle(NULL);
-
-	const DWORD LOCATOR_SIZE = 256; // Use this to allocate space to hold a ResourceLocator string 
-	WCHAR szResourceLocator[ LOCATOR_SIZE ];
-
-	// Try and load the HTMLColours.col based off the common XML first, before the deprecated xuiscene_colourtable	
-	wsprintfW(szResourceLocator,L"section://%X,%s#%s",c_ModuleHandle,L"media", L"media/HTMLColours.col");
-	BYTE *data;
-	UINT dataLength;
-	if(XuiResourceLoadAll(szResourceLocator, &data, &dataLength) == S_OK)
-	{
-		m_colourTable->loadColoursFromData(data,dataLength);
-
-		XuiFree(data);
-	}
-	else
-	{
-		wsprintfW(szResourceLocator,L"section://%X,%s#%s",c_ModuleHandle,L"media", L"media/");
-		HXUIOBJ hScene;
-		HRESULT hr = XuiSceneCreate(szResourceLocator,L"xuiscene_colourtable.xur", NULL, &hScene);
-
-		if(HRESULT_SUCCEEDED(hr))
-		{
-			loadHTMLColourTableFromXuiScene(hScene);
-		}
-	}
-#else
 	if(app.hasArchiveFile(L"HTMLColours.col"))
 	{
 		byteArray textColours = app.getArchiveFile(L"HTMLColours.col");
@@ -313,47 +244,13 @@ void AbstractTexturePack::loadDefaultHTMLColourTable()
 
 		delete [] textColours.data;
 	}
-#endif
 }
 
-#ifdef _XBOX
-void AbstractTexturePack::loadHTMLColourTableFromXuiScene(HXUIOBJ hObj)
-{
-	HXUIOBJ child;
-	HRESULT hr = XuiElementGetFirstChild(hObj, &child);
-
-	while(HRESULT_SUCCEEDED(hr) && child != NULL)
-	{
-		LPCWSTR childName;
-		XuiElementGetId(child,&childName);
-		m_colourTable->setColour(childName,XuiTextElementGetText(child));
-
-		//eMinecraftTextColours colourIndex = eTextColor_NONE;
-		//for(int i = 0; i < (int)eTextColor_MAX; i++)
-		//{
-		//	if(wcscmp(HTMLColourTableElements[i],childName)==0)
-		//	{
-		//		colourIndex = (eMinecraftTextColours)i;
-		//		break;
-		//	}
-		//}
-
-		//LPCWSTR stringValue = XuiTextElementGetText(child);
-
-		//m_htmlColourTable[colourIndex] = XuiTextElementGetText(child);
-
-		hr = XuiElementGetNext(child, &child);
-	}
-}
-#endif
 
 void AbstractTexturePack::loadUI()
 {
 	loadColourTable();
 	
-#ifdef _XBOX
-	CXuiSceneBase::GetInstance()->SkinChanged(CXuiSceneBase::GetInstance()->m_hObj);
-#endif
 }
 
 void AbstractTexturePack::unloadUI()

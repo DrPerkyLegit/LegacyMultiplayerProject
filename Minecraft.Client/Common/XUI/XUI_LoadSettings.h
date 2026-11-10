@@ -137,9 +137,6 @@ private:
 	bool m_texturePackDescDisplayed;
 
 	DWORD m_dwSaveFileC;
-#ifdef _XBOX
-	C4JStorage::CACHEINFOSTRUCT *m_InfoA;
-#endif
 	unsigned char m_szSeed[50];
 	XCONTENT_DATA m_XContentData;
 	LaunchMoreOptionsMenuInitData m_MoreOptionsParams;

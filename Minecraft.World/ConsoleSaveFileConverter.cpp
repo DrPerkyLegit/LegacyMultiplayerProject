@@ -78,27 +78,14 @@ void ConsoleSaveFileConverter::ConvertSave(ConsoleSaveFile *sourceSave, ConsoleS
 	}
 
 	// MGH added - find any player data files and copy them across
-#if defined(__PS3__) || defined(__ORBIS__) || defined(__PSVITA__)
-	vector<FileEntry *>* playerFiles = sourceSave->getValidPlayerDatFiles();
-#else
 	vector<FileEntry *> *playerFiles = sourceSave->getFilesWithPrefix( DirectoryLevelStorage::getPlayerDir() );
-#endif
 
 	if(playerFiles != NULL)
 	{
 		for(int fileIdx = 0; fileIdx < playerFiles->size();fileIdx++)
 		{
 			ConsoleSavePath sourcePlayerDatPath( playerFiles->at(fileIdx)->data.filename );
-#ifdef _XBOX_ONE
-			// 4J Stu - As the XUIDs on X360 and X1 are different, we don't want to transfer these over. However as the first player
-			// file should be the owner of the save, we can move their data over to the current players XUID
-			if(fileIdx > 0) break;
-			PlayerUID xuid;
-			ProfileManager.GetXUID(ProfileManager.GetPrimaryPad(), &xuid, false);
-			ConsoleSavePath targetPlayerDatPath( L"players/" + xuid.toString() + L".dat" );
-#else
 			ConsoleSavePath targetPlayerDatPath( playerFiles->at(fileIdx)->data.filename );
-#endif
 			{
 				FileEntry *sourceFe = sourceSave->createFile( sourcePlayerDatPath );
 				FileEntry *targetFe = targetSave->createFile( targetPlayerDatPath );

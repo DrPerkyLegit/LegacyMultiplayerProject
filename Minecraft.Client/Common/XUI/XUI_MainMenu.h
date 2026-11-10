@@ -120,9 +120,4 @@ public:
 	static int Leaderboards_SignInReturned(void* pParam, bool bContinue, int iPad);
 	static int UnlockFullGame_SignInReturned(void *pParam,bool bContinue,int iPad);
 	static int MustSignInReturned(void *pParam,int iPad,C4JStorage::EMessageResult result);
-#ifdef _XBOX
-	static int TMSReadFileListReturned(void *pParam,int iPad,C4JStorage::PTMSPP_FILE_LIST pTmsFileList);
-	static int TMSFileWriteReturned(void *pParam,int iPad,int iResult);
-	static int TMSFileReadReturned(void *pParam,int iPad,C4JStorage::PTMSPP_FILEDATA pData);
-#endif
 };

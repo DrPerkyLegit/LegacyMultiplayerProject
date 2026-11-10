@@ -3,14 +3,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#ifdef __PS3__
-#include <np.h>
-#include <np/drm.h>
-#include <np/commerce2.h>
-#elif defined __PSVITA__
-#include <np.h>
-#include <np_toolkit.h>
-#else // __ORBIS__
 
 #define SCE_NP_COMMERCE2_CATEGORY_ID_LEN				SCE_TOOLKIT_NP_COMMERCE_CATEGORY_ID_LEN					///< The size of the category ID.
 #define SCE_NP_COMMERCE2_PRODUCT_ID_LEN					SCE_TOOLKIT_NP_COMMERCE_PRODUCT_ID_LEN					///< The size of the product ID.
@@ -30,14 +22,11 @@
 #define SCE_NP_COMMERCE2_PRODUCT_LEGAL_DESCRIPTION_LEN	SCE_TOOLKIT_NP_COMMERCE_PRODUCT_LEGAL_DESCRIPTION_LEN	///< The size of the product legal description.
 #define SCE_NP_COMMERCE2_RATING_SYSTEM_ID_LEN			SCE_TOOLKIT_NP_COMMERCE_RATING_SYSTEM_ID_LEN			///< The size of the rating system ID.
 #define SCE_NP_ENTITLEMENT_ID_SIZE						SCE_TOOLKIT_NP_COMMERCE_ENTITLEMENT_ID_LEN				///< The size of entitlement ID.
-#endif
 
-#ifndef __PSVITA__
 #define SCE_TOOLKIT_NP_SKU_PRICE_LEN	(SCE_NP_COMMERCE2_CURRENCY_CODE_LEN \
 	+ SCE_NP_COMMERCE2_CURRENCY_SYMBOL_LEN \
 	+ SCE_NP_COMMERCE2_THOUSAND_SEPARATOR_LEN \
 	+ SCE_NP_COMMERCE2_DECIMAL_LETTER_LEN) ///< The maximum length of a price in characters.
-#endif
 
 class SonyCommerce
 {
@@ -87,11 +76,7 @@ public:
 		char		imageUrl[SCE_NP_COMMERCE2_URL_LEN];									///< The product image URL.
 		char		price[SCE_TOOLKIT_NP_SKU_PRICE_LEN];								///< The price of the product. This is formatted to include the currency code.	
 		char        padding[6];															///< Padding.	
-#ifdef __PS3__
-		CellRtcTick	releaseDate;														///< The product release date.
-#else
 		SceRtcTick releaseDate;
-#endif
 	}
 	ProductInfo;
 
@@ -115,12 +100,7 @@ public:
 		char		ratingSystemId[SCE_NP_COMMERCE2_RATING_SYSTEM_ID_LEN];				///< The ID of the rating system (for example: PEGI, ESRB).
 		char		ratingImageUrl[SCE_NP_COMMERCE2_URL_LEN];							///< The URL of the rating icon.
 		char		padding[2];															///< Padding.	
-#ifdef __PS3__
-		std::list<SceNpCommerce2ContentRatingDescriptor> ratingDescriptors;				///< The list of rating descriptors.			
-		CellRtcTick	releaseDate;														///< The product release date.
-#else 
 		SceRtcTick	releaseDate;														///< The product release date.
-#endif
 	}
 	ProductInfoDetailed;
 
@@ -131,9 +111,6 @@ public:
 	typedef struct CheckoutInputParams 
 	{
 		std::list<const char *>		skuIds;			///< List of SKU IDs
-#ifdef __PS3__
-		sys_memory_container_t	*memContainer;	///< Memory container for checkout overlay
-#endif
 	}
 	CheckoutInputParams;
 
@@ -144,9 +121,6 @@ public:
 	typedef struct DownloadListInputParams 
 	{
 		std::list<const char *>		skuIds;			///< The list of SKU IDs
-#ifdef __PS3__
-		sys_memory_container_t	*memContainer;	///< A memory container for checkout overlay.
-#endif
 		const char*				categoryID;
 	}
 	DownloadListInputParams;
@@ -162,10 +136,6 @@ public:
 	virtual void AddDetailedProductInfo( CallbackFunc cb, LPVOID lpParam, ProductInfo* productInfo, const char *productId, const char *categoryId ) = 0;
 	virtual void Checkout(CallbackFunc cb, LPVOID lpParam, const char* skuID) = 0;
 	virtual void DownloadAlreadyPurchased(CallbackFunc cb, LPVOID lpParam, const char* skuID) = 0;
-#if defined(__ORBIS__) || defined( __PSVITA__)
-	virtual void Checkout_Game(CallbackFunc cb, LPVOID lpParam, const char* skuID) = 0;
-	virtual void DownloadAlreadyPurchased_Game(CallbackFunc cb, LPVOID lpParam, const char* skuID) = 0;
-#endif
 	virtual void UpgradeTrial(CallbackFunc cb, LPVOID lpParam) = 0;
 	virtual void CheckForTrialUpgradeKey() = 0;
 	virtual bool LicenseChecked() = 0;

@@ -35,19 +35,6 @@ void UIControl_Button::init(const wstring &label, int id)
 	value[1].number = id;
 	IggyResult out = IggyPlayerCallMethodRS ( m_parentScene->getMovie() , &result, getIggyValuePath() , m_initFunc , 2 , value );
 
-#ifdef __PSVITA__
-	// 4J-PB - add this button to the vita touch box list
-
-	switch(m_parentScene->GetParentLayer()->m_iLayer)
-	{
-	case eUILayer_Error:
-	case eUILayer_Fullscreen:
-	case eUILayer_Scene:
-	case eUILayer_HUD:
-		ui.TouchBoxAdd(this,m_parentScene);
-		break;
-	}
-#endif
 }
 
 void UIControl_Button::ReInit()

@@ -28,10 +28,6 @@ public:
 	virtual wstring getResource(const wstring& name);
 	virtual DLCPack * getDLCPack();
 	// Added for sound banks with MashUp packs
-#ifdef _XBOX
-	IXACT3WaveBank	*m_pStreamedWaveBank;
-	IXACT3SoundBank	*m_pSoundBank;
-#endif
 protected:
 	//@Override
 	void loadIcon();

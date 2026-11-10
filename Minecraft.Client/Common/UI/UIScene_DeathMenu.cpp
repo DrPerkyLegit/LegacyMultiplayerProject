@@ -68,9 +68,6 @@ void UIScene_DeathMenu::handleInput(int iPad, int key, bool repeat, bool pressed
 		handled = true;
 		break;
 	case ACTION_MENU_OK:
-#ifdef __ORBIS__
-	case ACTION_MENU_TOUCHPAD_PRESS:
-#endif
 	case ACTION_MENU_UP:
 	case ACTION_MENU_DOWN:
 		sendInputToMovie(key, repeat, pressed, released);
@@ -86,9 +83,6 @@ void UIScene_DeathMenu::handlePress(F64 controlId, F64 childId)
 	case eControl_Respawn:
 		m_bIgnoreInput = true;
 		app.SetAction(m_iPad,eAppAction_Respawn);
-#ifdef _DURANGO
-		//InputManager.SetEnabledGtcButtons(_360_GTC_MENU|_360_GTC_PAUSE|_360_GTC_VIEW);
-#endif
 		break;
 	case eControl_ExitGame:
 		{
@@ -110,23 +104,6 @@ void UIScene_DeathMenu::handlePress(F64 controlId, F64 childId)
 					}
 					TelemetryManager->RecordLevelExit(m_iPad, eSen_LevelExitStatus_Failed);
 					
-#if defined (_XBOX_ONE) || defined(__ORBIS__)
-					if(g_NetworkManager.IsHost() && StorageManager.GetSaveDisabled())
-					{
-						uiIDA[0]=IDS_CONFIRM_CANCEL;
-						uiIDA[1]=IDS_EXIT_GAME_SAVE;
-						uiIDA[2]=IDS_EXIT_GAME_NO_SAVE;
-
-						ui.RequestMessageBox(IDS_EXIT_GAME, IDS_CONFIRM_EXIT_GAME, uiIDA, 3, m_iPad,&IUIScene_PauseMenu::ExitGameSaveDialogReturned,this, app.GetStringTable(), 0, 0, false);
-					}
-					else
-					{
-					uiIDA[0]=IDS_CONFIRM_CANCEL;
-					uiIDA[1]=IDS_CONFIRM_OK;
-						ui.RequestMessageBox(IDS_EXIT_GAME, IDS_CONFIRM_EXIT_GAME, uiIDA, 2, m_iPad,&IUIScene_PauseMenu::ExitGameDialogReturned,this, app.GetStringTable(), 0, 0, false);
-					}
-
-#else
 					if(StorageManager.GetSaveDisabled())
 					{
 						uiIDA[0]=IDS_CONFIRM_CANCEL;
@@ -151,7 +128,6 @@ void UIScene_DeathMenu::handlePress(F64 controlId, F64 childId)
 							ui.RequestMessageBox(IDS_EXIT_GAME, IDS_CONFIRM_EXIT_GAME, uiIDA, 2, m_iPad,&IUIScene_PauseMenu::ExitGameDialogReturned,this, app.GetStringTable(), 0, 0, false);
 						}
 					}
-#endif
 				}
 				else
 				{

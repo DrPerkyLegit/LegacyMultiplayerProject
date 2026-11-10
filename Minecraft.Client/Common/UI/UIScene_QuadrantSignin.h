@@ -104,7 +104,4 @@ private:
 	void updateState();
 	void setControllerState(int iPad, EControllerStatus state);
 
-#ifdef _DURANGO
-	static void checkAllPrivilegesCallback(LPVOID lpParam, bool hasPrivileges, int iPad);
-#endif
 };

@@ -76,9 +76,6 @@ public:
 	void removePack(DLCPack *pack);
 
 	DLCPack *getPack(const wstring &name);
-#ifdef _XBOX_ONE
-	DLCPack *DLCManager::getPackFromProductID(const wstring &productID);
-#endif
 	DLCPack *getPack(DWORD index, EDLCType type = e_DLCType_All);
 	DWORD getPackIndex(DLCPack *pack, bool &found, EDLCType type = e_DLCType_All);
 	DLCSkinFile *getSkinFile(const wstring &path); // Will hunt all packs of type skin to find the right skinfile

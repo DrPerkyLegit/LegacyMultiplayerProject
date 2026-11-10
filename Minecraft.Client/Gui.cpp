@@ -1255,9 +1255,6 @@ void Gui::addMessage(const wstring& _string,int iPad,bool bIsDeathMessage)
 		{
 			maximumChars = 55;
 		}
-#ifdef __PSVITA__
-		maximumChars = 90;
-#endif
 		switch(XGetLanguage())
 		{
 		case XC_LANGUAGE_JAPANESE:
@@ -1271,9 +1268,6 @@ void Gui::addMessage(const wstring& _string,int iPad,bool bIsDeathMessage)
 			{
 				maximumChars = 35;
 			}
-#ifdef __PSVITA__
-			maximumChars = 55;
-#endif
 			break;
 		}
 		break;

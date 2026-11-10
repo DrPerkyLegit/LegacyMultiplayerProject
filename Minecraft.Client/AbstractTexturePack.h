@@ -74,9 +74,6 @@ protected:
 	void loadDefaultUI();
 	void loadDefaultColourTable();
 	void loadDefaultHTMLColourTable();
-#ifdef _XBOX
-	void loadHTMLColourTableFromXuiScene(HXUIOBJ hObj);
-#endif
 
 public:
 	virtual BufferedImage *getImageResource(const wstring& File, bool filenameHasExtension = false, bool bTitleUpdateTexture=false, const wstring &drive =L"");

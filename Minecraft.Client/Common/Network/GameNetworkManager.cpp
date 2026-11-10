@@ -28,17 +28,10 @@
 #include "..\GameRules\ConsoleGameRules.h"
 #include "GameNetworkManager.h"
 
-#ifdef _XBOX
-#include "Common\XUI\XUI_PauseMenu.h"
-#elif !(defined __PSVITA__)
 #include "Common\UI\UI.h"
 #include "Common\UI\UIScene_PauseMenu.h"
 #include "..\..\Xbox\Network\NetworkPlayerXbox.h"
-#endif
 
-#ifdef _DURANGO
-#include "..\Minecraft.World\DurangoStats.h"
-#endif
 
 // Global instance
 CGameNetworkManager g_NetworkManager;
@@ -54,10 +47,6 @@ CGameNetworkManager::CGameNetworkManager()
 	m_bLastDisconnectWasLostRoomOnly = false;
 	m_bFullSessionMessageOnNextSessionChange = false;
 
-#ifdef __ORBIS__
-	m_pUpsell = NULL;
-	m_pInviteInfo = NULL;
-#endif
 }
 
 void CGameNetworkManager::Initialise()
@@ -65,15 +54,7 @@ void CGameNetworkManager::Initialise()
 	ServerStoppedCreate( false );
 	ServerReadyCreate( false );
 	int flagIndexSize = LevelRenderer::getGlobalChunkCount() / (Level::maxBuildHeight / 16);		// dividing here by number of renderer chunks in one column
-#ifdef _XBOX
-	s_pPlatformNetworkManager = new CPlatformNetworkManagerXbox();
-#elif defined __PS3__ || defined __ORBIS__ || defined __PSVITA__
-	s_pPlatformNetworkManager = new CPlatformNetworkManagerSony();
-#elif defined _DURANGO
-	s_pPlatformNetworkManager = new CPlatformNetworkManagerDurango();
-#else
 	s_pPlatformNetworkManager = new CPlatformNetworkManagerStub();
-#endif
 	s_pPlatformNetworkManager->Initialise( this, flagIndexSize );		
 	m_bNetworkThreadRunning = false;
 	m_bInitialised = true;
@@ -89,59 +70,8 @@ void CGameNetworkManager::Terminate()
 
 void CGameNetworkManager::DoWork()
 {
-#ifdef _XBOX
-	// did we get any notifications from the game listener?
-	if(app.GetNotifications()->size()!=0)
-	{
-		PNOTIFICATION pNotification=app.GetNotifications()->back();
-
-		switch(pNotification->dwNotification)
-		{
-		case XN_LIVE_LINK_STATE_CHANGED:
-			{
-				int iPrimaryPlayer = g_NetworkManager.GetPrimaryPad();
-				bool bConnected	= (pNotification->uiParam!=0)?true:false;
-				if((g_NetworkManager.GetLockedProfile()!=-1) && iPrimaryPlayer!=-1 && bConnected == false && g_NetworkManager.IsInSession() )
-				{
-					app.SetAction(iPrimaryPlayer,eAppAction_EthernetDisconnected);
-				}		
-			}
-			break;
-		case XN_LIVE_INVITE_ACCEPTED:
-			s_pPlatformNetworkManager->Notify(pNotification->dwNotification,pNotification->uiParam);
-			break;
-		}
-
-		app.GetNotifications()->pop_back();
-		delete pNotification;
-	}
-#endif
 	s_pPlatformNetworkManager->DoWork();
 
-#ifdef __ORBIS__
-	if (m_pUpsell != NULL && m_pUpsell->hasResponse())
-	{
-		int iPad_invited = m_iPlayerInvited, iPad_checking = m_pUpsell->m_userIndex;
-
-		m_iPlayerInvited = -1;
-
-		delete m_pUpsell;
-		m_pUpsell = NULL;
-
-		if (ProfileManager.HasPlayStationPlus(iPad_checking))
-		{
-			this->GameInviteReceived(iPad_invited, m_pInviteInfo);
-
-			// m_pInviteInfo deleted by GameInviteReceived.
-			m_pInviteInfo = NULL;
-		}
-		else
-		{
-			delete m_pInviteInfo;
-			m_pInviteInfo = NULL;
-		}
-	}
-#endif
 }
 
 bool CGameNetworkManager::_RunNetworkGame(LPVOID lpParameter)
@@ -184,9 +114,6 @@ bool CGameNetworkManager::_RunNetworkGame(LPVOID lpParameter)
 
 bool	CGameNetworkManager::StartNetworkGame(Minecraft *minecraft, LPVOID lpParameter)
 {
-#ifdef _DURANGO
-	ProfileManager.SetDeferredSignoutEnabled(true);
-#endif
 
 	__int64 seed = 0;
 	if(lpParameter != NULL)
@@ -217,9 +144,6 @@ bool	CGameNetworkManager::StartNetworkGame(Minecraft *minecraft, LPVOID lpParame
 		ServerReadyCreate(true);
 		// Ready to go - create actual networking thread & start hosting
 		C4JThread* thread = new C4JThread(&CGameNetworkManager::ServerThreadProc, lpParameter, "Server", 256 * 1024);
-#if defined __PS3__ || defined __PSVITA__
-		thread->SetPriority(THREAD_PRIORITY_BELOW_NORMAL);
-#endif //__PS3__
 
 		thread->SetProcessor(CPU_CORE_SERVER);
 		thread->Run();
@@ -237,7 +161,6 @@ bool	CGameNetworkManager::StartNetworkGame(Minecraft *minecraft, LPVOID lpParame
 		Socket::Initialise(NULL);
 	}
 
-#ifndef _XBOX
 	Minecraft *pMinecraft = Minecraft::GetInstance();	
 	// Make sure that we have transitioned through any joining/creating stages and are actually playing the game, so that we know the players should be valid
 	bool changedMessage = false;
@@ -252,7 +175,6 @@ bool	CGameNetworkManager::StartNetworkGame(Minecraft *minecraft, LPVOID lpParame
 	{
 		pMinecraft->progressRenderer->progressStagePercentage( 100 );
 	}
-#endif
 
 	// If we aren't in session, then something bad must have happened - we aren't joining, creating or ready play
 	if(!IsInSession() )
@@ -423,12 +345,8 @@ bool	CGameNetworkManager::StartNetworkGame(Minecraft *minecraft, LPVOID lpParame
 				// The connections should tick at 20 per second
 				Sleep(50);
 				app.DebugPrintf("<***> %d %d %d %d %d\n",IsInSession(), !connection->isStarted(),!connection->isClosed(),ProfileManager.IsSignedIn(idx),!g_NetworkManager.IsLeavingGame());
-#if defined _XBOX || __PS3__
-			} while (IsInSession() && !connection->isStarted() && !connection->isClosed() && ProfileManager.IsSignedIn(idx) && !g_NetworkManager.IsLeavingGame() );
-#else
 				// TODO - This SHOULD be something just like the code above but temporarily changing here so that we don't have to depend on the profilemanager behaviour
 			} while (IsInSession() && !connection->isStarted() && !connection->isClosed() && !g_NetworkManager.IsLeavingGame() );
-#endif
 
 			// 4J Stu - Fix for #11279 - CRASH: TCR 001: BAS Game Stability: Signing out of game will cause title to crash
 			// We need to break out of the above loop if m_bLeavingGame is set, and stop creating new connections
@@ -527,12 +445,6 @@ INetworkPlayer *CGameNetworkManager::GetPlayerBySmallId(unsigned char smallId)
 	return s_pPlatformNetworkManager->GetPlayerBySmallId( smallId );
 }
 
-#ifdef _DURANGO
-wstring CGameNetworkManager::GetDisplayNameByGamertag(wstring gamertag)
-{
-	return s_pPlatformNetworkManager->GetDisplayNameByGamertag(gamertag);
-}
-#endif
 
 INetworkPlayer *CGameNetworkManager::GetHostPlayer()
 {
@@ -670,9 +582,6 @@ CGameNetworkManager::eJoinGameResult CGameNetworkManager::JoinGame(FriendSession
 
 void CGameNetworkManager::CancelJoinGame(LPVOID lpParam)
 {
-#ifdef _XBOX_ONE
-	s_pPlatformNetworkManager->CancelJoinGame();
-#endif
 }
 
 bool CGameNetworkManager::LeaveGame(bool bMigrateHost)
@@ -687,18 +596,6 @@ int CGameNetworkManager::JoinFromInvite_SignInReturned(void *pParam,bool bContin
 
 	if(bContinue==true)
 	{
-#ifdef __ORBIS__
-		// Check if PSN is unavailable because of age restriction
-		int npAvailability = ProfileManager.getNPAvailability(iPad);
-		if (npAvailability == SCE_NP_ERROR_AGE_RESTRICTION)
-		{
-			UINT uiIDA[1];
-			uiIDA[0] = IDS_OK;
-			ui.RequestMessageBox(IDS_ONLINE_SERVICE_TITLE, IDS_CONTENT_RESTRICTION, uiIDA, 1, iPad, NULL, NULL, app.GetStringTable());
-
-			return 0;
-		}
-#endif
 
 		app.DebugPrintf("JoinFromInvite_SignInReturned, iPad %d\n",iPad);
 		// It's possible that the player has not signed in - they can back out
@@ -721,11 +618,6 @@ int CGameNetworkManager::JoinFromInvite_SignInReturned(void *pParam,bool bContin
 
 			// Check if user-created content is allowed, as we cannot play multiplayer if it's not
 			bool noUGC = false;
-#if defined(__PS3__) || defined(__PSVITA__)
-			ProfileManager.GetChatAndContentRestrictions(iPad,false,&noUGC,NULL,NULL);
-#elif defined(__ORBIS__)
-			ProfileManager.GetChatAndContentRestrictions(iPad,false,NULL,&noUGC,NULL);
-#endif
 
 			if(noUGC)
 			{
@@ -742,14 +634,6 @@ int CGameNetworkManager::JoinFromInvite_SignInReturned(void *pParam,bool bContin
 			}
 			else
 			{
-#if defined(__ORBIS__) || defined(__PSVITA__)
-				bool chatRestricted = false;
-				ProfileManager.GetChatAndContentRestrictions(iPad,false,&chatRestricted,NULL,NULL);
-				if(chatRestricted)
-				{
-					ProfileManager.DisplaySystemMessage( 0, ProfileManager.GetPrimaryPad() );
-				}
-#endif
 				ProfileManager.SetLockedProfile(iPad);
 				ProfileManager.SetPrimaryPad(iPad);
 
@@ -838,10 +722,6 @@ int CGameNetworkManager::RunNetworkGameThreadProc( void* lpParameter )
 		return -1;
 	}
 
-#ifdef __PSVITA__
-	// 4J-JEV: Wait for the loading/saving to finish.
-	while (StorageManager.GetSaveState() != C4JStorage::ESaveGame_Idle)	Sleep(10);
-#endif
 
 	Tile::ReleaseThreadStorage();
 	IntCache::ReleaseThreadStorage();
@@ -890,9 +770,7 @@ int	CGameNetworkManager::ExitAndJoinFromInviteThreadProc( void* lpParam )
 
 	//app.SetGameStarted(false);
 
-#ifndef __PSVITA__
 	UIScene_PauseMenu::_ExitWorld(NULL);
-#endif
 
 	while( g_NetworkManager.IsInSession() )
 	{
@@ -900,136 +778,12 @@ int	CGameNetworkManager::ExitAndJoinFromInviteThreadProc( void* lpParam )
 	}
 
 	// Xbox should always be online when receiving invites - on PS3 we need to check & ask the user to sign in
-#ifndef __PS3__
 	JoinFromInviteData *inviteData = (JoinFromInviteData *)lpParam;
 	app.SetAction(inviteData->dwUserIndex, eAppAction_JoinFromInvite, lpParam);
-#else
-	if(ProfileManager.IsSignedInLive(ProfileManager.GetPrimaryPad()))
-	{
-		JoinFromInviteData *inviteData = (JoinFromInviteData *)lpParam;
-		app.SetAction(inviteData->dwUserIndex, eAppAction_JoinFromInvite, lpParam);
-	}
-	else
-	{
-		UINT uiIDA[2];
-		uiIDA[0]=IDS_PRO_NOTONLINE_ACCEPT;
-		uiIDA[1]=IDS_PRO_NOTONLINE_DECLINE;
-		ui.RequestMessageBox(IDS_PRO_NOTONLINE_TITLE, IDS_PRO_NOTONLINE_TEXT, uiIDA, 2, ProfileManager.GetPrimaryPad(),&CGameNetworkManager::MustSignInReturned_0,lpParam, app.GetStringTable());
-	}
-#endif
 
 	return S_OK;
 }
 
-#if defined __PS3__ || defined __PSVITA__ || defined __ORBIS__
-// This case happens when we have been returned from the game to the main menu after receiving an invite and are now trying to go back in to join the new game
-// The pair of methods MustSignInReturned_0 & PSNSignInReturned_0 handle this
-int	CGameNetworkManager::MustSignInReturned_0(void *pParam,int iPad,C4JStorage::EMessageResult result)
-{
-	if(result==C4JStorage::EMessage_ResultAccept) 
-	{
-#ifdef __PS3__
-		SQRNetworkManager_PS3::AttemptPSNSignIn(&CGameNetworkManager::PSNSignInReturned_0, pParam,true);
-#elif defined __PSVITA__
-		SQRNetworkManager_Vita::AttemptPSNSignIn(&CGameNetworkManager::PSNSignInReturned_0, pParam,true);
-#elif defined __ORBIS__
-		SQRNetworkManager_Orbis::AttemptPSNSignIn(&CGameNetworkManager::PSNSignInReturned_0, pParam,true);
-#endif
-	}
-	else
-	{
-		app.SetAction(0,eAppAction_Idle);
-		ui.NavigateToHomeMenu();
-		ui.UpdatePlayerBasePositions();
-	}
-
-	return 0;
-}
-
-int CGameNetworkManager::PSNSignInReturned_0(void* pParam, bool bContinue, int iPad)
-{
-	JoinFromInviteData *inviteData = (JoinFromInviteData *)pParam;
-
-	// If the invite data isn't set up yet (indicated by it being all zeroes, easiest detected via the net version), then try and get it again... this can happen if we got
-	// the invite whilst signed out
-
-	if( bContinue )
-	{
-		if(inviteData->pInviteInfo->netVersion == 0)
-		{
-#if defined __PS3__ || defined __VITA__
-			if(!SQRNetworkManager_PS3::UpdateInviteData((SQRNetworkManager::PresenceSyncInfo *)inviteData->pInviteInfo))
-			{
-				bContinue = false;
-			}
-#elif defined __ORBIS__
-			// TODO: No Orbis equivalent (should there be?)
-#endif
-		}
-	}
-
-	if( bContinue )
-	{
-		app.SetAction(inviteData->dwUserIndex, eAppAction_JoinFromInvite, pParam);
-	}
-	else
-	{
-		app.SetAction(inviteData->dwUserIndex,eAppAction_Idle);
-		ui.NavigateToHomeMenu();
-		ui.UpdatePlayerBasePositions();
-	}
-
-	return 0;
-}
-
-// This case happens when we were in the main menus when we got an invite, and weren't signed in... now can proceed with the normal flow of code for this situation
-// The pair of methods MustSignInReturned_1 & PSNSignInReturned_1 handle this
-int	CGameNetworkManager::MustSignInReturned_1(void *pParam,int iPad,C4JStorage::EMessageResult result)
-{
-	if(result==C4JStorage::EMessage_ResultAccept) 
-	{
-#ifdef __PS3__
-		SQRNetworkManager_PS3::AttemptPSNSignIn(&CGameNetworkManager::PSNSignInReturned_1, pParam,true);
-#elif defined __PSVITA__
-		SQRNetworkManager_Vita::AttemptPSNSignIn(&CGameNetworkManager::PSNSignInReturned_1, pParam,true);
-#elif defined __ORBIS__
-		SQRNetworkManager_Orbis::AttemptPSNSignIn(&CGameNetworkManager::PSNSignInReturned_1, pParam,true);
-#endif
-	}
-	return 0;
-}
-
-int CGameNetworkManager::PSNSignInReturned_1(void* pParam, bool bContinue, int iPad)
-{
-	INVITE_INFO *inviteInfo = (INVITE_INFO *)pParam;
-
-	// If the invite data isn't set up yet (indicated by it being all zeroes, easiest detected via the net version), then try and get it again... this can happen if we got
-	// the invite whilst signed out
-
-	if( bContinue )
-	{
-		if(inviteInfo->netVersion == 0)
-		{
-#if defined __PS3__ || defined __VITA__
-			if(!SQRNetworkManager_PS3::UpdateInviteData((SQRNetworkManager::PresenceSyncInfo *)inviteInfo))
-			{
-				bContinue = false;
-			}
-#elif defined __ORBIS__
-			// TODO: No Orbis equivalent (should there be?)
-#endif
-			
-		}
-	}
-
-	if( bContinue )
-	{
-		g_NetworkManager.HandleInviteWhenInMenus(0, inviteInfo);
-	}
-
-	return 0;
-}
-#endif
 
 void CGameNetworkManager::_LeaveGame()
 {
@@ -1046,47 +800,8 @@ int CGameNetworkManager::ChangeSessionTypeThreadProc( void* lpParam )
 	Minecraft *pMinecraft = Minecraft::GetInstance();	
 	MinecraftServer *pServer = MinecraftServer::getInstance();
 
-#if defined(__PS3__) || defined(__ORBIS__) || defined __PSVITA__
-	UINT uiIDA[1];
-	uiIDA[0]=IDS_CONFIRM_OK;
-	if( g_NetworkManager.m_bLastDisconnectWasLostRoomOnly )
-	{
-		if(g_NetworkManager.m_bSignedOutofPSN)
-		{
-			C4JStorage::EMessageResult result = ui.RequestMessageBox( IDS_PROGRESS_CONVERTING_TO_OFFLINE_GAME, IDS_ERROR_PSN_SIGN_OUT, uiIDA,1,ProfileManager.GetPrimaryPad());
-		}
-		else
-		{
-			C4JStorage::EMessageResult result = ui.RequestMessageBox( IDS_ERROR_NETWORK_TITLE, IDS_PROGRESS_CONVERTING_TO_OFFLINE_GAME, uiIDA,1,ProfileManager.GetPrimaryPad());
-		}
-	}
-	else
-	{
-		C4JStorage::EMessageResult result = ui.RequestMessageBox( IDS_CONNECTION_LOST, g_NetworkManager.CorrectErrorIDS(IDS_CONNECTION_LOST_LIVE_NO_EXIT), uiIDA,1,ProfileManager.GetPrimaryPad());
-	}
-
-	// Swap these two messages around as one is too long to display at 480
-	pMinecraft->progressRenderer->progressStartNoAbort( IDS_PROGRESS_CONVERTING_TO_OFFLINE_GAME );
-	pMinecraft->progressRenderer->progressStage( -1 ); //g_NetworkManager.CorrectErrorIDS(IDS_CONNECTION_LOST_LIVE_NO_EXIT) );
-#elif defined(_XBOX_ONE)
-	if( g_NetworkManager.m_bFullSessionMessageOnNextSessionChange )
-	{
-		UINT uiIDA[1];
-		uiIDA[0]=IDS_CONFIRM_OK;
-		C4JStorage::EMessageResult result = ui.RequestMessageBox( IDS_PROGRESS_CONVERTING_TO_OFFLINE_GAME, IDS_IN_PARTY_SESSION_FULL, uiIDA,1,ProfileManager.GetPrimaryPad());
-		pMinecraft->progressRenderer->progressStartNoAbort( IDS_PROGRESS_CONVERTING_TO_OFFLINE_GAME );
-		pMinecraft->progressRenderer->progressStage(  -1 );
-	}
-	else
-	{
-		pMinecraft->progressRenderer->progressStartNoAbort( g_NetworkManager.CorrectErrorIDS(IDS_CONNECTION_LOST_LIVE_NO_EXIT) );
-		pMinecraft->progressRenderer->progressStage( IDS_PROGRESS_CONVERTING_TO_OFFLINE_GAME );
-	}
-	
-#else
 	pMinecraft->progressRenderer->progressStartNoAbort( g_NetworkManager.CorrectErrorIDS(IDS_CONNECTION_LOST_LIVE_NO_EXIT) );
 	pMinecraft->progressRenderer->progressStage( IDS_PROGRESS_CONVERTING_TO_OFFLINE_GAME );
-#endif
 
 	while( app.GetXuiServerAction(ProfileManager.GetPrimaryPad() ) != eXuiServerAction_Idle && !MinecraftServer::serverHalted() )
 	{
@@ -1097,36 +812,11 @@ int CGameNetworkManager::ChangeSessionTypeThreadProc( void* lpParam )
 	// wait for the server to be in a non-ticking state
 	pServer->m_serverPausedEvent->WaitForSignal(INFINITE);
 	
-#if defined(__PS3__) || defined(__ORBIS__) || defined __PSVITA__
-	// Swap these two messages around as one is too long to display at 480
-	pMinecraft->progressRenderer->progressStartNoAbort( IDS_PROGRESS_CONVERTING_TO_OFFLINE_GAME );
-	pMinecraft->progressRenderer->progressStage( -1 ); //g_NetworkManager.CorrectErrorIDS(IDS_CONNECTION_LOST_LIVE_NO_EXIT) );
-#elif defined(_XBOX_ONE)
-	if( g_NetworkManager.m_bFullSessionMessageOnNextSessionChange )
-	{
-		pMinecraft->progressRenderer->progressStartNoAbort( IDS_PROGRESS_CONVERTING_TO_OFFLINE_GAME );
-		pMinecraft->progressRenderer->progressStage( -1 );
-	}
-	else
-	{
-		pMinecraft->progressRenderer->progressStartNoAbort( g_NetworkManager.CorrectErrorIDS(IDS_CONNECTION_LOST_LIVE_NO_EXIT) );
-		pMinecraft->progressRenderer->progressStage( IDS_PROGRESS_CONVERTING_TO_OFFLINE_GAME );
-	}
-#else
 	pMinecraft->progressRenderer->progressStartNoAbort( g_NetworkManager.CorrectErrorIDS(IDS_CONNECTION_LOST_LIVE_NO_EXIT) );
 	pMinecraft->progressRenderer->progressStage( IDS_PROGRESS_CONVERTING_TO_OFFLINE_GAME );
-#endif
 
 	pMinecraft->progressRenderer->progressStagePercentage(25);
 
-#ifdef _XBOX_ONE
-	// wait for any players that were being added, to finish doing this. On XB1, if we don't do this then there's an async thread running doing this,
-	// which could then finish at any inappropriate time later
-	while( s_pPlatformNetworkManager->IsAddingPlayer() )
-	{
-		Sleep(1);
-	}
-#endif
 
 	// Null the network player of all the server players that are local, to stop them being removed from the server when removed from the session
 	if( pServer != NULL )
@@ -1221,23 +911,19 @@ int CGameNetworkManager::ChangeSessionTypeThreadProc( void* lpParam )
 	
 	pMinecraft->progressRenderer->progressStagePercentage(100);
 
-#ifndef _XBOX
 	// Make sure that we have transitioned through any joining/creating stages so we're actually ready to set to play
 	while(!s_pPlatformNetworkManager->IsReadyToPlayOrIdle())
 	{
 		Sleep(10);
 	}
-#endif
 
 	s_pPlatformNetworkManager->_StartGame();
 
-#ifndef _XBOX
 	// Wait until the message box has been closed
 	while(ui.IsSceneInStack(XUSER_INDEX_ANY, eUIScene_MessageBox))
 	{
 		Sleep(10);
 	}
-#endif
 
 	// Start the game again
 	app.SetGameStarted(true);				
@@ -1266,15 +952,6 @@ wstring CGameNetworkManager::GatherStats()
 
 void CGameNetworkManager::renderQueueMeter()
 {
-#ifdef _XBOX
-	int height = 720;
-
-	CGameNetworkManager::byteQueue[(CGameNetworkManager::messageQueuePos) & (CGameNetworkManager::messageQueue_length - 1)] = GetHostPlayer()->GetSendQueueSizeBytes(NULL, false);
-	CGameNetworkManager::messageQueue[(CGameNetworkManager::messageQueuePos++) & (CGameNetworkManager::messageQueue_length - 1)] = GetHostPlayer()->GetSendQueueSizeMessages(NULL, false);
-
-	Minecraft *pMinecraft = Minecraft::GetInstance();
-	pMinecraft->gui->renderGraph(CGameNetworkManager::messageQueue_length, CGameNetworkManager::messageQueuePos, CGameNetworkManager::messageQueue, 10, 1000, CGameNetworkManager::byteQueue, 100, 25000);
-#endif
 }
 
 wstring CGameNetworkManager::GatherRTTStats()
@@ -1326,9 +1003,6 @@ void CGameNetworkManager::StateChange_JoiningToIdle(CPlatformNetworkManager::eJo
 
 void CGameNetworkManager::StateChange_AnyToStarting()
 {
-#if defined __PS3__ || defined __ORBIS__ || defined __PSVITA__
- 	app.getRemoteStorage()->shutdown();			// shut the remote storage lib down and hopefully get our 7mb back
-#endif
 
 	if(!g_NetworkManager.IsHost())
 	{
@@ -1484,21 +1158,6 @@ void CGameNetworkManager::PlayerJoining( INetworkPlayer *pNetworkPlayer )
     {
 		TelemetryManager->RecordPlayerSessionStart(pNetworkPlayer->GetUserIndex());
     }
-#ifdef _XBOX
-    else
-    {
-        if( !pNetworkPlayer->IsHost() )
-        {		
-			for(int idx = 0; idx < XUSER_MAX_COUNT; ++idx)
-			{
-				if(Minecraft::GetInstance()->localplayers[idx] != NULL)
-				{
-					TelemetryManager->RecordLevelStart(idx, eSen_FriendOrMatch_Playing_With_Invited_Friends, eSen_CompeteOrCoop_Coop_and_Competitive, Minecraft::GetInstance()->level->difficulty, app.GetLocalPlayerCount(), g_NetworkManager.GetOnlinePlayerCount());
-				}
-			}
-        }
-	}
-#endif
 }
 
 void CGameNetworkManager::PlayerLeaving( INetworkPlayer *pNetworkPlayer )
@@ -1509,18 +1168,6 @@ void CGameNetworkManager::PlayerLeaving( INetworkPlayer *pNetworkPlayer )
 
 		TelemetryManager->RecordPlayerSessionExit(pNetworkPlayer->GetUserIndex(), app.GetDisconnectReason());
 	}
-#ifdef _XBOX
-	else
-	{
-		for(int idx = 0; idx < XUSER_MAX_COUNT; ++idx)
-		{
-			if(Minecraft::GetInstance()->localplayers[idx] != NULL)
-			{
-				TelemetryManager->RecordLevelStart(idx, eSen_FriendOrMatch_Playing_With_Invited_Friends, eSen_CompeteOrCoop_Coop_and_Competitive, Minecraft::GetInstance()->level->difficulty, app.GetLocalPlayerCount(), g_NetworkManager.GetOnlinePlayerCount());
-			}
-		}
-	}
-#endif
 }
 
 void CGameNetworkManager::HostChanged()
@@ -1536,104 +1183,7 @@ void CGameNetworkManager::WriteStats( INetworkPlayer *pNetworkPlayer )
 
 void CGameNetworkManager::GameInviteReceived( int userIndex, const INVITE_INFO *pInviteInfo)
 {
-#ifdef __ORBIS__
-	if (m_pUpsell != NULL)
-	{
-		delete pInviteInfo;
-		return;
-	}
 
-	// Need to check we're signed in to PSN
-	bool isSignedInLive = true;		
-	bool isLocalMultiplayerAvailable = app.IsLocalMultiplayerAvailable();
-	int iPadNotSignedInLive = -1;
-	for(unsigned int i = 0; i < XUSER_MAX_COUNT; i++)
-	{
-		if (ProfileManager.IsSignedIn(i) && (i == ProfileManager.GetPrimaryPad() || isLocalMultiplayerAvailable))
-		{
-			if (isSignedInLive && !ProfileManager.IsSignedInLive(i))
-			{
-				// Record the first non signed in live pad
-				iPadNotSignedInLive = i;
-			}
-
-			isSignedInLive = isSignedInLive && ProfileManager.IsSignedInLive(i);
-		}
-	}
-
-	if (!isSignedInLive)
-	{
-		// Determine why they're not "signed in live"
-
-		// Check if PSN is unavailable because of age restriction
-		int npAvailability = ProfileManager.getNPAvailability(iPadNotSignedInLive);
-		if (npAvailability == SCE_NP_ERROR_AGE_RESTRICTION)
-		{
-			// 4J Stu - This is a bit messy and is due to the library incorrectly returning false for IsSignedInLive if the npAvailability isn't SCE_OK
-			UINT uiIDA[1];
-			uiIDA[0]=IDS_OK;
-			ui.RequestMessageBox(IDS_ONLINE_SERVICE_TITLE, IDS_CONTENT_RESTRICTION, uiIDA, 1, iPadNotSignedInLive, NULL, NULL, app.GetStringTable());
-		}
-		else if (ProfileManager.isSignedInPSN(iPadNotSignedInLive))
-		{
-			// Signed in to PSN but not connected (no internet access)
-			assert(!ProfileManager.isConnectedToPSN(iPadNotSignedInLive));
-
-			UINT uiIDA[1];
-			uiIDA[0] = IDS_OK;
-			ui.RequestMessageBox( IDS_ERROR_NETWORK_TITLE, IDS_ERROR_NETWORK, uiIDA, 1, iPadNotSignedInLive, NULL, NULL, app.GetStringTable());
-		}
-		else
-		{		
-			// Not signed in to PSN
-			UINT uiIDA[1];
-			uiIDA[0] = IDS_PRO_NOTONLINE_ACCEPT;
-			ui.RequestMessageBox( IDS_PRO_NOTONLINE_TITLE, IDS_PRO_NOTONLINE_TEXT, uiIDA, 1, iPadNotSignedInLive, &CGameNetworkManager::MustSignInReturned_1, (void *)pInviteInfo, app.GetStringTable(), NULL, 0, false);
-		}
-		return;
-	}
-
-	// 4J-JEV: Check that all players are authorised for PsPlus, present upsell to players that aren't and try again.
-	for (unsigned int index = 0; index < XUSER_MAX_COUNT; index++)
-	{
-		if (	 ProfileManager.IsSignedIn(index)
-			&&	!ProfileManager.HasPlayStationPlus(userIndex) )
-		{
-			m_pInviteInfo = (INVITE_INFO *) pInviteInfo;
-			m_iPlayerInvited = userIndex;
-			
-			m_pUpsell = new PsPlusUpsellWrapper(index);
-			m_pUpsell->displayUpsell();
-			
-			return;
-		}
-	}
-#endif
-
-#ifdef __PSVITA__
-	// Need to check we're signed in to PSN
-	bool isSignedInLive = ProfileManager.IsSignedInLive(ProfileManager.GetPrimaryPad());		
-	if (!isSignedInLive)
-	{
-		// Determine why they're not "signed in live"
-		// MGH - we need to add a new message at some point for connecting when already signed in
-// 		if (ProfileManager.IsSignedInPSN(ProfileManager.GetPrimaryPad()))
-// 		{
-// 			// Signed in to PSN but not connected (no internet access)
-// 			UINT uiIDA[1];
-// 			uiIDA[0] = IDS_OK;
-// 			ui.RequestMessageBox( IDS_ERROR_NETWORK_TITLE, IDS_ERROR_NETWORK, uiIDA, 1, ProfileManager.GetPrimaryPad(), NULL, NULL, app.GetStringTable());
-// 		}
-// 		else
-		{		
-			// Not signed in to PSN
-			UINT uiIDA[1];
-			uiIDA[0] = IDS_PRO_NOTONLINE_ACCEPT;
-			ui.RequestMessageBox( IDS_PRO_NOTONLINE_TITLE, IDS_PRO_NOTONLINE_TEXT, uiIDA, 1, ProfileManager.GetPrimaryPad(), &CGameNetworkManager::MustSignInReturned_1, (void *)pInviteInfo, app.GetStringTable(), NULL, 0, false);
-		}
-		return;
-	}
-#endif
 
 
 	int localUsersMask = 0;
@@ -1661,24 +1211,9 @@ void CGameNetworkManager::GameInviteReceived( int userIndex, const INVITE_INFO *
 	bool bContentRestricted=false;
 	BOOL pccAllowed = TRUE;
 	BOOL pccFriendsAllowed = TRUE;
-#if defined(__PS3__) || defined(__PSVITA__)
-	ProfileManager.GetChatAndContentRestrictions(userIndex,false,&noUGC,&bContentRestricted,NULL);
-#else
 	ProfileManager.AllowedPlayerCreatedContent(ProfileManager.GetPrimaryPad(),false,&pccAllowed,&pccFriendsAllowed);
 	if(!pccAllowed && !pccFriendsAllowed) noUGC = true;
-#endif
 	
-#if defined(_XBOX) || defined(__PS3__)
-	if(joiningUsers > 1 && !RenderManager.IsHiDef() && userIndex != ProfileManager.GetPrimaryPad())
-	{
-		UINT uiIDA[1];
-		uiIDA[0]=IDS_CONFIRM_OK;
-
-		// 4J-PB - it's possible there is no primary pad here, when accepting an invite from the dashboard
-		ui.RequestMessageBox( IDS_CONNECTION_FAILED, IDS_CONNECTION_FAILED_NO_SD_SPLITSCREEN, uiIDA,1,XUSER_INDEX_ANY,NULL,NULL, app.GetStringTable());
-	}
-	else
-#endif
 
 	if( noUGC )
 	{
@@ -1687,15 +1222,6 @@ void CGameNetworkManager::GameInviteReceived( int userIndex, const INVITE_INFO *
 
 		ui.RequestUGCMessageBox(IDS_CONNECTION_FAILED, messageText, XUSER_INDEX_ANY);
 	}
-#if defined(__PS3__) || defined __PSVITA__
-	else if(bContentRestricted)
-	{
-		int messageText = IDS_CONTENT_RESTRICTION;
-		if(joiningUsers > 1) messageText = IDS_CONTENT_RESTRICTION_MULTIPLAYER;
-
-		ui.RequestContentRestrictedMessageBox(IDS_CONNECTION_FAILED, messageText, XUSER_INDEX_ANY);
-	}
-#endif
 	else if(noPrivileges)
 	{
 		UINT uiIDA[1];
@@ -1707,32 +1233,9 @@ void CGameNetworkManager::GameInviteReceived( int userIndex, const INVITE_INFO *
 	}
 	else
 	{
-#if defined(__ORBIS__) || defined(__PSVITA__)
-		bool chatRestricted = false;
-		ProfileManager.GetChatAndContentRestrictions(ProfileManager.GetPrimaryPad(),false,&chatRestricted,NULL,NULL);
-		if(chatRestricted)
-		{
-			ProfileManager.DisplaySystemMessage( SCE_MSG_DIALOG_SYSMSG_TYPE_TRC_PSN_CHAT_RESTRICTION, ProfileManager.GetPrimaryPad() );
-		}
-#endif
 		if( !g_NetworkManager.IsInSession() )
 		{	
-#ifndef __PS3__
 			HandleInviteWhenInMenus(userIndex, pInviteInfo);			
-#else
-			// PS3 is more complicated here - we need to make sure that the player is online. If they are then we can do the same as the xbox, if not we need to try and get them online and then, if they do sign in, go down the same path
-			if(ProfileManager.IsSignedInLive(ProfileManager.GetPrimaryPad()))
-			{
-				HandleInviteWhenInMenus(userIndex, pInviteInfo);
-			}
-			else
-			{
-				UINT uiIDA[2];
-				uiIDA[0]=IDS_PRO_NOTONLINE_ACCEPT;
-				uiIDA[1]=IDS_PRO_NOTONLINE_DECLINE;
-				ui.RequestMessageBox(IDS_PRO_NOTONLINE_TITLE, IDS_PRO_NOTONLINE_TEXT, uiIDA, 2, ProfileManager.GetPrimaryPad(),&CGameNetworkManager::MustSignInReturned_1,(void *)pInviteInfo, app.GetStringTable());
-			}
-#endif
 		}
 		else
 		{
@@ -1744,9 +1247,6 @@ void CGameNetworkManager::GameInviteReceived( int userIndex, const INVITE_INFO *
 // 			joinData->pInviteInfo = pInviteInfo;
 
 			// tell the app to process this
-#ifdef __PSVITA__
-			if(((CPlatformNetworkManagerSony*)s_pPlatformNetworkManager)->checkValidInviteData(pInviteInfo))
-#endif
 			{
 				app.ProcessInvite(userIndex,localUsersMask,pInviteInfo);
 			}
@@ -1826,16 +1326,12 @@ void CGameNetworkManager::HandleInviteWhenInMenus( int userIndex, const INVITE_I
 		else
 		{
 			// the FromInvite will make the lib decide how many panes to display based on connected pads/signed in players
-#ifdef _XBOX
-			ProfileManager.RequestSignInUI(true, false, false, false, false,&CGameNetworkManager::JoinFromInvite_SignInReturned, (LPVOID)pInviteInfo,userIndex);
-#else
 			SignInInfo info;
 			info.Func = &CGameNetworkManager::JoinFromInvite_SignInReturned;
 			info.lpParam = (LPVOID)pInviteInfo;
 			info.requireOnline = true;
 			app.DebugPrintf("Using fullscreen layer\n");
 			ui.NavigateToScene(ProfileManager.GetPrimaryPad(),eUIScene_QuadrantSignin,&info,eUILayer_Alert,eUIGroup_Fullscreen);
-#endif
 		}
 	}
 }
@@ -1845,20 +1341,13 @@ void CGameNetworkManager::AddLocalPlayerFailed(int idx, bool serverFull/* = fals
 	Minecraft::GetInstance()->connectionDisconnected(idx,  serverFull ? DisconnectPacket::eDisconnect_ServerFull : DisconnectPacket::eDisconnect_ConnectionCreationFailed);
 }
 
-#if defined __PS3__ || defined __PSVITA__ || defined __ORBIS__
-void CGameNetworkManager::HandleDisconnect(bool bLostRoomOnly,bool bPSNSignout)
-#else
 void CGameNetworkManager::HandleDisconnect(bool bLostRoomOnly)
-#endif
 {
 	int iPrimaryPlayer = g_NetworkManager.GetPrimaryPad();
 
 	if((g_NetworkManager.GetLockedProfile()!=-1) && iPrimaryPlayer!=-1 && g_NetworkManager.IsInSession() )
 	{
 		m_bLastDisconnectWasLostRoomOnly = bLostRoomOnly;
-#if defined __PS3__ || defined __PSVITA__ || defined __ORBIS__
-		m_bSignedOutofPSN=bPSNSignout;
-#endif
 		app.SetAction(iPrimaryPlayer,eAppAction_EthernetDisconnected);
 	}
 	else
@@ -1938,9 +1427,7 @@ void CGameNetworkManager::ServerStoppedWait()
 		int result = WAIT_TIMEOUT;
 		do
 		{
-#ifndef _XBOX
 			RenderManager.StartFrame();
-#endif
 			result = m_hServerStoppedEvent->WaitForSignal(20);
 			// Tick some simple things
 			ProfileManager.Tick();
@@ -1974,27 +1461,7 @@ int CGameNetworkManager::GetJoiningReadyPercentage()
 	return s_pPlatformNetworkManager->GetJoiningReadyPercentage();
 }
 
-#ifndef _XBOX
 void CGameNetworkManager::FakeLocalPlayerJoined()
 {
 	s_pPlatformNetworkManager->FakeLocalPlayerJoined();
 }
-#endif
-
-#ifdef __PSVITA__
-bool CGameNetworkManager::usingAdhocMode()
-{
-	return ((CPlatformNetworkManagerSony*)s_pPlatformNetworkManager)->usingAdhocMode();
-}
-
-void CGameNetworkManager::setAdhocMode(bool bAdhoc)
-{
-	((CPlatformNetworkManagerSony*)s_pPlatformNetworkManager)->setAdhocMode(bAdhoc);
-}
-
-void CGameNetworkManager::startAdhocMatching()
-{
-	((CPlatformNetworkManagerSony*)s_pPlatformNetworkManager)->startAdhocMatching();
-}
-
-#endif

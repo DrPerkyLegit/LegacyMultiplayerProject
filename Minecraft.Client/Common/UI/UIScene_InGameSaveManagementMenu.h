@@ -8,9 +8,6 @@ private:
 	enum EControls
 	{
 		eControl_SavesList,
-#if defined(_XBOX_ONE) || defined(__ORBIS__)
-		eControl_SpaceIndicator,
-#endif
 	};
 
 	enum EState
@@ -29,9 +26,6 @@ protected:
 	UIControl_SaveList m_buttonListSaves;
 	UIControl_Label m_labelSavesListTitle;
 	UIControl m_controlSavesTimer;
-#if defined(_XBOX_ONE) || defined(__ORBIS__)
-	UIControl_SpaceIndicatorBar m_spaceIndicatorSaves;
-#endif
 
 private:
 	UI_BEGIN_MAP_ELEMENTS_AND_NAMES(UIScene)		
@@ -41,9 +35,6 @@ private:
 
 		UI_MAP_ELEMENT( m_controlSavesTimer, "SavesTimer")
 
-#if defined(_XBOX_ONE) || defined(__ORBIS__)
-		UI_MAP_ELEMENT( m_spaceIndicatorSaves, "SaveSizeBar")
-#endif
 	UI_END_MAP_ELEMENTS_AND_NAMES()
 
 	int m_iState;

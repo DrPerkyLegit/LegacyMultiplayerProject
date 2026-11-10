@@ -29,9 +29,7 @@ private:
 	UIControl_TextInput m_editWorldName, m_editSeed;
 	UIControl_Slider m_sliderDifficulty;
 	
-#if defined _XBOX_ONE || defined __ORBIS__ || defined _WINDOWS64
 	UIControl_CheckBox m_checkboxOnline;
-#endif
 
 	UIControl_BitmapIcon m_bitmapIcon, m_bitmapComparison;
 
@@ -46,9 +44,7 @@ private:
 			UI_MAP_ELEMENT( m_texturePackList, "TexturePackSelector")
 			UI_MAP_ELEMENT( m_buttonGamemode, "GameModeToggle")
 			
-#if defined _XBOX_ONE || defined __ORBIS__ || defined _WINDOWS64
 			UI_MAP_ELEMENT( m_checkboxOnline, "CheckboxOnline")
-#endif
 			UI_MAP_ELEMENT( m_buttonMoreOptions, "MoreOptions")
 			UI_MAP_ELEMENT( m_buttonCreateWorld, "NewWorld")
 			UI_MAP_ELEMENT( m_sliderDifficulty, "Difficulty")
@@ -91,9 +87,6 @@ private:
 	void StartSharedLaunchFlow();
 	bool IsLocalMultiplayerAvailable();
 
-#ifdef _DURANGO
-	static void checkPrivilegeCallback(LPVOID lpParam, bool hasPrivilege, int iPad);
-#endif
 
 protected:
 	static int KeyboardCompleteWorldNameCallback(LPVOID lpParam,const bool bRes);
@@ -106,10 +99,6 @@ protected:
 	static int StartGame_SignInReturned(void *pParam,bool bContinue, int iPad);
 	static int MustSignInReturnedPSN(void *pParam,int iPad,C4JStorage::EMessageResult result);
 
-#ifdef __ORBIS__
-	//static int PSPlusReturned(void *pParam,int iPad,C4JStorage::EMessageResult result);
-	static int ContinueOffline(void *pParam,int iPad,C4JStorage::EMessageResult result);
-#endif
 
 	virtual void checkStateAndStartGame();
 };

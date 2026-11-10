@@ -118,9 +118,6 @@ UIScene_LaunchMoreOptionsMenu::UIScene_LaunchMoreOptionsMenu(int iPad, void *ini
 
 	addTimer(GAME_CREATE_ONLINE_TIMER_ID,GAME_CREATE_ONLINE_TIMER_TIME);
 
-#ifdef __PSVITA__
-	ui.TouchBoxRebuild(this);
-#endif
 
 	m_bIgnoreInput = false;
 	m_tabIndex = 0;
@@ -190,14 +187,8 @@ void UIScene_LaunchMoreOptionsMenu::tick()
 
 void UIScene_LaunchMoreOptionsMenu::handleDestroy()
 {
-#ifdef __PSVITA__
-	app.DebugPrintf("missing InputManager.DestroyKeyboard on Vita !!!!!!\n");
-#endif
 
 	// so shut down the keyboard if it is displayed
-#if ( defined __PS3__ || defined __ORBIS__ || defined _DURANGO)
-	InputManager.DestroyKeyboard();
-#endif
 }
 
 void UIScene_LaunchMoreOptionsMenu::handleInput(int iPad, int key, bool repeat, bool pressed, bool released, bool &handled)
@@ -217,20 +208,7 @@ void UIScene_LaunchMoreOptionsMenu::handleInput(int iPad, int key, bool repeat, 
 		}
 		break;
 	case ACTION_MENU_OK:
-#ifdef __ORBIS__
-	case ACTION_MENU_TOUCHPAD_PRESS:
-#endif
 		// 4J-JEV: Inform user why their game must be offline.
-#if defined _XBOX_ONE
-		{
-			UIControl_CheckBox *checkboxOnline = &m_checkboxes[eLaunchCheckbox_Online];
-			if ( pressed && controlHasFocus( checkboxOnline->getId()) && !checkboxOnline->IsEnabled() )
-			{
-				UINT uiIDA[1] = { IDS_CONFIRM_OK };
-				ui.RequestMessageBox(IDS_PRO_NOTONLINE_TITLE, IDS_PRO_XBOXLIVE_NOTIFICATION, uiIDA, 1, iPad, NULL, NULL, app.GetStringTable()); 
-			}
-		}
-#endif
 
 	case ACTION_MENU_UP:
 	case ACTION_MENU_DOWN:
@@ -423,23 +401,7 @@ void UIScene_LaunchMoreOptionsMenu::handlePress(F64 controlId, F64 childId)
 	case eControl_EditSeed:
 		{
 			m_bIgnoreInput=true;
-#ifdef __PS3__
-			int language = XGetLanguage();
-			switch(language)
-			{
-			case XC_LANGUAGE_JAPANESE:
-			case XC_LANGUAGE_KOREAN:
-			case XC_LANGUAGE_TCHINESE:
-				InputManager.RequestKeyboard(app.GetString(IDS_CREATE_NEW_WORLD_SEED),m_editSeed.getLabel(),(DWORD)0,60,&UIScene_LaunchMoreOptionsMenu::KeyboardCompleteSeedCallback,this,C_4JInput::EKeyboardMode_Default);
-				break;
-			default:
-				// 4J Stu - Use a different keyboard for non-asian languages so we don't have prediction on
-				InputManager.RequestKeyboard(app.GetString(IDS_CREATE_NEW_WORLD_SEED),m_editSeed.getLabel(),(DWORD)0,60,&UIScene_LaunchMoreOptionsMenu::KeyboardCompleteSeedCallback,this,C_4JInput::EKeyboardMode_Alphabet_Extended);
-				break;
-			}
-#else
 			InputManager.RequestKeyboard(app.GetString(IDS_CREATE_NEW_WORLD_SEED),m_editSeed.getLabel(),(DWORD)0,60,&UIScene_LaunchMoreOptionsMenu::KeyboardCompleteSeedCallback,this,C_4JInput::EKeyboardMode_Default);
-#endif
 		}
 		break;
 	}

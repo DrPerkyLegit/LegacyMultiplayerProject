@@ -19,12 +19,10 @@ const unsigned int PlayerRenderer::s_nametagColors[MINECRAFT_NET_MAX_PLAYERS] =
 	0xff33cc33, // GREEN
 	0xffcc3333, // RED
 	0xff3333cc, // BLUE
-#ifndef __PSVITA__		// only 4 player on Vita
 	0xffcc33cc, // PINK
 	0xffcc6633, // ORANGE
 	0xffcccc33, // YELLOW
 	0xff33dccc, // TURQUOISE
-#endif
 };
 
 const wstring PlayerRenderer::MATERIAL_NAMES[5] = { L"cloth", L"chain", L"iron", L"diamond", L"gold" };

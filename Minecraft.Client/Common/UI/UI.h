@@ -36,9 +36,6 @@
 #include "UIControl_EnchantmentBook.h"
 #include "UIControl_SpaceIndicatorBar.h"
 
-#ifdef __PSVITA__
-#include "UIControl_Touch.h"
-#endif
 
 #include "UIScene_HUD.h"
 #include "UIComponent_Panorama.h"
@@ -110,9 +107,6 @@
 #include "UIScene_InGameInfoMenu.h"
 #include "UIScene_InGameHostOptionsMenu.h"
 #include "UIScene_InGamePlayerOptionsMenu.h"
-#if defined(_XBOX_ONE) || defined(__ORBIS__)
-#include "UIScene_InGameSaveManagementMenu.h"
-#endif
 #include "UIScene_TeleportMenu.h"
 #include "UIScene_EndPoem.h"
 #include "UIScene_EULA.h"

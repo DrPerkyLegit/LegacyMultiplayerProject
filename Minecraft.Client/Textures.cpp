@@ -333,29 +333,6 @@ int Textures::loadTexture(int idx)
 void Textures::setTextureFormat(const wstring& resourceName)
 {
 	// 4J Stu - These texture formats are not currently in the render header
-#ifdef _XBOX
-	if(resourceName == L"/environment/clouds.png")
-	{
-		TEXTURE_FORMAT = C4JRender::TEXTURE_FORMAT_R1G1B1Ax;
-	}
-	else if(resourceName == L"%blur%/misc/pumpkinblur.png")
-	{
-		TEXTURE_FORMAT = C4JRender::TEXTURE_FORMAT_R0G0B0Ax;
-	}
-	else if(resourceName == L"%clamp%/misc/shadow.png")
-	{
-		TEXTURE_FORMAT = C4JRender::TEXTURE_FORMAT_R0G0B0Ax;
-	}
-	else if(resourceName == L"/environment/snow.png")
-	{
-		TEXTURE_FORMAT = C4JRender::TEXTURE_FORMAT_RxGxBxAx;
-	}
-	else if(resourceName == L"/1_2_2/misc/explosion.png")
-	{
-		TEXTURE_FORMAT = C4JRender::TEXTURE_FORMAT_RxGxBxAx;
-	}
-	else
-#endif
 	{
 		TEXTURE_FORMAT = C4JRender::TEXTURE_FORMAT_RxGyBzAw;
 	}
@@ -547,17 +524,10 @@ void Textures::loadTexture(BufferedImage *img, int id, bool blur, bool clamp)
         int g = (rawPixels[i] >> 8) & 0xff;
         int b = (rawPixels[i]) & 0xff;
 
-#ifdef _XBOX
-        newPixels[i * 4 + 0] = (byte) a;
-        newPixels[i * 4 + 1] = (byte) r;
-        newPixels[i * 4 + 2] = (byte) g;
-        newPixels[i * 4 + 3] = (byte) b;
-#else
         newPixels[i * 4 + 0] = (byte) r;
         newPixels[i * 4 + 1] = (byte) g;
         newPixels[i * 4 + 2] = (byte) b;
         newPixels[i * 4 + 3] = (byte) a;
-#endif
     }
 	// 4J - now creating a buffer of the size we require dynamically
 	ByteBuffer *pixels =  MemoryTracker::createByteBuffer(w * h * 4);
@@ -600,13 +570,11 @@ void Textures::loadTexture(BufferedImage *img, int id, bool blur, bool clamp)
 			if( img->getData( level ) )
 			{
 				memcpy( tempData, img->getData( level ), ww * hh * 4);
-#ifndef _XBOX
 				// Swap ARGB to RGBA
 				for( int i = 0; i < ww * hh ; i++ )
 				{
 					tempData[i] = ( tempData[i] >> 24 ) | (tempData[i] << 8 );
 				}
-#endif
 			}
 			else
 			{
@@ -617,18 +585,14 @@ void Textures::loadTexture(BufferedImage *img, int id, bool blur, bool clamp)
 						int c1 = pixels->getInt(((x * 2 + 1) + (y * 2 + 0) * ow) * 4);
 						int c2 = pixels->getInt(((x * 2 + 1) + (y * 2 + 1) * ow) * 4);
 						int c3 = pixels->getInt(((x * 2 + 0) + (y * 2 + 1) * ow) * 4);
-#ifndef _XBOX
 						// 4J - convert our RGBA texels to ARGB that crispBlend is expecting
 						c0 = ( ( c0 >> 8 ) & 0x00ffffff ) | ( c0 << 24 );
 						c1 = ( ( c1 >> 8 ) & 0x00ffffff ) | ( c1 << 24 );
 						c2 = ( ( c2 >> 8 ) & 0x00ffffff ) | ( c2 << 24 );
 						c3 = ( ( c3 >> 8 ) & 0x00ffffff ) | ( c3 << 24 );
-#endif
 						int col = Texture::crispBlend(Texture::crispBlend(c0, c1), Texture::crispBlend(c2, c3));
-#ifndef _XBOX
 						// 4J - and back from ARGB -> RGBA
 						col = ( col << 8 ) | (( col >> 24 ) & 0xff);
-#endif
 						tempData[x + y * ww] = col;
 					}
 			}
@@ -736,11 +700,7 @@ void Textures::replaceTexture(intArray rawPixels, int w, int h, int id)
 
 	// New
 	// glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w, h, GL12.GL_BGRA, GL12.GL_UNSIGNED_INT_8_8_8_8_REV, pixels);	
-#ifdef _XBOX
-	RenderManager.TextureDataUpdate(pixels->getBuffer(),0);
-#else
 	RenderManager.TextureDataUpdate(0, 0,w,h,pixels->getBuffer(),0);
-#endif
 	// Old
     //glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
 	delete pixels;
@@ -775,11 +735,7 @@ void Textures::replaceTextureDirect(intArray rawPixels, int w, int h, int id)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-#ifdef _XBOX
-	RenderManager.TextureDataUpdate(rawPixels.data, 0);
-#else
 	RenderManager.TextureDataUpdate(0, 0, w, h, rawPixels.data, 0);
-#endif
 }
 
 // 4J - added. This is a more minimal version of replaceTexture that assumes the texture bytes are already in order, and so doesn't do any of the extra copying round
@@ -811,11 +767,7 @@ void Textures::replaceTextureDirect(shortArray rawPixels, int w, int h, int id)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-#ifdef _XBOX
-	RenderManager.TextureDataUpdate(rawPixels.data, 0);
-#else
 	RenderManager.TextureDataUpdate(0, 0, w, h, rawPixels.data, 0);
-#endif
 }
 
 void Textures::releaseTexture(int id)
@@ -1222,24 +1174,6 @@ BufferedImage *Textures::readImage(TEXTURE_NAME texId, const wstring& name)	// 4
 	else
 	{
 		const char *pchName=wstringtofilename(name);
-#ifdef __PS3__
-		if(app.GetBootedFromDiscPatch() && app.IsFileInPatchList(pchName))
-		{
-			char *pchUsrDir = app.GetBDUsrDirPath(pchName);
-			wstring wstr (pchUsrDir, pchUsrDir+strlen(pchUsrDir));
-
-			if(isTu)
-			{
-				drive= wstr + L"\\Common\\res\\TitleUpdate\\";
-
-			}
-			else
-			{
-				drive= wstr + L"\\Common\\";
-			}
-		}
-		else
-#endif
 		{
 			drive = skins->getDefault()->getPath(isTu);
 		}

@@ -11,7 +11,6 @@ typedef struct tagTHREADNAME_INFO {
 
 void SetThreadName( DWORD dwThreadID, LPCSTR szThreadName )
 {
-#ifndef __PS3__
     THREADNAME_INFO info;
 	
     info.dwType = 0x1000;
@@ -19,7 +18,6 @@ void SetThreadName( DWORD dwThreadID, LPCSTR szThreadName )
     info.dwThreadID = dwThreadID;
     info.dwFlags = 0;
 	
-#if ( defined _WINDOWS64 | defined _DURANGO )
 	__try
 	{
 		RaiseException( 0x406D1388, 0, sizeof(info)/sizeof(DWORD), (ULONG_PTR *)&info );
@@ -27,15 +25,4 @@ void SetThreadName( DWORD dwThreadID, LPCSTR szThreadName )
 	__except( GetExceptionCode()==0x406D1388 ? EXCEPTION_CONTINUE_EXECUTION : EXCEPTION_EXECUTE_HANDLER )
 	{
 	}
-#endif
-#ifdef _XBOX
-    __try
-    {
-        RaiseException( 0x406D1388, 0, sizeof(info)/sizeof(DWORD), (DWORD *)&info );
-    }
-    __except( GetExceptionCode()==0x406D1388 ? EXCEPTION_CONTINUE_EXECUTION : EXCEPTION_EXECUTE_HANDLER )
-    {
-    }
-#endif
-#endif // __PS3__
 }

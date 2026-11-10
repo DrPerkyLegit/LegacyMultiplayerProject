@@ -23,9 +23,7 @@ private:
 	UIControl_Slider m_sliderDifficulty;
 	UIControl_BitmapIcon m_bitmapIcon;
 	
-#if defined _XBOX_ONE || defined __ORBIS__ || defined _WINDOWS64
 	UIControl_CheckBox m_checkboxOnline;
-#endif
 
 	UI_BEGIN_MAP_ELEMENTS_AND_NAMES(IUIScene_StartGame)
 		UI_MAP_ELEMENT( m_controlMainPanel, "MainPanel" )
@@ -36,9 +34,7 @@ private:
 			UI_MAP_ELEMENT( m_texturePackList, "TexturePackSelector")
 			UI_MAP_ELEMENT( m_buttonGamemode, "GameModeToggle")
 			
-#if defined _XBOX_ONE || defined __ORBIS__ || defined _WINDOWS64
 			UI_MAP_ELEMENT( m_checkboxOnline, "CheckboxOnline")
-#endif
 			UI_MAP_ELEMENT( m_buttonMoreOptions, "MoreOptions")
 			UI_MAP_ELEMENT( m_buttonLoadWorld, "LoadSettings")
 			UI_MAP_ELEMENT( m_sliderDifficulty, "Difficulty")
@@ -63,9 +59,6 @@ private:
 	bool m_bThumbnailGetFailed;
 	__int64 m_seed;
 
-#ifdef __PS3__
-	std::vector<SonyCommerce::ProductInfo>*m_pvProductInfo;
-#endif
 	//int *m_iConfigA; // track the texture packs that we don't have installed
 
 	PBYTE m_pbThumbnailData;
@@ -107,9 +100,6 @@ private:
 	void LoadLevelGen(LevelGenerationOptions *levelGen);
 	void LaunchGame(void);
 
-#ifdef _DURANGO
-	static void checkPrivilegeCallback(LPVOID lpParam, bool hasPrivilege, int iPad);
-#endif
 	
 	static int ConfirmLoadReturned(void *pParam,int iPad,C4JStorage::EMessageResult result);
 	static void StartGameFromSave(UIScene_LoadMenu* pClass, DWORD dwLocalUsersMask);
@@ -121,10 +111,6 @@ private:
 	static int DeleteSaveDialogReturned(void *pParam,int iPad,C4JStorage::EMessageResult result);
 	static int DeleteSaveDataReturned(void *pParam,bool bSuccess);
 	static int MustSignInReturnedPSN(void *pParam,int iPad,C4JStorage::EMessageResult result);
-#ifdef __ORBIS__
-	//static int PSPlusReturned(void *pParam,int iPad,C4JStorage::EMessageResult result);
-	static int ContinueOffline(void *pParam,int iPad,C4JStorage::EMessageResult result);
-#endif
 
 public:
 	static int StartGame_SignInReturned(LPVOID pParam, bool, int);

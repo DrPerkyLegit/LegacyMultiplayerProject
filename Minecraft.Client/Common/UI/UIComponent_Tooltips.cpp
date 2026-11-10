@@ -14,24 +14,7 @@ UIComponent_Tooltips::UIComponent_Tooltips(int iPad, void *initData, UILayer *pa
 	// Setup all the Iggy references we need for this scene
 	initialiseMovie();
 
-#ifdef __PSVITA__
-	// initialise vita touch controls with ids
-	for(unsigned int i = 0; i < ETouchInput_Count; ++i)
-	{
-		m_TouchController[i].init(i);
-	}
-#endif
 
-#if defined(__PS3__) || defined(__ORBIS__) || defined(__PSVITA__)
-	if(InputManager.IsCircleCrossSwapped())
-	{
-		IggyDataValue result;
-		IggyDataValue value[1];
-		value[0].type = IGGY_DATATYPE_boolean;
-		value[0].boolval = true;
-		IggyResult out = IggyPlayerCallMethodRS ( getMovie() , &result, IggyPlayerRootPath( getMovie() ), m_funcSetABSwap , 1 , value );
-	}
-#endif
 }
 
 wstring UIComponent_Tooltips::getMoviePath()
@@ -63,7 +46,6 @@ F64 UIComponent_Tooltips::getSafeZoneHalfWidth()
 
 	float safeWidth = 0.0f;
 
-#ifndef __PSVITA__
 	// 85% safezone for tooltips in either SD mode
 	if( !RenderManager.IsHiDef() )
 	{
@@ -75,7 +57,6 @@ F64 UIComponent_Tooltips::getSafeZoneHalfWidth()
 		// 90% safezone
 		safeWidth = width * (0.1f / 2);
 	}
-#endif
 	return safeWidth;
 }
 
@@ -338,78 +319,13 @@ void UIComponent_Tooltips::_Relayout()
 	IggyDataValue result;
 	IggyResult out = IggyPlayerCallMethodRS ( getMovie() , &result, IggyPlayerRootPath( getMovie() ), m_funcUpdateLayout, 0 , NULL );
 
-#ifdef __PSVITA__
-	// rebuild touchboxes
-	ui.TouchBoxRebuild(this);
-#endif
 }
 
-#ifdef __PSVITA__
-void UIComponent_Tooltips::handleTouchInput(unsigned int iPad, S32 x, S32 y, int iId, bool bPressed, bool bRepeat, bool bReleased)
-{
-	//app.DebugPrintf("ToolTip Touch ID = %i\n", iId);
-	bool handled = false;
-
-	// perform action on release
-	if(bReleased)
-	{
-		switch(iId)
-		{
-			case ETouchInput_Touch_A:
-				app.DebugPrintf("ToolTip Map Touch to _PSV_JOY_BUTTON_X\n", iId);
-				InputManager.MapTouchInput(iPad, _PSV_JOY_BUTTON_X);
-				break;
-			case ETouchInput_Touch_B:
-				app.DebugPrintf("ToolTip Map Touch to _PSV_JOY_BUTTON_O\n", iId);
-				InputManager.MapTouchInput(iPad, _PSV_JOY_BUTTON_O);
-				break;
-			case ETouchInput_Touch_X:
-				app.DebugPrintf("ToolTip Map Touch to _PSV_JOY_BUTTON_SQUARE\n", iId);
-				InputManager.MapTouchInput(iPad, _PSV_JOY_BUTTON_SQUARE);
-				break;
-			case ETouchInput_Touch_Y:
-				app.DebugPrintf("ToolTip Map Touch to _PSV_JOY_BUTTON_TRIANGLE\n", iId);
-				InputManager.MapTouchInput(iPad, _PSV_JOY_BUTTON_TRIANGLE);
-				break;
-			case ETouchInput_Touch_LT:
-				/* not in use on vita */
-				app.DebugPrintf("ToolTip no action\n", iId);
-				break;
-			case ETouchInput_Touch_RightTrigger:
-				app.DebugPrintf("ToolTip Map Touch to _PSV_JOY_BUTTON_SELECT\n", iId);
-				InputManager.MapTouchInput(iPad, _PSV_JOY_BUTTON_SELECT);
-				break;
-			case ETouchInput_Touch_LeftBumper:
-				app.DebugPrintf("ToolTip Map Touch to _PSV_JOY_BUTTON_L1\n", iId);
-				InputManager.MapTouchInput(iPad, _PSV_JOY_BUTTON_L1);
-				break;
-			case ETouchInput_Touch_RightBumper:
-				app.DebugPrintf("ToolTip Map Touch to _PSV_JOY_BUTTON_R1\n", iId);
-				InputManager.MapTouchInput(iPad, _PSV_JOY_BUTTON_R1);
-				break;
-			case ETouchInput_Touch_LeftStick:
-				app.DebugPrintf("ToolTip no action\n", iId);
-				/* no action */
-				break;
-		}
-	}
-}
-#endif
 
 void UIComponent_Tooltips::handleReload()
 {
 	app.DebugPrintf("UIComponent_Tooltips::handleReload\n");
 
-#if defined(__PS3__) || defined(__ORBIS__) || defined(__PSVITA__)
-	if(InputManager.IsCircleCrossSwapped())
-	{
-		IggyDataValue result;
-		IggyDataValue value[1];
-		value[0].type = IGGY_DATATYPE_boolean;
-		value[0].boolval = true;
-		IggyResult out = IggyPlayerCallMethodRS ( getMovie() , &result, IggyPlayerRootPath( getMovie() ), m_funcSetABSwap , 1 , value );
-	}
-#endif
 
 	for(unsigned int i = 0; i < eToolTipNumButtons; ++i)
 	{

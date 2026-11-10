@@ -11,9 +11,7 @@
 #include "StringTable.h"
 #include "Common\DLC\DLCAudioFile.h"
 
-#if defined _XBOX || defined _WINDOWS64
 #include "Xbox\XML\xmlFilesCallback.h"
-#endif
 
 DLCTexturePack::DLCTexturePack(DWORD id, DLCPack *pack, TexturePack *fallback) : AbstractTexturePack(id, NULL, pack->getName(), fallback)
 {
@@ -28,10 +26,6 @@ DLCTexturePack::DLCTexturePack(DWORD id, DLCPack *pack, TexturePack *fallback) :
 
 	m_stringTable = NULL;
 
-#ifdef _XBOX
-	m_pStreamedWaveBank=NULL;
-	m_pSoundBank=NULL;
-#endif
 
 	if(m_dlcInfoPack->doesPackContainFile(DLCManager::e_DLCType_LocalisationData, L"languages.loc"))
 	{
@@ -178,49 +172,6 @@ void DLCTexturePack::loadColourTable()
 	}
 
 	// Load the text colours
-#ifdef _XBOX
-	if(m_dlcDataPack != NULL && m_dlcDataPack->doesPackContainFile(DLCManager::e_DLCType_UIData, L"TexturePack.xzp"))
-	{
-		DLCUIDataFile *dataFile = (DLCUIDataFile *)m_dlcDataPack->getFile(DLCManager::e_DLCType_UIData, L"TexturePack.xzp");
-
-		DWORD dwSize = 0;
-		PBYTE pbData = dataFile->getData(dwSize);
-
-		const DWORD LOCATOR_SIZE = 256; // Use this to allocate space to hold a ResourceLocator string 
-		WCHAR szResourceLocator[ LOCATOR_SIZE ];
-		
-		// Try and load the HTMLColours.col based off the common XML first, before the deprecated xuiscene_colourtable	
-		swprintf(szResourceLocator, LOCATOR_SIZE,L"memory://%08X,%04X#HTMLColours.col",pbData, dwSize);
-		BYTE *data;
-		UINT dataLength;
-		if(XuiResourceLoadAll(szResourceLocator, &data, &dataLength) == S_OK)
-		{
-			m_colourTable->loadColoursFromData(data,dataLength);
-
-			XuiFree(data);
-		}
-		else
-		{
-
-		swprintf(szResourceLocator, LOCATOR_SIZE,L"memory://%08X,%04X#xuiscene_colourtable.xur",pbData, dwSize);
-		HXUIOBJ hScene;
-		HRESULT hr = XuiSceneCreate(szResourceLocator,szResourceLocator, NULL, &hScene);
-
-		if(HRESULT_SUCCEEDED(hr))
-		{
-			loadHTMLColourTableFromXuiScene(hScene);
-		}
-		else
-		{			
-			loadDefaultHTMLColourTable();
-		}
-	}
-	}
-	else
-	{
-		loadDefaultHTMLColourTable();
-	}
-#else
 	if(app.hasArchiveFile(L"HTMLColours.col"))
 	{
 		byteArray textColours = app.getArchiveFile(L"HTMLColours.col");
@@ -228,7 +179,6 @@ void DLCTexturePack::loadColourTable()
 
 		delete [] textColours.data;
 	}
-#endif
 }
 
 void DLCTexturePack::loadData()
@@ -237,11 +187,7 @@ void DLCTexturePack::loadData()
 
 	if(mountIndex > -1)
 	{
-#ifdef _DURANGO
-		if(StorageManager.MountInstalledDLC(ProfileManager.GetPrimaryPad(),mountIndex,&DLCTexturePack::packMounted,this,L"TPACK")!=ERROR_IO_PENDING)
-#else
 		if(StorageManager.MountInstalledDLC(ProfileManager.GetPrimaryPad(),mountIndex,&DLCTexturePack::packMounted,this,"TPACK")!=ERROR_IO_PENDING)
-#endif
 		{
 			// corrupt DLC
 			m_bHasLoadedData = true;
@@ -299,41 +245,8 @@ int DLCTexturePack::packMounted(LPVOID pParam,int iPad,DWORD dwErr,DWORD dwLicen
 			// Load the UI data
 			if(texturePack->m_dlcDataPack != NULL)
 			{
-#ifdef _XBOX
-				File xzpPath(getFilePath(texturePack->m_dlcInfoPack->GetPackID(), wstring(L"TexturePack.xzp") ) );
-
-				if(xzpPath.exists())
-				{
-					const char *pchFilename=wstringtofilename(xzpPath.getPath());
-					HANDLE fileHandle = CreateFile(
-						pchFilename, // file name
-						GENERIC_READ, // access mode
-						0, // share mode // TODO 4J Stu - Will we need to share file? Probably not but...
-						NULL, // Unused
-						OPEN_EXISTING , // how to create // TODO 4J Stu - Assuming that the file already exists if we are opening to read from it
-						FILE_FLAG_SEQUENTIAL_SCAN, // file attributes
-						NULL // Unsupported
-						);
-
-					if( fileHandle != INVALID_HANDLE_VALUE )
-					{
-						DWORD dwFileSize = xzpPath.length();
-						DWORD bytesRead;
-						PBYTE pbData =  (PBYTE) new BYTE[dwFileSize];
-						BOOL success = ReadFile(fileHandle,pbData,dwFileSize,&bytesRead,NULL);
-						CloseHandle(fileHandle);
-						if(success)
-						{
-							DLCUIDataFile *uiDLCFile = (DLCUIDataFile *)texturePack->m_dlcDataPack->addFile(DLCManager::e_DLCType_UIData,L"TexturePack.xzp");
-							uiDLCFile->addData(pbData,bytesRead,true);
-						
-						}
-					}
-				}
-#else
 				File archivePath(getFilePath(texturePack->m_dlcInfoPack->GetPackID(), wstring(L"media.arc") ) );
 				if(archivePath.exists()) texturePack->m_archiveFile = new ArchiveFile(archivePath);
-#endif
 
 				/**
 					4J-JEV:
@@ -450,21 +363,6 @@ int DLCTexturePack::packMounted(LPVOID pParam,int iPad,DWORD dwErr,DWORD dwLicen
 				
 
 				// any audio data?
-#ifdef _XBOX				
-				File audioXSBPath(getFilePath(texturePack->m_dlcInfoPack->GetPackID(), wstring(L"MashUp.xsb") ) );
-				File audioXWBPath(getFilePath(texturePack->m_dlcInfoPack->GetPackID(), wstring(L"MashUp.xwb") ) );
-				
-				if(audioXSBPath.exists() && audioXWBPath.exists())
-				{
-
-					texturePack->setHasAudio(true);
-					const char *pchXWBFilename=wstringtofilename(audioXWBPath.getPath());
-					Minecraft::GetInstance()->soundEngine->CreateStreamingWavebank(pchXWBFilename,&texturePack->m_pStreamedWaveBank);
-					const char *pchXSBFilename=wstringtofilename(audioXSBPath.getPath());
-					Minecraft::GetInstance()->soundEngine->CreateSoundbank(pchXSBFilename,&texturePack->m_pSoundBank);	
-
-				}
-#else 
 				//DLCPack *pack = texturePack->m_dlcInfoPack->GetParentPack();
 				if (pack->getDLCItemsCount(DLCManager::e_DLCType_Audio) > 0)
 				{
@@ -511,7 +409,6 @@ int DLCTexturePack::packMounted(LPVOID pParam,int iPad,DWORD dwErr,DWORD dwLicen
 						iCreativeStart, iCreativeStart + iCreativeRange - 1,
 						iMenuStart, iMenuStart + iMenuRange - 1, iAfterEnd);
 				}
-#endif
 }
 			texturePack->loadColourTable();
 		}
@@ -519,9 +416,6 @@ int DLCTexturePack::packMounted(LPVOID pParam,int iPad,DWORD dwErr,DWORD dwLicen
 		// 4J-PB - we need to leave the texture pack mounted if it contained streaming audio
 		if(texturePack->hasAudio()==false)
 		{
-#ifdef _XBOX
-			StorageManager.UnmountInstalledDLC("TPACK");
-#endif
 		}
 	}
 	
@@ -534,40 +428,11 @@ int DLCTexturePack::packMounted(LPVOID pParam,int iPad,DWORD dwErr,DWORD dwLicen
 
 void DLCTexturePack::loadUI()
 {
-#ifdef _XBOX
-//Syntax: "memory://" + Address + "," + Size + "#" + File
-//L"memory://0123ABCD,21A3#skin_default.xur"
-
-	// Load new skin
-	if(m_dlcDataPack != NULL && m_dlcDataPack->doesPackContainFile(DLCManager::e_DLCType_UIData, L"TexturePack.xzp"))
-	{
-		DLCUIDataFile *dataFile = (DLCUIDataFile *)m_dlcDataPack->getFile(DLCManager::e_DLCType_UIData, L"TexturePack.xzp");
-
-		DWORD dwSize = 0;
-		PBYTE pbData = dataFile->getData(dwSize);
-
-		const DWORD LOCATOR_SIZE = 256; // Use this to allocate space to hold a ResourceLocator string 
-		WCHAR szResourceLocator[ LOCATOR_SIZE ];
-		swprintf(szResourceLocator, LOCATOR_SIZE,L"memory://%08X,%04X#skin_Minecraft.xur",pbData, dwSize);
-
-		XuiFreeVisuals(L"");
-
-
-		HRESULT hr = app.LoadSkin(szResourceLocator,NULL);//L"TexturePack");
-		if(HRESULT_SUCCEEDED(hr))
-		{
-			bUILoaded = true;
-			//CXuiSceneBase::GetInstance()->SetVisualPrefix(L"TexturePack");
-			//CXuiSceneBase::GetInstance()->SkinChanged(CXuiSceneBase::GetInstance()->m_hObj);
-		}
-	}
-#else
 	if(m_archiveFile && m_archiveFile->hasFile(L"skin.swf"))
 	{
 		ui.ReloadSkin();
 		bUILoaded = true;
 	}
-#endif
 	else
 	{		
 		loadDefaultUI();
@@ -575,16 +440,10 @@ void DLCTexturePack::loadUI()
 	}
 
 	AbstractTexturePack::loadUI();
-#ifndef _XBOX
 	if(hasAudio()==false && !ui.IsReloadingSkin())
 	{
-#ifdef _DURANGO
-		StorageManager.UnmountInstalledDLC(L"TPACK");
-#else
 		StorageManager.UnmountInstalledDLC("TPACK");
-#endif
 	}
-#endif
 }
 
 void DLCTexturePack::unloadUI()
@@ -592,12 +451,6 @@ void DLCTexturePack::unloadUI()
 	// Unload skin
 	if(bUILoaded)
 	{
-#ifdef _XBOX
-		XuiFreeVisuals(L"TexturePack");
-		XuiFreeVisuals(L"");
-		CXuiSceneBase::GetInstance()->SetVisualPrefix(L"");
-		CXuiSceneBase::GetInstance()->SkinChanged(CXuiSceneBase::GetInstance()->m_hObj);
-#endif
 		setHasAudio(false);
 	}
 	AbstractTexturePack::unloadUI();

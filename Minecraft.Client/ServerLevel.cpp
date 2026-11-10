@@ -59,9 +59,6 @@ void ServerLevel::staticCtor()
 
 	m_updateThread = new C4JThread(runUpdate, NULL, "Tile update");
 	m_updateThread->SetProcessor(CPU_CORE_TILE_UPDATE);
-#ifdef __ORBIS__
-	m_updateThread->SetPriority(THREAD_PRIORITY_BELOW_NORMAL);	// On Orbis, this core is also used for Matching 2, and that priority of that seems to be always at default no matter what we set it to. Prioritise this below Matching 2.
-#endif
 	m_updateThread->Run();
 
     RANDOM_BONUS_ITEMS =  WeighedTreasureArray(20);
@@ -420,17 +417,10 @@ void ServerLevel::tickTiles()
 	int prob = 100000;
 	if(app.GetGameSettingsDebugMask()&(1L<<eDebugSetting_RegularLightning)) prob = 100;
 
-#ifdef __PSVITA__
-	// AP - see CustomSet.h for and explanation
-	for( int i = 0;i < chunksToPoll.end();i += 1 )
-	{
-		ChunkPos cp = chunksToPoll.get(i);
-#else
 	AUTO_VAR(itEndCtp, chunksToPoll.end());
 	for (AUTO_VAR(it, chunksToPoll.begin()); it != itEndCtp; it++)
 	{
 		ChunkPos cp = *it;
-#endif
 		int xo = cp.x * 16;
 		int zo = cp.z * 16;
 
@@ -878,14 +868,6 @@ void ServerLevel::save(bool force, ProgressListener *progressListener, bool bAut
 
 	if (progressListener != NULL) progressListener->progressStage(IDS_PROGRESS_SAVING_CHUNKS);
 
-#if defined(_XBOX_ONE) || defined(__ORBIS__)
-	// Our autosave is a minimal save. All the chunks are saves by the constant save process
-	if(bAutosave)
-	{
-		chunkSource->saveAllEntities();
-	}
-	else
-#endif
 	{
 		chunkSource->save(force, progressListener);
 
@@ -1441,9 +1423,6 @@ int ServerLevel::runUpdate(void* lpParam)
 			LeaveCriticalSection(&m_updateCS[iLev]);
 		}
 		PIXEndNamedEvent();
-#ifdef __PS3__
-		Sleep(10);
-#endif //__PS3__
 	}
 
 	return 0;

@@ -283,74 +283,42 @@ Stat* GenericStats::flyPig()
 
 Stat* GenericStats::snipeSkeleton() 
 {
-#ifndef _XBOX
 	return instance->get_achievement( eAward_snipeSkeleton );
-#else
-	return NULL;
-#endif
 }
 
 Stat* GenericStats::diamonds() 
 {
-#ifndef _XBOX
 	return instance->get_achievement( eAward_diamonds );
-#else
-	return NULL;
-#endif
 }
 
 Stat* GenericStats::ghast() 
 {
-#ifndef _XBOX
 	return instance->get_achievement( eAward_ghast );
-#else
-	return NULL;
-#endif
 }
 
 Stat* GenericStats::blazeRod() 
 {
-#ifndef _XBOX
 	return instance->get_achievement( eAward_blazeRod );
-#else
-	return NULL;
-#endif
 }
 
 Stat* GenericStats::potion() 
 {
-#ifndef _XBOX
 	return instance->get_achievement( eAward_potion );
-#else
-	return NULL;
-#endif
 }
 
 Stat* GenericStats::theEnd() 
 {
-#ifndef _XBOX
 	return instance->get_achievement( eAward_theEnd );
-#else
-	return NULL;
-#endif
 }
 
 Stat* GenericStats::winGame() 
 {
-#ifndef _XBOX
 	return instance->get_achievement( eAward_winGame );
-#else
-	return NULL;
-#endif
 }
 
 Stat* GenericStats::enchantments() 
 {
-#ifndef _XBOX
 	return instance->get_achievement( eAward_enchantments );
-#else
-	return NULL;
-#endif
 }
 
 Stat* GenericStats::overkill() 
@@ -733,11 +701,7 @@ byteArray GenericStats::getParam_onARail(int distance)
 
 byteArray GenericStats::getParam_overkill(int damage)
 {
-#ifdef _XBOX
-	return getParam_noArgs();
-#else
 	return getParam_achievement(eAward_overkill);
-#endif
 }
 
 byteArray GenericStats::getParam_openInventory(int menuId)
@@ -977,74 +941,42 @@ byteArray GenericStats::param_flyPig()
 
 byteArray GenericStats::param_snipeSkeleton()
 {
-#ifdef _XBOX
-	return instance->getParam_noArgs();
-#else
 	return instance->getParam_achievement(eAward_snipeSkeleton);
-#endif
 }
 
 byteArray GenericStats::param_diamonds()
 {
-#ifdef _XBOX
-	return instance->getParam_noArgs();
-#else
 	return instance->getParam_achievement(eAward_diamonds);
-#endif
 }
 
 byteArray GenericStats::param_ghast()
 {
-#ifdef _XBOX
-	return instance->getParam_noArgs();
-#else
 	return instance->getParam_achievement(eAward_ghast);
-#endif
 }
 
 byteArray GenericStats::param_blazeRod()
 {
-#ifdef _XBOX
-	return instance->getParam_noArgs();
-#else
 	return instance->getParam_achievement(eAward_blazeRod);
-#endif
 }
 
 byteArray GenericStats::param_potion()
 {
-#ifdef _XBOX
-	return instance->getParam_noArgs();
-#else
 	return instance->getParam_achievement(eAward_potion);
-#endif
 }
 
 byteArray GenericStats::param_theEnd()
 {
-#ifdef _XBOX
-	return instance->getParam_noArgs();
-#else
 	return instance->getParam_achievement(eAward_theEnd);
-#endif
 }
 
 byteArray GenericStats::param_winGame()
 {
-#ifdef _XBOX
-	return instance->getParam_noArgs();
-#else
 	return instance->getParam_achievement(eAward_winGame);
-#endif
 }
 
 byteArray GenericStats::param_enchantments()
 {
-#ifdef _XBOX
-	return instance->getParam_noArgs();
-#else
 	return instance->getParam_achievement(eAward_enchantments);
-#endif
 }
 
 byteArray GenericStats::param_overkill(int dmg)

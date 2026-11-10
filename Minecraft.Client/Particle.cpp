@@ -165,21 +165,12 @@ void Particle::render(Tesselator *t, float a, float xa, float ya, float za, floa
 	    br = getBrightness(a);
 	}
 
-#ifdef __PSVITA__
-	// AP - this will set up the 4 vertices in half the time.
-	t->tileParticleQuad((float)(x - xa * r - xa2 * r), (float)( y - ya * r), (float)( z - za * r - za2 * r), (float)( u1), (float)( v1),
-					(float)(x - xa * r + xa2 * r), (float)( y + ya * r), (float)( z - za * r + za2 * r), (float)( u1), (float)( v0), 
-					(float)(x + xa * r + xa2 * r), (float)( y + ya * r), (float)( z + za * r + za2 * r), (float)( u0), (float)( v0), 
-					(float)(x + xa * r - xa2 * r), (float)( y - ya * r), (float)( z + za * r - za2 * r), (float)( u0), (float)( v1), 
-					rCol * br, gCol * br, bCol * br, alpha);
-#else
     t->color(rCol * br, gCol * br, bCol * br, alpha);
 
     t->vertexUV((float)(x - xa * r - xa2 * r), (float)( y - ya * r), (float)( z - za * r - za2 * r), (float)( u1), (float)( v1));
     t->vertexUV((float)(x - xa * r + xa2 * r), (float)( y + ya * r), (float)( z - za * r + za2 * r), (float)( u1), (float)( v0));
     t->vertexUV((float)(x + xa * r + xa2 * r), (float)( y + ya * r), (float)( z + za * r + za2 * r), (float)( u0), (float)( v0));
     t->vertexUV((float)(x + xa * r - xa2 * r), (float)( y - ya * r), (float)( z + za * r - za2 * r), (float)( u0), (float)( v1));
-#endif
 }
 
 int Particle::getParticleTexture()

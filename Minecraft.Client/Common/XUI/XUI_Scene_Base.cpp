@@ -2233,11 +2233,9 @@ bool CXuiSceneBase::GetBaseSceneSafeZone( unsigned int iPad, D3DXVECTOR2 &origin
 }
 
 
-#ifndef _XBOX
 void CXuiSceneBase::CreateBaseSceneInstance()
 {
 	CXuiSceneBase *sceneBase = new CXuiSceneBase();
 	BOOL handled;
 	sceneBase->OnInit(NULL,handled);
 }
-#endif

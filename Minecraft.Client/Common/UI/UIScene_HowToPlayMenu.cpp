@@ -25,10 +25,6 @@ unsigned int UIScene_HowToPlayMenu::m_uiHTPButtonNameA[]=
 
 	IDS_HOW_TO_PLAY_MENU_NETHERPORTAL,		// eHTPButton_NetherPortal,
 	IDS_HOW_TO_PLAY_MENU_THEEND,			// eHTPButton_TheEnd,
-#ifdef _XBOX
-	IDS_HOW_TO_PLAY_MENU_SOCIALMEDIA,		// eHTPButton_SocialMedia,
-	IDS_HOW_TO_PLAY_MENU_BANLIST,			// eHTPButton_BanningLevels,
-#endif
 	IDS_HOW_TO_PLAY_MENU_HOSTOPTIONS,		// eHTPButton_HostOptions,
 };
 
@@ -55,10 +51,6 @@ unsigned int UIScene_HowToPlayMenu::m_uiHTPSceneA[]=
 
 	eHowToPlay_NetherPortal,
 	eHowToPlay_TheEnd,
-#ifdef _XBOX
-	eHowToPlay_SocialMedia,
-	eHowToPlay_BanList,
-#endif
 	eHowToPlay_HostOptions,
 };
 
@@ -71,27 +63,6 @@ UIScene_HowToPlayMenu::UIScene_HowToPlayMenu(int iPad, void *initData, UILayer *
 
 	for(unsigned int i = 0; i < eHTPButton_Max; ++i)
 	{
-#ifdef __PS3__
-		// If it's the blu ray, or the first Japanese digital game, there's no What's New until the first patch, which will take this line out
-		if(StorageManager.GetBootTypeDisc() || (app.GetProductSKU()==e_sku_SCEJ))
-		{
-			if(!(i==eHTPButton_WhatsNew) )
-			{
-				m_buttonListHowTo.addItem( app.GetString(m_uiHTPButtonNameA[i]) , i);//iCount++);
-			}
-		}
-		else
-#elif defined(__ORBIS__) || defined(_DURANGO) || defined(__PSVITA__)
-		// No What's New for the first PS4 and Xbox One builds
-		if(true)
-		{
-			if(!(i==eHTPButton_WhatsNew) )
-			{
-				m_buttonListHowTo.addItem( app.GetString(m_uiHTPButtonNameA[i]) , i);//iCount++);
-			}
-		}
-		else
-#endif
 		{
 			m_buttonListHowTo.addItem( app.GetString(m_uiHTPButtonNameA[i]) , i);//iCount++);
 		}
@@ -136,27 +107,6 @@ void UIScene_HowToPlayMenu::handleReload()
 {
 	for(unsigned int i = 0; i < eHTPButton_Max; ++i)
 	{
-#ifdef __PS3__
-		// If it's the blu ray, or the first Japanese digital game, there's no What's New until the first patch, which will take this line out
-		if(StorageManager.GetBootTypeDisc() || (app.GetProductSKU()==e_sku_SCEJ))
-		{
-			if(!(i==eHTPButton_WhatsNew) )
-			{
-				m_buttonListHowTo.addItem( app.GetString(m_uiHTPButtonNameA[i]) , i);
-			}
-		}
-		else
-#elif defined(__ORBIS__) || defined(_DURANGO) || defined(__PSVITA__)
-		// No What's New for the first PS4 and Xbox One builds
-		if(true)
-		{
-			if(!(i==eHTPButton_WhatsNew) )
-			{
-				m_buttonListHowTo.addItem( app.GetString(m_uiHTPButtonNameA[i]) , i);
-			}
-		}
-		else
-#endif
 		{
 			m_buttonListHowTo.addItem( app.GetString(m_uiHTPButtonNameA[i]) , i);
 		}
@@ -177,9 +127,6 @@ void UIScene_HowToPlayMenu::handleInput(int iPad, int key, bool repeat, bool pre
 		}
 		break;
 	case ACTION_MENU_OK:
-#ifdef __ORBIS__
-	case ACTION_MENU_TOUCHPAD_PRESS:
-#endif
 		sendInputToMovie(key, repeat, pressed, released);
 		break;
 	case ACTION_MENU_UP:

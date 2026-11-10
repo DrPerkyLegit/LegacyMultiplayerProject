@@ -2,9 +2,6 @@
 
 #include "Mob.h"
 
-#ifdef __PSVITA__
-#include "..\Minecraft.Client\PSVita\PSVitaExtras\CustomMap.h"
-#endif
 
 class Player;
 class Level;
@@ -18,12 +15,7 @@ protected:
 	static TilePos getRandomPosWithin(Level *level, int cx, int cz);
 
 private:
-#ifdef __PSVITA__
-	// AP - See CustomMap.h for an explanation of this
-	static CustomMap chunksToPoll;
-#else
 	static unordered_map<ChunkPos,bool,ChunkPosKeyHash,ChunkPosKeyEq> chunksToPoll;
-#endif
 
 public:
 	static const int tick(ServerLevel *level, bool spawnEnemies, bool spawnFriendlies);

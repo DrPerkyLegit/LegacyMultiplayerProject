@@ -43,18 +43,6 @@ void UIControl_CheckBox::init(const wstring &label, int id, bool checked)
 	value[2].boolval = checked;
 	IggyResult out = IggyPlayerCallMethodRS ( m_parentScene->getMovie() , &result, getIggyValuePath() , m_initFunc , 3 , value );
 
-#ifdef __PSVITA__
-	// 4J-TomK - add checkbox to the vita touch box list
-
-	switch(m_parentScene->GetParentLayer()->m_iLayer)
-	{
-	case eUILayer_Fullscreen:
-	case eUILayer_Scene:
-	case eUILayer_HUD:
-		ui.TouchBoxAdd(this,m_parentScene);
-		break;
-}
-#endif
 }
 
 bool UIControl_CheckBox::IsChecked()

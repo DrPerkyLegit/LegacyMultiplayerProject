@@ -59,12 +59,6 @@ HRESULT CScene_TrialExitUpsell::OnKeyDown(XUIMessageInput* pInputData, BOOL& rfH
 	switch(pInputData->dwKeyCode)
 	{
 	case VK_PAD_A:
-#ifdef _XBOX
-		if( m_bCanExit )
-		{
-			XLaunchNewImage(XLAUNCH_KEYWORD_DASH_ARCADE, 0);
-		}
-#endif
 		break;
 	case VK_PAD_B:
 	case VK_ESCAPE:

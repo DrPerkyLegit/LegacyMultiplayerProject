@@ -13,13 +13,8 @@
 #include "..\Minecraft.World\net.minecraft.world.level.chunk.storage.h"
 
 
-#ifdef _XBOX
-#define RESERVE_ALLOCATION  MEM_RESERVE | MEM_LARGE_PAGES
-#define COMMIT_ALLOCATION  MEM_COMMIT | MEM_LARGE_PAGES
-#else
 #define RESERVE_ALLOCATION  MEM_RESERVE
 #define COMMIT_ALLOCATION  MEM_COMMIT
-#endif
 
 unsigned int ConsoleSaveFileOriginal::pagesCommitted = 0;
 void *ConsoleSaveFileOriginal::pvHeap = NULL;
@@ -89,58 +84,22 @@ ConsoleSaveFileOriginal::ConsoleSaveFileOriginal(const wstring &fileName, LPVOID
 		bool AllocData = false;
 		if(pvSaveData != NULL)
 		{
-#ifdef __PSVITA__
-			// AP - use this to access the virtual memory
-			VirtualCopyTo(pvSaveMem, pvSaveData, fileSize);
-#else
 			memcpy(pvSaveMem, pvSaveData, fileSize);
 			if(bLevelGenBaseSave)
 			{
 				levelGen->deleteBaseSaveData();
 			}
-#endif
 		}
 		else
 		{
 			unsigned int storageLength;
-#ifdef __PSVITA__
-			// create a buffer to hold the compressed data
-			pvSaveData = malloc(fileSize);
-			AllocData = true;
-			StorageManager.GetSaveData( pvSaveData, &storageLength );
-#else
 			StorageManager.GetSaveData( pvSaveMem, &storageLength );
-#endif
-#ifdef __PS3__
-			StorageManager.FreeSaveData();
-#endif
 			app.DebugPrintf("Filesize - %d, Adjusted size - %d\n",fileSize,storageLength);
 			fileSize = storageLength;
 		} 
 
-#ifdef __PSVITA__
-		if(plat == SAVE_FILE_PLATFORM_PSVITA)
 		{
-			// AP - decompress via the access function. This uses a special RLE format
-			VirtualDecompress((unsigned char *)pvSaveData+8, fileSize-8 );
-			if( AllocData )
-			{
-				// free the compressed data buffer if required
-				free( pvSaveData );
-			}
-			else if(bLevelGenBaseSave)
-			{
-				levelGen->deleteBaseSaveData();
-			}
-		}
-		else
-#endif
-		{
-#ifdef __PSVITA__
-			void* pvSourceData = pvSaveData;
-#else
 			void* pvSourceData = pvSaveMem;
-#endif
 			int compressed = *(int*)pvSourceData;
 			if( compressed == 0 )
 			{
@@ -159,13 +118,11 @@ ConsoleSaveFileOriginal::ConsoleSaveFileOriginal(const wstring &fileName, LPVOID
 				else
 				{
 					unsigned char *buf = new unsigned char[decompSize];
-#ifndef _XBOX
 					if(plat == SAVE_FILE_PLATFORM_PSVITA)
 					{
 						Compression::VitaVirtualDecompress(buf, &decompSize, (unsigned char *)pvSourceData+8, fileSize-8 );
 					}
 					else
-#endif
 					{
 						Compression::getCompression()->SetDecompressionType(plat); // if this save is from another platform, set the correct decompression type
 						Compression::getCompression()->Decompress(buf, &decompSize, (unsigned char *)pvSourceData+8, fileSize-8 );
@@ -188,11 +145,7 @@ ConsoleSaveFileOriginal::ConsoleSaveFileOriginal(const wstring &fileName, LPVOID
 						}
 						pagesCommitted = pagesRequired;
 					}
-#ifdef __PSVITA__
-					VirtualCopyTo(pvSaveMem, buf, decompSize);
-#else
 					memcpy(pvSaveMem, buf, decompSize);
-#endif
 					delete[] buf;
 				}
 			}
@@ -213,11 +166,6 @@ ConsoleSaveFileOriginal::~ConsoleSaveFileOriginal()
 	VirtualFree( pvHeap, MAX_PAGE_COUNT * CSF_PAGE_SIZE, MEM_DECOMMIT );
 	pagesCommitted = 0;
 	// Make sure we don't have any thumbnail data still waiting round - we can't need it now we've destroyed the save file anyway
-#if defined _XBOX 
-	app.GetSaveThumbnail(NULL,NULL);
-#elif defined __PS3__
-	app.GetSaveThumbnail(NULL,NULL, NULL,NULL);
-#endif
 
 	DeleteCriticalSection(&m_lock);
 }
@@ -269,24 +217,14 @@ void ConsoleSaveFileOriginal::deleteFile( FileEntry *file )
 		if( amountToRead == 0 )
 			break;
 
-#ifdef __PSVITA__
-		// AP - use this to access the virtual memory
-		VirtualCopyFrom( buffer, readStartOffset, amountToRead );
-#else
 		memcpy( buffer, readStartOffset, amountToRead );
-#endif
 		numberOfBytesRead = amountToRead;
 
 		bufferDataSize = amountToRead;
 		readStartOffset += numberOfBytesRead;
 
 		// Write buffer to file
-#ifdef __PSVITA__
-		// AP - use this to access the virtual memory
-		VirtualCopyTo( (void *)writeStartOffset, buffer, bufferDataSize );
-#else
 		memcpy( (void *)writeStartOffset, buffer, bufferDataSize );
-#endif
 		numberOfBytesWritten = bufferDataSize;
 
 		writeStartOffset += numberOfBytesWritten;
@@ -352,12 +290,7 @@ BOOL ConsoleSaveFileOriginal::writeFile(FileEntry *file,LPCVOID lpBuffer, DWORD 
 	char *writeStartOffset = (char *)pvSaveMem + file->currentFilePointer;
 	//printf("Write: pvSaveMem = %0xd, currentFilePointer = %d, writeStartOffset = %0xd\n", pvSaveMem, file->currentFilePointer, writeStartOffset);
 
-#ifdef __PSVITA__
-	// AP - use this to access the virtual memory
-	VirtualCopyTo((void *)writeStartOffset, (void*)lpBuffer, nNumberOfBytesToWrite);
-#else
 	memcpy( (void *)writeStartOffset, lpBuffer, nNumberOfBytesToWrite );
-#endif
 	*lpNumberOfBytesWritten = nNumberOfBytesToWrite;
 
 	if(file->data.length < 0)
@@ -389,12 +322,7 @@ BOOL ConsoleSaveFileOriginal::zeroFile(FileEntry *file, DWORD nNumberOfBytesToWr
 	char *writeStartOffset = (char *)pvSaveMem + file->currentFilePointer;
 	//printf("Write: pvSaveMem = %0xd, currentFilePointer = %d, writeStartOffset = %0xd\n", pvSaveMem, file->currentFilePointer, writeStartOffset);
 
-#ifdef __PSVITA__
-	// AP - use this to access the virtual memory
-	VirtualMemset( (void *)writeStartOffset, 0, nNumberOfBytesToWrite );
-#else
 	memset( (void *)writeStartOffset, 0, nNumberOfBytesToWrite );
-#endif
 	*lpNumberOfBytesWritten = nNumberOfBytesToWrite;
 
 	if(file->data.length < 0)
@@ -433,12 +361,7 @@ BOOL ConsoleSaveFileOriginal::readFile( FileEntry *file, LPVOID lpBuffer, DWORD 
 		actualBytesToRead = (file->data.startOffset + file->data.length) - file->currentFilePointer;
 	}
 
-#ifdef __PSVITA__
-	// AP - use this to access the virtual memory
-	VirtualCopyFrom( lpBuffer, readStartOffset, actualBytesToRead );
-#else
 	memcpy( lpBuffer, readStartOffset, actualBytesToRead );
-#endif
 
 	*lpNumberOfBytesRead = actualBytesToRead;
 
@@ -550,12 +473,7 @@ void ConsoleSaveFileOriginal::MoveDataBeyond(FileEntry *file, DWORD nNumberOfByt
 					// Needs to be clamped to the end of our region
 					uiCopyEnd = uiFromEnd;					
 				}
-#ifdef __PSVITA__
-				// AP - use this to access the virtual memory
-				VirtualMove( (void *)(uiCopyStart + nNumberOfBytesToWrite), ( void *)uiCopyStart, uiCopyEnd - uiCopyStart);
-#else
 				XMemCpy( (void *)(uiCopyStart + nNumberOfBytesToWrite), ( void *)uiCopyStart, uiCopyEnd - uiCopyStart );
-#endif
 			}
 		}
 	}
@@ -581,12 +499,7 @@ void ConsoleSaveFileOriginal::MoveDataBeyond(FileEntry *file, DWORD nNumberOfByt
 			readStartOffset -= amountToRead;
 
 			//printf("About to read %u from %d\n", amountToRead, readStartOffset - (char *)pvSaveMem );
-#ifdef __PSVITA__
-			// AP - use this to access the virtual memory
-			VirtualCopyFrom(buffer1, readStartOffset, amountToRead);
-#else
 			memcpy( buffer1, readStartOffset, amountToRead );
-#endif
 			numberOfBytesRead = amountToRead;
 
 			buffer1Size = amountToRead;
@@ -598,12 +511,7 @@ void ConsoleSaveFileOriginal::MoveDataBeyond(FileEntry *file, DWORD nNumberOfByt
 			if( (writeStartOffset + buffer2Size) <= finishEndOfDataOffset)
 			{
 				//printf("About to write %u to %d\n", buffer2Size, writeStartOffset - (char *)pvSaveMem );
-#ifdef __PSVITA__
-				// AP - use this to access the virtual memory
-				VirtualCopyTo((void *)writeStartOffset, buffer2, buffer2Size);
-#else
 				memcpy( (void *)writeStartOffset, buffer2, buffer2Size );
-#endif
 				numberOfBytesWritten = buffer2Size;
 			}
 			else
@@ -654,21 +562,10 @@ void ConsoleSaveFileOriginal::Flush(bool autosave, bool updateThumbnail )
 
 	// 4J Stu - Added TU-1 interim
 
-#ifdef __PS3__
-	// On PS3, don't compress the data as we can't really afford the extra memory this requires for the output buffer. Instead we'll be writing
-	// directly from the save data.
-	StorageManager.SetSaveData(pvSaveMem,fileSize);
-	byte *compData = (byte *)pvSaveMem;
-#else
 	// Attempt to allocate the required memory
 	// We do not own this, it belongs to the StorageManager
 	byte *compData = (byte *)StorageManager.AllocateSaveData( compLength );
 
-#ifdef __PSVITA__
-	// AP - make sure we always allocate just what is needed so it will only SAVE what is needed.
-	// If we don't do this the StorageManager will save a file of uncompressed size unnecessarily.
-	compData = NULL;
-#endif
 
 	// If we failed to allocate then compData will be NULL
 	// Pre-calculate the compressed data size so that we can attempt to allocate a smaller buffer
@@ -681,12 +578,7 @@ void ConsoleSaveFileOriginal::Flush(bool autosave, bool updateThumbnail )
 		PIXBeginNamedEvent(0,"Pre-calc save compression");
 		// Save the start time
 		QueryPerformanceCounter( &qwTime );
-#ifdef __PSVITA__
-		// AP - get the compressed size via the access function. This uses a special RLE format
-		VirtualCompress(NULL,&compLength,pvSaveMem,fileSize);
-#else
 		Compression::getCompression()->Compress(NULL,&compLength,pvSaveMem,fileSize);
-#endif
 		QueryPerformanceCounter( &qwNewTime );
 
 		qwDeltaTime.QuadPart = qwNewTime.QuadPart - qwTime.QuadPart;
@@ -702,22 +594,15 @@ void ConsoleSaveFileOriginal::Flush(bool autosave, bool updateThumbnail )
 		// Attempt to allocate the required memory
 		compData = (byte *)StorageManager.AllocateSaveData( compLength );
 	}
-#endif
 
 	if(compData != NULL)
 	{
 		// No compression on PS3 - see comment above
-#ifndef __PS3__
 		// Re-compress all save data before we save it to disk
 		PIXBeginNamedEvent(0,"Actual save compression");
 		// Save the start time
 		QueryPerformanceCounter( &qwTime );
-#ifdef __PSVITA__
-		// AP - compress via the access function. This uses a special RLE format
-		VirtualCompress(compData+8,&compLength,pvSaveMem,fileSize);
-#else
 		Compression::getCompression()->Compress(compData+8,&compLength,pvSaveMem,fileSize);
-#endif
 		QueryPerformanceCounter( &qwNewTime );
 
 		qwDeltaTime.QuadPart = qwNewTime.QuadPart - qwTime.QuadPart;
@@ -732,7 +617,6 @@ void ConsoleSaveFileOriginal::Flush(bool autosave, bool updateThumbnail )
 		memcpy( compData+4, &fileSize, sizeof(int) );
 
 		app.DebugPrintf("Save data compressed from %d to %d\n", fileSize, compLength);
-#endif
 
 		PBYTE pbThumbnailData=NULL;
 		DWORD dwThumbnailDataSize=0;
@@ -740,11 +624,6 @@ void ConsoleSaveFileOriginal::Flush(bool autosave, bool updateThumbnail )
 		PBYTE pbDataSaveImage=NULL;
 		DWORD dwDataSizeSaveImage=0;
 
-#if ( defined _XBOX || defined _DURANGO )
-		app.GetSaveThumbnail(&pbThumbnailData,&dwThumbnailDataSize);
-#elif ( defined __PS3__ || defined __ORBIS__ || defined __PSVITA__ )
-		app.GetSaveThumbnail(&pbThumbnailData,&dwThumbnailDataSize,&pbDataSaveImage,&dwDataSizeSaveImage);
-#endif
 
 		BYTE bTextMetadata[88];
 		ZeroMemory(bTextMetadata,88);
@@ -763,26 +642,6 @@ void ConsoleSaveFileOriginal::Flush(bool autosave, bool updateThumbnail )
 		bool validSave = StorageManager.GetSaveUniqueNumber(&saveOrCheckpointId);
 		TelemetryManager->RecordLevelSaveOrCheckpoint(ProfileManager.GetPrimaryPad(), saveOrCheckpointId, compLength+8);
 
-#ifdef _XBOX
-		StorageManager.SaveSaveData( compLength+8,pbThumbnailData,dwThumbnailDataSize,bTextMetadata,iTextMetadataBytes );
-		delete [] pbThumbnailData;	
-#ifndef _CONTENT_PACKAGE
-		if( app.DebugSettingsOn())
-		{
-			if(app.GetWriteSavesToFolderEnabled() )
-			{
-				DebugFlushToFile(compData, compLength+8);
-			}
-		}
-#endif
-	}
-	else
-	{
-		// We have failed to allocate the memory required to save this file. Now what?
-	}
-
-	ReleaseSaveAccess();
-#elif (defined __PS3__ || defined __ORBIS__ || defined __PSVITA__ || defined _DURANGO || defined _WINDOWS64)
 		// set the icon and save image
 		StorageManager.SetSaveImages(pbThumbnailData,dwThumbnailDataSize,pbDataSaveImage,dwDataSizeSaveImage,bTextMetadata,iTextMetadataBytes);
 		app.DebugPrintf("Save thumbnail size %d\n",dwThumbnailDataSize);
@@ -800,13 +659,8 @@ void ConsoleSaveFileOriginal::Flush(bool autosave, bool updateThumbnail )
 #endif
 		ReleaseSaveAccess();
 	}
-#else
-	}
-	ReleaseSaveAccess();
-#endif
 }
 
-#if (defined __PS3__ || defined __ORBIS__ || defined __PSVITA__ || defined _DURANGO || defined _WINDOWS64)
 
 int ConsoleSaveFileOriginal::SaveSaveDataCallback(LPVOID lpParam,bool bRes)
 {
@@ -815,7 +669,6 @@ int ConsoleSaveFileOriginal::SaveSaveDataCallback(LPVOID lpParam,bool bRes)
 	return 0;
 }
 
-#endif
 
 #ifndef _CONTENT_PACKAGE
 void ConsoleSaveFileOriginal::DebugFlushToFile(void *compressedData /*= NULL*/, unsigned int compressedDataSize /*= 0*/)
@@ -827,11 +680,7 @@ void ConsoleSaveFileOriginal::DebugFlushToFile(void *compressedData /*= NULL*/, 
 	unsigned int fileSize = header.GetFileSize();
 
 	DWORD numberOfBytesWritten = 0;
-#ifdef _XBOX
-	File targetFileDir(L"GAME:\\Saves");
-#else
 	File targetFileDir(L"Saves");
-#endif // _XBOX
 
 	if(!targetFileDir.exists())
 		targetFileDir.mkdir();
@@ -857,33 +706,19 @@ void ConsoleSaveFileOriginal::DebugFlushToFile(void *compressedData /*= NULL*/, 
 #else
 	LPCSTR lpFileName = wstringtofilename( targetFileDir.getPath() + wstring(fileName) );
 #endif
-#ifndef __PSVITA__
 	HANDLE hSaveFile = CreateFile( lpFileName, GENERIC_WRITE, 0, NULL, OPEN_ALWAYS, FILE_FLAG_RANDOM_ACCESS, NULL);
-#endif
 
 	if(compressedData != NULL && compressedDataSize > 0)
 	{
-#ifdef __PSVITA__
-		// AP - Use the access function to save
-		VirtualWriteFile( lpFileName, compressedData, compressedDataSize, &numberOfBytesWritten, NULL);
-#else
 		WriteFile( hSaveFile,compressedData,compressedDataSize,&numberOfBytesWritten,NULL);
-#endif
 		assert(numberOfBytesWritten == compressedDataSize);
 	}
 	else
 	{
-#ifdef __PSVITA__
-		// AP - Use the access function to save
-		VirtualWriteFile( lpFileName, compressedData, compressedDataSize, &numberOfBytesWritten, NULL);
-#else
 		WriteFile(hSaveFile,pvSaveMem,fileSize,&numberOfBytesWritten,NULL);
-#endif
 		assert(numberOfBytesWritten == fileSize);
 	}
-#ifndef __PSVITA__
 	CloseHandle( hSaveFile );
-#endif
 
 	delete[] fileName;
 
@@ -911,20 +746,6 @@ vector<FileEntry *> *ConsoleSaveFileOriginal::getRegionFilesByDimension(unsigned
 	return NULL;
 }
 
-#if defined(__PS3__) || defined(__ORBIS__) || defined(__PSVITA__)
-wstring ConsoleSaveFileOriginal::getPlayerDataFilenameForLoad(const PlayerUID& pUID)
-{
-	return header.getPlayerDataFilenameForLoad( pUID );
-}
-wstring ConsoleSaveFileOriginal::getPlayerDataFilenameForSave(const PlayerUID& pUID)
-{
-	return header.getPlayerDataFilenameForSave( pUID );
-}
-vector<FileEntry *> *ConsoleSaveFileOriginal::getValidPlayerDatFiles()
-{
-	return header.getValidPlayerDatFiles();
-}
-#endif
 
 int ConsoleSaveFileOriginal::getSaveVersion()
 {

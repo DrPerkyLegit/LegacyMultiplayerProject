@@ -35,11 +35,7 @@ private:
 	static bool getIsMatch(float *frac);					// 4J added
 	static void getFracs(intArray indices, float *fracs);	// 4J added
 public:
-#ifdef __PSVITA__
-	static __int64 findSeed(LevelType *generator, bool* pServerRunning);	// MGH - added pRunning, so we can early out of this on Vita as it can take up to 60 secs							// 4J added
-#else
 	static __int64 findSeed(LevelType *generator);	// 4J added
-#endif
 	~BiomeSource();
 
 public:

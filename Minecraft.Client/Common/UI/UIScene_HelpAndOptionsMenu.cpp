@@ -31,14 +31,6 @@ UIScene_HelpAndOptionsMenu::UIScene_HelpAndOptionsMenu(int iPad, void *initData,
 	if(!app.DebugSettingsOn()) removeControl( &m_buttons[BUTTON_HAO_DEBUG], false);
 #endif
 
-#ifdef _XBOX_ONE
-	// 4J-PB - in order to buy the skin packs, we need the signed offer ids for them, which we get in the availability info
-	// we need to retrieve this info though, so do it here
-	app.AddDLCRequest(e_Marketplace_Content); // content is skin packs, texture packs and mash-up packs
-
-	// we also need to mount the local DLC so we can tell what's been purchased
-	app.StartInstallDLCProcess(iPad);
-#endif
 
 
 
@@ -188,9 +180,6 @@ void UIScene_HelpAndOptionsMenu::handleInput(int iPad, int key, bool repeat, boo
 		}
 		break;
 	case ACTION_MENU_OK:
-#ifdef __ORBIS__
-	case ACTION_MENU_TOUCHPAD_PRESS:
-#endif
 	//CD - Added for audio
 	if(pressed)
 	{

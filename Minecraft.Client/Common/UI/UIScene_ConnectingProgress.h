@@ -48,9 +48,6 @@ protected:
 	// TODO: This should be pure virtual in this class
 	virtual wstring getMoviePath();
 
-#ifdef _DURANGO	
-	virtual long long getDefaultGtcButtons() { return 0; }
-#endif
 
 public:
 	// INPUT

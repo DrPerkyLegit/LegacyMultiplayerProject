@@ -10,9 +10,6 @@ using namespace std;
 #include "biome.h"
 #include "C4JThread.h"
 
-#ifdef __PSVITA__
-#include "..\Minecraft.Client\PSVita\PSVitaExtras\CustomSet.h"
-#endif
 
 // 4J Stu - This value should be big enough that we don't get any crashes causes by memory overwrites,
 // however it does seem way too large for what is actually needed. Needs further investigation
@@ -376,12 +373,7 @@ public:
 	void toggleDownfall();
 
 protected:
-#ifdef __PSVITA__
-	// AP - See CustomSet.h for an explanation of this
-	CustomSet chunksToPoll;
-#else
 	unordered_set<ChunkPos,ChunkPosKeyHash,ChunkPosKeyEq> chunksToPoll;
-#endif
 
 private:
 	int delayUntilNextMoodSound;

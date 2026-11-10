@@ -13,11 +13,7 @@ private:
 	vector<UIScene *> m_scenesToDelete; // A list of scenes to delete
 	vector<UIScene *> m_scenesToDestroy; // A list of scenes where we want to dump the swf
 
-#ifdef __ORBIS__
-	unordered_map<EUIScene,std::pair<int,bool>,std::hash<int>> m_componentRefCount;
-#else
 	unordered_map<EUIScene,pair<int,bool> > m_componentRefCount;
-#endif
 
 public:
 	bool m_hasFocus; // True if the layer "has focus", should be the only layer in the group
@@ -27,9 +23,6 @@ public:
 	bool m_bIgnoreAutosaveMenuDisplayed;
 	bool m_bIgnorePlayerJoinMenuDisplayed;
 
-#ifdef __PSVITA__
-	EUILayer m_iLayer;
-#endif
 
 	UIGroup *m_parentGroup;
 public:
@@ -66,10 +59,6 @@ public:
 
 	// INPUT
 	void handleInput(int iPad, int key, bool repeat, bool pressed, bool released, bool &handled);
-#ifdef __PSVITA__	
-	// Current active scene
-	UIScene *getCurrentScene();
-#endif
 	// FOCUS
 	
 	bool updateFocusState(bool allowedFocus = false);
@@ -80,9 +69,6 @@ public:
 
 	virtual void HandleDLCMountingComplete();
 	virtual void HandleDLCInstalled();
-#ifdef _XBOX_ONE
-	virtual void HandleDLCLicenseChange();
-#endif
 	void handleUnlockFullVersion();
 	UIScene *FindScene(EUIScene sceneType);
 	

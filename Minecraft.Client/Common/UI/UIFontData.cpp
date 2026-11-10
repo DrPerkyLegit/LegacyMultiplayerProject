@@ -10,11 +10,7 @@ SFontData SFontData::Mojangles_7
 
 		/* Font Name */		"Mojangles7",
 
-#ifdef _XBOX
-		/* filename */		L"/font/Mojangles_7.png",
-#else
 		/* Filename */		L"/TitleUpdate/res/font/Mojangles_7.png",
-#endif
 
 		/* Glyph count */	FONTSIZE,
 		/* Codepoints */	SFontData::Codepoints,
@@ -39,11 +35,7 @@ SFontData SFontData::Mojangles_11
 
 		/* Font Name */		"Mojangles11",
 
-#ifdef _XBOX 
-		/* filename */		L"/font/Mojangles_11.png",
-#else
 		/* Filename */		L"/TitleUpdate/res/font/Mojangles_11.png",
-#endif
 
 		/* Glyph count */	FONTSIZE,
 		/* Codepoints */	SFontData::Codepoints,

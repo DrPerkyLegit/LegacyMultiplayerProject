@@ -16,9 +16,7 @@ const wstring DirectoryLevelStorage::sc_szPlayerDir(L"players/");
 
 _MapDataMappings::_MapDataMappings()
 {
-#ifndef _DURANGO
 	ZeroMemory(xuids,sizeof(PlayerUID)*MAXIMUM_MAP_SAVE_DATA);
-#endif
 	ZeroMemory(dimensions,sizeof(byte)*(MAXIMUM_MAP_SAVE_DATA/4));
 }
 
@@ -81,9 +79,7 @@ void _MapDataMappings::setMapping(int id, PlayerUID xuid, int dimension)
 // Old version the only used 1 bit for dimension indexing
 _MapDataMappings_old::_MapDataMappings_old()
 {
-#ifndef _DURANGO
 	ZeroMemory(xuids,sizeof(PlayerUID)*MAXIMUM_MAP_SAVE_DATA);
-#endif
 	ZeroMemory(dimensions,sizeof(byte)*(MAXIMUM_MAP_SAVE_DATA/8));
 }
 
@@ -246,29 +242,6 @@ LevelData *DirectoryLevelStorage::prepareLevel()
 		DWORD NumberOfBytesRead;
 		FileEntry *fileEntry = getSaveFile()->createFile(mapFile);
 
-#ifdef __PS3__
-		// 4J Stu - This version changed happened before initial release
-		if(getSaveFile()->getSaveVersion() < SAVE_FILE_VERSION_CHANGE_MAP_DATA_MAPPING_SIZE)
-		{
-			// Delete the old file
-			if(fileEntry) getSaveFile()->deleteFile( fileEntry );
-
-			// Save a new, blank version
-			saveMapIdLookup();
-		}
-		else
-#elif defined(_DURANGO)
-		// 4J Stu - This version changed happened before initial release
-		if(getSaveFile()->getSaveVersion() < SAVE_FILE_VERSION_DURANGO_CHANGE_MAP_DATA_MAPPING_SIZE)
-		{
-			// Delete the old file
-			if(fileEntry) getSaveFile()->deleteFile( fileEntry );
-
-			// Save a new, blank version
-			saveMapIdLookup();
-		}
-		else
-#endif
 		{
 			getSaveFile()->setFilePointer(fileEntry,0,NULL, FILE_BEGIN);
 
@@ -385,21 +358,11 @@ void DirectoryLevelStorage::save(shared_ptr<Player> player)
 {
 	// 4J Jev, removed try/catch.
 	PlayerUID playerXuid = player->getXuid();
-#if defined(__PS3__) || defined(__ORBIS__)
-	if( playerXuid != INVALID_XUID )
-#else
 	if( playerXuid != INVALID_XUID && !player->isGuest() )
-#endif
 	{
 		CompoundTag *tag = new CompoundTag();
 		player->saveWithoutId(tag);
-#if defined(__PS3__) || defined(__ORBIS__) || defined(__PSVITA__)
-		ConsoleSavePath realFile = ConsoleSavePath( m_saveFile->getPlayerDataFilenameForSave(playerXuid).c_str() );
-#elif defined(_DURANGO)
-		ConsoleSavePath realFile = ConsoleSavePath( playerDir.getName() + player->getXuid().toString() + L".dat" );
-#else
 		ConsoleSavePath realFile = ConsoleSavePath( playerDir.getName() + _toString( player->getXuid() ) + L".dat" );
-#endif
 		// If saves are disabled (e.g. because we are writing the save buffer to disk) then cache this player data
 		if(StorageManager.GetSaveDisabled())
 		{
@@ -445,13 +408,7 @@ bool DirectoryLevelStorage::load(shared_ptr<Player> player)
 CompoundTag *DirectoryLevelStorage::loadPlayerDataTag(PlayerUID xuid)
 {
 	// 4J Jev, removed try/catch.
-#if defined(__PS3__) || defined(__ORBIS__) || defined(__PSVITA__)
-	ConsoleSavePath realFile = ConsoleSavePath( m_saveFile->getPlayerDataFilenameForLoad(xuid).c_str() );
-#elif defined(_DURANGO)
-	ConsoleSavePath realFile = ConsoleSavePath( playerDir.getName() + xuid.toString() + L".dat" );
-#else
 	ConsoleSavePath realFile = ConsoleSavePath( playerDir.getName() + _toString( xuid ) + L".dat" );
-#endif
 	AUTO_VAR(it, m_cachedSaveData.find(realFile.getName()));
 	if(it != m_cachedSaveData.end() )
 	{
@@ -475,11 +432,7 @@ void DirectoryLevelStorage::clearOldPlayerFiles()
 {
 	if(StorageManager.GetSaveDisabled() ) return;
 
-#if defined(__PS3__) || defined(__ORBIS__) || defined(__PSVITA__)
-	vector<FileEntry *> *playerFiles = m_saveFile->getValidPlayerDatFiles();
-#else
 	vector<FileEntry *> *playerFiles = m_saveFile->getFilesWithPrefix( playerDir.getName() );
-#endif
 
 	if( playerFiles != NULL )
 	{
@@ -490,11 +443,7 @@ void DirectoryLevelStorage::clearOldPlayerFiles()
 			{
 				FileEntry *file = playerFiles->at(i);
 				wstring xuidStr = replaceAll( replaceAll(file->data.filename,playerDir.getName(),L""),L".dat",L"");
-#if defined(__PS3__) || defined(__ORBIS__) || defined(_DURANGO)
-				PlayerUID xuid(xuidStr);
-#else
 				PlayerUID xuid = _fromString<PlayerUID>(xuidStr);
-#endif
 				deleteMapFilesForPlayer(xuid);
 				m_saveFile->deleteFile( playerFiles->at(i) );
 			}
@@ -509,11 +458,7 @@ void DirectoryLevelStorage::clearOldPlayerFiles()
 			{
 					FileEntry *file = playerFiles->at(i);
 					wstring xuidStr = replaceAll( replaceAll(file->data.filename,playerDir.getName(),L""),L".dat",L"");
-#if defined(__PS3__) || defined(__ORBIS__) || defined(_DURANGO)
-				PlayerUID xuid(xuidStr);
-#else
 				PlayerUID xuid = _fromString<PlayerUID>(xuidStr);
-#endif
 				deleteMapFilesForPlayer(xuid);
 				m_saveFile->deleteFile( playerFiles->at(i) );
 			}
@@ -564,11 +509,7 @@ void DirectoryLevelStorage::resetNetherPlayerPositions()
 {
 	if(app.GetResetNether())
 	{
-#if defined(__PS3__) || defined(__ORBIS__) || defined(__PSVITA__)
-		vector<FileEntry *> *playerFiles = m_saveFile->getValidPlayerDatFiles();
-#else
 		vector<FileEntry *> *playerFiles = m_saveFile->getFilesWithPrefix( playerDir.getName() );
-#endif
 
 		if( playerFiles != NULL )
 		{

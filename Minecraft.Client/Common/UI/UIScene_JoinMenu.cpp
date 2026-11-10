@@ -29,9 +29,6 @@ void UIScene_JoinMenu::updateTooltips()
 	int iY = -1;
 	if (getControlFocus() == eControl_GamePlayers)
 	{
-#ifdef _DURANGO
-		iY = IDS_TOOLTIPS_VIEW_GAMERCARD;
-#endif
 	}
 	else
 	{
@@ -59,53 +56,6 @@ void UIScene_JoinMenu::tick()
 
 		m_buttonListPlayers.init(eControl_GamePlayers);
 
-#if defined(__PS3__) || defined(__ORBIS__) || defined __PSVITA__
-		for( int i = 0; i < MINECRAFT_NET_MAX_PLAYERS; i++ )
-		{
-			if( m_selectedSession->data.players[i] != NULL )
-			{
-	#ifndef _CONTENT_PACKAGE
-				if(app.DebugSettingsOn() && (app.GetGameSettingsDebugMask()&(1L<<eDebugSetting_DebugLeaderboards)))
-				{
-					m_buttonListPlayers.addItem(L"WWWWWWWWWWWWWWWW");
-				}
-				else
-	#endif
-				{
-					string playerName(m_selectedSession->data.players[i].getOnlineID());
-
-	#ifndef __PSVITA__
-					// Append guest number (any players in an online game not signed into PSN are guests)
-					if( m_selectedSession->data.players[i].isSignedIntoPSN() == false )
-					{
-						char suffix[5];
-						sprintf(suffix, " (%d)", m_selectedSession->data.players[i].getQuadrant() + 1);
-						playerName.append(suffix);
-					}
-	#endif
-					m_buttonListPlayers.addItem(playerName);
-				}
-			}
-			else
-			{
-				// Leave the loop when we hit the first NULL player
-				break;
-			}
-		}
-#elif defined(_DURANGO)
-		for( int i = 0; i < MINECRAFT_NET_MAX_PLAYERS; i++ )
-		{
-			if ( m_selectedSession->searchResult.m_playerNames[i].size() )
-			{
-				m_buttonListPlayers.addItem(m_selectedSession->searchResult.m_playerNames[i]);
-			}
-			else
-			{
-				// Leave the loop when we hit the first empty player name
-				break;
-			}
-		}
-#endif
 
 		m_labelLabels[eLabel_Difficulty].init(app.GetString(IDS_LABEL_DIFFICULTY));
 		m_labelLabels[eLabel_GameType].init(app.GetString(IDS_LABEL_GAME_TYPE));
@@ -208,11 +158,7 @@ void UIScene_JoinMenu::tick()
 		// without bubbling more info up from the network manager so this is the best we can do
 		UINT uiIDA[1];
 		uiIDA[0] = IDS_CONFIRM_OK;
-#ifdef _XBOX_ONE
-		ui.RequestMessageBox( IDS_CONNECTION_FAILED, IDS_DISCONNECTED_SERVER_QUIT, uiIDA,1,m_iPad,ErrorDialogReturned,this, app.GetStringTable());
-#else
 		ui.RequestMessageBox( IDS_ERROR_NETWORK_TITLE, IDS_ERROR_NETWORK, uiIDA,1,m_iPad,ErrorDialogReturned,this, app.GetStringTable());
-#endif
 	}
 
 	UIScene::tick();
@@ -266,15 +212,6 @@ void UIScene_JoinMenu::handleInput(int iPad, int key, bool repeat, bool pressed,
 			handled = true;
 		}
 		break;
-#ifdef _DURANGO
-	case ACTION_MENU_Y:
-		if(m_selectedSession != NULL && getControlFocus() == eControl_GamePlayers && m_buttonListPlayers.getItemCount() > 0)
-		{
-			PlayerUID uid = m_selectedSession->searchResult.m_playerXuids[m_buttonListPlayers.getCurrentSelection()];
-			if( uid != INVALID_XUID ) ProfileManager.ShowProfileCard(ProfileManager.GetLockedProfile(),uid);
-		}
-		break;
-#endif
 	case ACTION_MENU_OK:
 		if (getControlFocus() != eControl_GamePlayers)
 		{
@@ -282,9 +219,6 @@ void UIScene_JoinMenu::handleInput(int iPad, int key, bool repeat, bool pressed,
 		}
 		handled = true;
 		break;
-#ifdef __ORBIS__
-	case ACTION_MENU_TOUCHPAD_PRESS:
-#endif
 	case ACTION_MENU_UP:
 	case ACTION_MENU_DOWN:
 	case ACTION_MENU_PAGEUP:
@@ -306,11 +240,7 @@ void UIScene_JoinMenu::handlePress(F64 controlId, F64 childId)
 			//CD - Added for audio
 			ui.PlayUISFX(eSFX_Press);
 
-#ifdef _DURANGO
-			ProfileManager.CheckMultiplayerPrivileges(m_iPad, true, &checkPrivilegeCallback, this);
-#else
 			StartSharedLaunchFlow();
-#endif
 		}
 		break;
 	case eControl_GamePlayers:
@@ -328,21 +258,6 @@ void UIScene_JoinMenu::handleFocusChange(F64 controlId, F64 childId)
 	updateTooltips();
 }
 
-#ifdef _DURANGO
-void UIScene_JoinMenu::checkPrivilegeCallback(LPVOID lpParam, bool hasPrivilege, int iPad)
-{
-	UIScene_JoinMenu* pClass = (UIScene_JoinMenu*)lpParam;
-
-	if(hasPrivilege)
-	{
-		pClass->StartSharedLaunchFlow();
-}
-	else
-	{
-		pClass->m_bIgnoreInput = false;
-	}
-}
-#endif
 
 void UIScene_JoinMenu::StartSharedLaunchFlow()
 {
@@ -422,10 +337,6 @@ void UIScene_JoinMenu::JoinGame(UIScene_JoinMenu* pClass)
 			dwLocalUsersMask |= CGameNetworkManager::GetLocalPlayerMask(ProfileManager.GetPrimaryPad());
 
 			isSignedInLive = ProfileManager.IsSignedInLive(ProfileManager.GetPrimaryPad());
-#ifdef __PSVITA__
-			if(CGameNetworkManager::usingAdhocMode() && SQRNetworkManager_AdHoc_Vita::GetAdhocStatus())
-				isSignedInLive = true;
-#endif
 
 		}
 	}
@@ -433,19 +344,6 @@ void UIScene_JoinMenu::JoinGame(UIScene_JoinMenu* pClass)
 	// If this is an online game but not all players are signed in to Live, stop!
 	if (!isSignedInLive)
 	{
-#ifdef __ORBIS__
-		// Check if PSN is unavailable because of age restriction
-		int npAvailability = ProfileManager.getNPAvailability(iPadNotSignedInLive);
-		if (npAvailability == SCE_NP_ERROR_AGE_RESTRICTION)
-		{
-			pClass->m_bIgnoreInput = false;
-			// 4J Stu - This is a bit messy and is due to the library incorrectly returning false for IsSignedInLive if the npAvailability isn't SCE_OK
-			UINT uiIDA[1];
-			uiIDA[0]=IDS_OK;
-			ui.RequestMessageBox(IDS_ONLINE_SERVICE_TITLE, IDS_CONTENT_RESTRICTION, uiIDA, 1, iPadNotSignedInLive, NULL, NULL, app.GetStringTable());
-		}
-		else
-#endif
 		{
 			pClass->m_bIgnoreInput=false;
 			UINT uiIDA[1];
@@ -460,24 +358,10 @@ void UIScene_JoinMenu::JoinGame(UIScene_JoinMenu* pClass)
 	BOOL pccAllowed = TRUE;
 	BOOL pccFriendsAllowed = TRUE;
 
-#if defined(__PS3__) || defined(__PSVITA__)
-	if(isSignedInLive)
-	{
-		ProfileManager.GetChatAndContentRestrictions(ProfileManager.GetPrimaryPad(),false,&noUGC,NULL,NULL);
-	}
-#else
 	ProfileManager.AllowedPlayerCreatedContent(ProfileManager.GetPrimaryPad(),false,&pccAllowed,&pccFriendsAllowed);
 	if(!pccAllowed && !pccFriendsAllowed) noUGC = true;
-#endif
 
 
-#ifdef __PSVITA__
-	if( CGameNetworkManager::usingAdhocMode() )
-	{
-		noPrivileges = false;
-		noUGC = false;
-	}
-#endif
 
 	if(noUGC)
 	{
@@ -499,14 +383,6 @@ void UIScene_JoinMenu::JoinGame(UIScene_JoinMenu* pClass)
 	}
 	else
 	{
-#if defined(__ORBIS__) || defined(__PSVITA__)
-		bool chatRestricted = false;
-		ProfileManager.GetChatAndContentRestrictions(ProfileManager.GetPrimaryPad(),false,&chatRestricted,NULL,NULL);
-		if(chatRestricted)
-		{
-			ProfileManager.DisplaySystemMessage( SCE_MSG_DIALOG_SYSMSG_TYPE_TRC_PSN_CHAT_RESTRICTION, ProfileManager.GetPrimaryPad() );
-		}
-#endif
 		CGameNetworkManager::eJoinGameResult result = g_NetworkManager.JoinGame( pClass->m_selectedSession, dwLocalUsersMask );
 
 		// Alert the app the we no longer want to be informed of ethernet connections

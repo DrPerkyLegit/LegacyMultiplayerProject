@@ -318,11 +318,6 @@ bool UILayer::NavigateToScene(int iPad, EUIScene scene, void *initData)
 	case eUIScene_InGamePlayerOptionsMenu:
 		newScene = new UIScene_InGamePlayerOptionsMenu(iPad, initData, this);
 		break;
-#if defined(_XBOX_ONE) || defined(__ORBIS__)
-	case eUIScene_InGameSaveManagementMenu:
-		newScene = new UIScene_InGameSaveManagementMenu(iPad, initData, this);
-		break;
-#endif
 	case eUIScene_TeleportMenu:
 		newScene = new UIScene_TeleportMenu(iPad, initData, this);
 		break;
@@ -576,10 +571,6 @@ void UILayer::removeComponent(EUIScene scene)
 			{
 				if( (*compIt)->getSceneType() == scene)
 				{
-#ifdef __PSVITA__
-					// remove any touchboxes
-					ui.TouchBoxesClear((*compIt));
-#endif
 					m_scenesToDelete.push_back((*compIt));
 					(*compIt)->handleDestroy(); // For anything that might require the pointer be valid
 					compIt = m_components.erase(compIt);
@@ -595,10 +586,6 @@ void UILayer::removeComponent(EUIScene scene)
 
 void UILayer::removeScene(UIScene *scene)
 {
-#ifdef __PSVITA__
-	// remove any touchboxes
-	ui.TouchBoxesClear(scene);
-#endif
 
 	AUTO_VAR(newEnd, std::remove(m_sceneStack.begin(), m_sceneStack.end(), scene) );
 	m_sceneStack.erase(newEnd, m_sceneStack.end());
@@ -625,10 +612,6 @@ void UILayer::closeAllScenes()
 	m_sceneStack.clear();
 	for(AUTO_VAR(it, temp.begin()); it != temp.end(); ++it)
 	{
-#ifdef __PSVITA__
-		// remove any touchboxes
-		ui.TouchBoxesClear(*it);
-#endif
 		m_scenesToDelete.push_back(*it);
 		(*it)->handleDestroy(); // For anything that might require the pointer be valid
 	}
@@ -692,9 +675,7 @@ bool UILayer::updateFocusState(bool allowedFocus /* = false */)
 				// 4J Stu - This is a memory optimisation so we don't keep scenes loaded in memory all the time
 				// This is required for PS3 (and likely Vita), but I'm removing it on XboxOne so that we can avoid
 				// the scene creation time (which can be >0.5s) since we have the memory to spare
-#ifndef _XBOX_ONE
 				m_scenesToDestroy.push_back(scene);
-#endif
 			}
 		}
 
@@ -745,23 +726,6 @@ bool UILayer::updateFocusState(bool allowedFocus /* = false */)
 	return m_hasFocus;
 }
 
-#ifdef __PSVITA__
-UIScene *UILayer::getCurrentScene()
-{
-	// Note: reverse iterator, the last element is the top of the stack
-	for(AUTO_VAR(it,m_sceneStack.rbegin()); it != m_sceneStack.rend(); ++it)
-	{
-		UIScene *scene = *it;
-		// 4J-PB - only used on Vita, so iPad 0 is fine
-		if(scene->hasFocus(0) && scene->canHandleInput())
-		{
-			return scene;
-		}
-}
-
-	return NULL;
-}
-#endif
 
 void UILayer::handleInput(int iPad, int key, bool repeat, bool pressed, bool released, bool &handled)
 {
@@ -808,16 +772,6 @@ void UILayer::HandleDLCInstalled()
 	}
 }
 
-#ifdef _XBOX_ONE
-void UILayer::HandleDLCLicenseChange()
-{
-	for(AUTO_VAR(it,m_sceneStack.rbegin()); it != m_sceneStack.rend(); ++it)
-	{
-		UIScene *topScene = *it;
-		topScene->HandleDLCLicenseChange();
-	}
-}
-#endif
 
 bool UILayer::IsFullscreenGroup()
 {

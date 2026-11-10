@@ -112,9 +112,6 @@ void Player::_init()
 	m_bCheckedForModelParts=false;
 	m_bCheckedDLCForModelParts=false;
 
-#if defined(__PS3__) || defined(__ORBIS__)
-	m_ePlayerNameValidState=ePlayerNameValid_NotSet;
-#endif
 
 	enderChestInventory = shared_ptr<PlayerEnderChestContainer>(new PlayerEnderChestContainer());
 
@@ -374,25 +371,7 @@ void Player::tick()
 			this->drop( shared_ptr<ItemInstance>(new ItemInstance( Item::pickAxe_diamond, 1 )) );
 #endif
 
-#ifdef __PS3__
-			// #ifdef _DEBUG
-			// 		// Drop some items so we have them in inventory to play with
-			// 		this->drop( shared_ptr<ItemInstance>( new ItemInstance(Tile::recordPlayer) ) );
-			// 		this->drop( shared_ptr<ItemInstance>( new ItemInstance(Item::map) ) );
-			// 		this->drop( shared_ptr<ItemInstance>( new ItemInstance(Item::record_01) ) );
-			// 		this->drop( shared_ptr<ItemInstance>( new ItemInstance(Item::record_02) ) );
-			// 		this->drop( shared_ptr<ItemInstance>(new ItemInstance( Item::pickAxe_diamond, 1 )) );
-			// #endif
-#endif
 
-#ifdef _DURANGO
-			// Drop some items so we have them in inventory to play with
-			this->drop( shared_ptr<ItemInstance>( new ItemInstance(Tile::recordPlayer) ) );
-			this->drop( shared_ptr<ItemInstance>( new ItemInstance(Item::map) ) );
-			this->drop( shared_ptr<ItemInstance>( new ItemInstance(Item::record_01) ) );
-			this->drop( shared_ptr<ItemInstance>( new ItemInstance(Item::record_02) ) );
-			this->drop( shared_ptr<ItemInstance>(new ItemInstance( Item::pickAxe_diamond, 1 )) );
-#endif
 #endif
 			// 4J-PB - Throw items out at the start of the level
 			//this->drop( new ItemInstance( Item::pickAxe_diamond, 1 ) );
@@ -742,12 +721,6 @@ unsigned int Player::getSkinAnimOverrideBitmask(DWORD skinId)
 void Player::setXuid(PlayerUID xuid)
 {
 	m_xuid = xuid;
-#ifdef _XBOX_ONE
-	// 4J Stu - For XboxOne (and probably in the future all other platforms) we store a UUID for the player to use as the owner key for tamed animals
-	// This should just be a string version of the xuid
-
-	setUUID( xuid.toString() );
-#endif
 }
 
 void Player::setCustomCape(DWORD capeId)
@@ -2162,30 +2135,11 @@ void Player::checkRidingStatistiscs(double dx, double dy, double dz)
 				{
 					// 4-JEV, changed slightly to add extra parameters for event on durango.
 					int dist = minecartAchievementPos->dist(Mth::floor(x), Mth::floor(y), Mth::floor(z));
-#ifdef _XBOX_ONE
-					// 4J-PB - send the event to cause the progress bar to increase on XB1
-					if (m_bAwardedOnARail==false)
-					{
-						if(dist < 500)
-						{
-							if((dist>0) && (dist%100==0))
-							{
-								awardStat(GenericStats::onARail(), GenericStats::param_onARail(dist));
-							}
-						}
-						else
-						{
-							awardStat(GenericStats::onARail(), GenericStats::param_onARail(dist));
-							m_bAwardedOnARail=true;
-						}
-					}
-#else
 					if ((m_bAwardedOnARail==false) && (dist >= 500))
 					{
 						awardStat(GenericStats::onARail(), GenericStats::param_onARail(dist));
 						m_bAwardedOnARail=true;
 					}
-#endif					
 				}
 
 			}
@@ -2427,7 +2381,7 @@ void Player::startUsingItem(shared_ptr<ItemInstance> instance, int duration)
 	awardStat(GenericStats::itemsUsed(instance->getItem()->id),
 		GenericStats::param_itemsUsed(dynamic_pointer_cast<Player>(shared_from_this()),instance));
 
-#if (!defined _DURANGO) && (defined _EXTENDED_ACHIEVEMENTS)
+#if defined(_EXTENDED_ACHIEVEMENTS)
 	if ( (instance->getItem()->id == Item::rotten_flesh_Id) && (getFoodData()->getFoodLevel() == 0) )
 		awardStat(GenericStats::ironBelly(), GenericStats::param_ironBelly());
 #endif
@@ -2558,11 +2512,7 @@ int Player::getTexture()
 int Player::hash_fnct(const shared_ptr<Player> k)
 {
 	// TODO 4J Stu - Should we just be using the pointers and hashing them?
-#ifdef __PS3__
-	return (int)boost::hash_value( k->name ); // 4J Stu - Names are completely unique?
-#else
 	return (int)std::hash<wstring>{}( k->name ); // 4J Stu - Names are completely unique?
-#endif //__PS3__
 }
 
 bool Player::eq_test(const shared_ptr<Player> x, const shared_ptr<Player> y)
@@ -2979,24 +2929,3 @@ void Player::SetAdditionalModelParts(vector<ModelPart *> *ppAdditionalModelParts
 { 
 	m_ppAdditionalModelParts=ppAdditionalModelParts;
 }
-
-#if defined(__PS3__) || defined(__ORBIS__)
-
-Player::ePlayerNameValidState Player::GetPlayerNameValidState(void)
-{
-	return m_ePlayerNameValidState;
-}
-
-void Player::SetPlayerNameValidState(bool bState) 
-{
-	if(bState)
-	{
-		m_ePlayerNameValidState=ePlayerNameValid_True;
-	}
-	else
-	{
-		m_ePlayerNameValidState=ePlayerNameValid_False;
-
-	}
-}
-#endif

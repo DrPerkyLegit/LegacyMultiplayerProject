@@ -67,13 +67,7 @@ UIScene_FullscreenProgress::UIScene_FullscreenProgress(int iPad, void *initData,
 	thread->Run();
 	threadStarted = true;
 
-#ifdef __PSVITA__
-	ui.TouchBoxRebuild(this);
-#endif
 
-#ifdef _XBOX_ONE
-	ui.ShowPlayerDisplayname(false);
-#endif
 }
 
 UIScene_FullscreenProgress::~UIScene_FullscreenProgress()
@@ -272,9 +266,6 @@ void UIScene_FullscreenProgress::handleInput(int iPad, int key, bool repeat, boo
 		switch(key)
 		{
 		case ACTION_MENU_OK:
-#ifdef __ORBIS__
-		case ACTION_MENU_TOUCHPAD_PRESS:
-#endif
 			if(pressed)
 			{
 				sendInputToMovie(key, repeat, pressed, released);

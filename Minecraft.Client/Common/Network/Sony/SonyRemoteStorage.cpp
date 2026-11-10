@@ -5,16 +5,8 @@
 
 
 static const char sc_remoteSaveFilename[] = "/minecraft_save/gamedata.rs";
-#ifdef __PSVITA__
-static const char sc_localSaveFilename[] = "CloudSave_Vita.bin";
-static const char sc_localSaveFullPath[] = "savedata0:CloudSave_Vita.bin";
-#elif defined __PS3__
-static const char sc_localSaveFilename[] = "CloudSave_PS3.bin";
-static const char sc_localSaveFullPath[] = "NPEB01899--140720203552";
-#else
 static const char sc_localSaveFilename[] = "CloudSave_Orbis.bin";
 static const char sc_localSaveFullPath[] = "/app0/CloudSave_Orbis.bin";
-#endif
 
 static SceRemoteStorageStatus statParams;
 
@@ -283,13 +275,7 @@ bool SonyRemoteStorage::saveIsAvailable()
 {
 	if(m_getInfoStatus != e_infoFound)
 		return false;
-#ifdef __PS3__
-	return (getSavePlatform() == SAVE_FILE_PLATFORM_PSVITA); 
-#elif defined __PSVITA__
-	return (getSavePlatform() == SAVE_FILE_PLATFORM_PS3); 
-#else // __ORBIS__
 	return true;
-#endif
 }
 
 int SonyRemoteStorage::getDataProgress()

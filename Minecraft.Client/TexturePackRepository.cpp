@@ -43,37 +43,6 @@ void TexturePackRepository::addDebugPacks()
 	//texturePacks->push_back(m_dummyTexturePack);	
 	//cacheById[m_dummyTexturePack->getId()] = m_dummyTexturePack;
 
-#ifdef _XBOX
-	File packedTestFile(L"GAME:\\DummyTexturePack\\TexturePack.pck");
-	if(packedTestFile.exists())
-	{
-		DLCPack *pack = app.m_dlcManager.getPack(L"DLCTestPack");
-
-		if( pack != NULL && pack->IsCorrupt() )
-		{
-			app.m_dlcManager.removePack(pack);
-			pack = NULL;
-		}
-
-		if(pack == NULL)
-		{
-			wprintf(L"Pack \"%ls\" is not installed, so adding it\n", L"DLCTestPack");
-			pack = new DLCPack(L"DLCTestPack",0xffffffff);
-			DWORD dwFilesProcessed = 0;
-			if( app.m_dlcManager.readDLCDataFile(dwFilesProcessed, "GAME:\\DummyTexturePack\\TexturePack.pck",pack))
-			{
-				// 4J Stu - Don't need to do this, as the readDLCDataFile now adds texture packs
-				//m_dummyDLCTexturePack = addTexturePackFromDLC(pack, DLC_TEST_TEXTURE_PACK_ID); //new DLCTexturePack(0xFFFFFFFE, L"DLCTestPack", pack, DEFAULT_TEXTURE_PACK);
-				app.m_dlcManager.addPack(pack);
-			}
-			else
-			{
-				delete pack;
-			}
-		}
-	}
-
-#endif // _XBOX
 #endif // _CONTENT_PACKAGE
 }
 

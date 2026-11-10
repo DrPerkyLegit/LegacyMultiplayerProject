@@ -2,13 +2,7 @@
 
 using namespace std;
 
-#if defined(__PS3__) || defined(__ORBIS__) || defined __PSVITA__
-#define LOCALE_COUNT 21
-#elif defined _XBOX_ONE
-#define LOCALE_COUNT 19
-#else
 #define LOCALE_COUNT 11
-#endif
 
 class StringTable
 {

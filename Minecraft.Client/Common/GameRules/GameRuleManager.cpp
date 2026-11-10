@@ -631,33 +631,6 @@ void GameRuleManager::processSchematicsLighting(LevelChunk *levelChunk)
 
 void GameRuleManager::loadDefaultGameRules()
 {
-#ifdef _XBOX
-#ifdef _TU_BUILD
-	wstring fileRoot = L"UPDATE:\\res\\GameRules\\Tutorial.pck";
-#else
-	wstring fileRoot = L"GAME:\\res\\TitleUpdate\\GameRules\\Tutorial.pck";
-#endif
-	File packedTutorialFile(fileRoot);
-	if(loadGameRulesPack(&packedTutorialFile))
-	{
-		m_levelGenerators.getLevelGenerators()->at(0)->setWorldName(app.GetString(IDS_PLAY_TUTORIAL));
-		//m_levelGenerators.getLevelGenerators()->at(0)->setDefaultSaveName(L"Tutorial");
-		m_levelGenerators.getLevelGenerators()->at(0)->setDefaultSaveName(app.GetString(IDS_TUTORIALSAVENAME));
-	}
-
-#ifndef _CONTENT_PACKAGE
-	// 4J Stu - Remove these just now
-	//File testRulesPath(L"GAME:\\GameRules");
-	//vector<File *> *packFiles = testRulesPath.listFiles();
-
-	//for(AUTO_VAR(it,packFiles->begin()); it != packFiles->end(); ++it)
-	//{
-	//	loadGameRulesPack(*it);
-	//}
-	//delete packFiles;
-#endif
-
-#else // _XBOX
 
 	wstring fpTutorial = L"Tutorial.pck";
 	if(app.getArchiveFileSize(fpTutorial) >= 0)
@@ -679,28 +652,11 @@ void GameRuleManager::loadDefaultGameRules()
 	readRuleFile(lgo, tutorial.data, tutorial.length, strings);
 	lgo->setLoadedData();*/
 
-#endif
 }
 
 bool GameRuleManager::loadGameRulesPack(File *path)
 {
 	bool success = false;
-#ifdef _XBOX
-	if(path->exists())
-	{
-		DLCPack *pack = new DLCPack(L"",0xffffffff);
-		DWORD dwFilesProcessed = 0;
-		if( app.m_dlcManager.readDLCDataFile(dwFilesProcessed, path->getPath(),pack))
-		{
-			app.m_dlcManager.addPack(pack);
-			success = true;
-		}
-		else
-		{
-			delete pack;
-		}
-	}
-#endif
 	return success;
 }
 

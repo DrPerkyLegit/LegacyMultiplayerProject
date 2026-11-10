@@ -28,9 +28,6 @@ int SpiderRenderer::prepareArmor(shared_ptr<Mob> _spider, int layer, float a)
 	// 4J Stu - We probably don't need to do this on 360 either (as we force it back on the renderer)
 	// However we do want it off for other platforms that don't force it on in the render lib CBuff handling
 	// Several texture packs have fully transparent bits that break if this is off
-#ifdef _XBOX
-    glDisable(GL_ALPHA_TEST);
-#endif
 	// 4J - changes brought forward from 1.8.2
 	glBlendFunc(GL_ONE, GL_ONE);
 	if (spider->isInvisible())	glDepthMask(false);

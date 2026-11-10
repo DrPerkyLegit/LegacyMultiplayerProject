@@ -18,11 +18,7 @@ enum ByteOrder
 	BIGENDIAN,
 	LITTLEENDIAN,
 
-#if defined(__PS3__) || defined(_XBOX)
-	LOCALSYTEM_ENDIAN = BIGENDIAN,
-#else
 	LOCALSYTEM_ENDIAN = LITTLEENDIAN,
-#endif
 };
 enum EDefaultSkins
 {

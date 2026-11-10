@@ -16,63 +16,18 @@ typedef unsigned char byte;
 const int XUSER_INDEX_ANY = 255;
 const int XUSER_INDEX_FOCUS = 254;
 
-#ifdef __PSVITA__
-const int XUSER_MAX_COUNT = 1;
-const int MINECRAFT_NET_MAX_PLAYERS = 4;
-#else
 const int XUSER_MAX_COUNT = 4;
 const int MINECRAFT_NET_MAX_PLAYERS = 8;
-#endif
 
 
 
-#ifdef __ORBIS__
-#include <net.h>
-#include <np/np_npid.h>
-#include <user_service.h>
-#include "..\..\Minecraft.Client\Orbis\Orbis_PlayerUID.h"
-#include "..\..\Minecraft.Client\Orbis\Network\SQRNetworkManager_Orbis.h"
-typedef SQRNetworkManager_Orbis::SessionID SessionID;
-typedef SQRNetworkManager_Orbis::PresenceSyncInfo INVITE_INFO;
-
-#elif defined __PS3__		// defined in the profile lib
-#include <np.h>
-#include <sysutil/sysutil_userinfo.h>
-#include <netex/libnetctl.h>
-#include <assert.h>
-#include <stdlib.h>
-#include "..\..\Minecraft.Client\PS3\PS3_PlayerUID.h"
-#include "..\..\Minecraft.Client\PS3\Network\SQRNetworkManager_PS3.h"
-typedef SQRNetworkManager::SessionID SessionID;
-typedef SQRNetworkManager::PresenceSyncInfo INVITE_INFO;
-
-#elif defined __PSVITA__
-#include <np.h>
-#include <assert.h>
-#include <stdlib.h>
-#include "..\..\Minecraft.Client\PSVita\PSVita_PlayerUID.h"
-#include "..\..\Minecraft.Client\PSVita\Network\SQRNetworkManager_Vita.h"
-#include "..\..\Minecraft.Client\PSVita\Network\SQRNetworkManager_AdHoc_Vita.h"
-typedef SQRNetworkManager_Vita::SessionID SessionID;
-typedef SQRNetworkManager_Vita::PresenceSyncInfo INVITE_INFO;
-
-#elif defined _DURANGO
-#include "..\..\Minecraft.Client\Durango\4JLibs\inc\4J_Profile.h"
-#include "..\..\Minecraft.Client\Durango\Network\DQRNetworkManager.h"
-typedef ULONGLONG SessionID;
-typedef ULONGLONG GameSessionUID;
-typedef DQRNetworkManager::SessionInfo INVITE_INFO;
-#else
 typedef ULONGLONG PlayerUID;
 typedef ULONGLONG SessionID;
 typedef PlayerUID GameSessionUID;
 class INVITE_INFO;
 
-#endif //  __PS3__
 
-#ifndef _DURANGO
 typedef PlayerUID *PPlayerUID;
-#endif
 typedef struct _XUIOBJ* HXUIOBJ;
 typedef struct _XUICLASS* HXUICLASS;
 typedef struct _XUIBRUSH* HXUIBRUSH;
@@ -94,9 +49,6 @@ template <typename T> class XLockFreeStack
 	std::vector<T *> intStack;
 public:
 	XLockFreeStack() {
-#ifdef __ORBIS__
-		OrbisInit();		// For PS4, we need to make sure Ult is set up for the critical sections to be able to initialise
-#endif
 		InitializeCriticalSectionAndSpinCount(&m_cs,5120);
 	}
 	~XLockFreeStack() { DeleteCriticalSection( &m_cs ); }
@@ -314,29 +266,17 @@ public:
 	static IQNetPlayer m_player[4];
 };
 
-#ifdef _DURANGO
-// 4J Stu - We don't want to be doing string conversions at runtime for timing instrumentation, so do this instead
-#define PIXBeginNamedEvent(a, b, ...) PIXBeginEvent(a,L ## b, __VA_ARGS__)
-#define PIXEndNamedEvent() PIXEndEvent()
-#define PIXSetMarkerDeprecated(a, b, ...) PIXSetMarker(a, L ## b, __VA_ARGS__)
-#define PIXAddNamedCounter(a, b) PIXReportCounter( L ## b, a)
-#else
 void PIXAddNamedCounter(int a, char *b, ...);
 void PIXBeginNamedEvent(int a, char *b, ...);
 void PIXEndNamedEvent();
 void PIXSetMarkerDeprecated(int a, char *b, ...);
-#endif
 
 void XSetThreadProcessor(HANDLE a, int b);
 //BOOL XCloseHandle(HANDLE a);
 
 const int QNET_SENDDATA_LOW_PRIORITY = 0;
 const int QNET_SENDDATA_SECONDARY = 0;
-#if defined(__PS3__) || defined(__ORBIS__) || defined(_DURANGO) || defined(__PSVITA__)
-#define INVALID_XUID PlayerUID()
-#else
 const int INVALID_XUID = 0;
-#endif
 // const int MOJANG_DATA = 0;
 
 // typedef struct _STRING_VERIFY_RESPONSE
@@ -349,7 +289,6 @@ const int XCONTENT_MAX_DISPLAYNAME_LENGTH = 256;
 const int XCONTENT_MAX_FILENAME_LENGTH = 256;
 typedef int XCONTENTDEVICEID;
 
-#if !defined( __PS3__) && !defined(__ORBIS__) && !defined(_DURANGO) && !defined(__PSVITA__)
 typedef struct _XCONTENT_DATA
 {
     XCONTENTDEVICEID DeviceID;
@@ -357,11 +296,9 @@ typedef struct _XCONTENT_DATA
     WCHAR szDisplayName[XCONTENT_MAX_DISPLAYNAME_LENGTH];
     CHAR szFileName[XCONTENT_MAX_FILENAME_LENGTH];
 } XCONTENT_DATA, *PXCONTENT_DATA;
-#endif //__PS3__
 
 static const int XMARKETPLACE_CONTENT_ID_LEN = 4;
 
-#ifndef _DURANGO
 typedef struct _XMARKETPLACE_CONTENTOFFER_INFO
 {
     ULONGLONG qwOfferID;
@@ -398,7 +335,6 @@ typedef enum
     XMARKETPLACE_OFFERING_TYPE_CONSUMABLE = 0x00010000,
     XMARKETPLACE_OFFERING_TYPE_AVATARITEM = 0x00100000
 } XMARKETPLACE_OFFERING_TYPE;
-#endif // _DURANGO
 
 const int QNET_SENDDATA_RELIABLE = 0;
 const int QNET_SENDDATA_SEQUENTIAL = 0;
@@ -437,7 +373,6 @@ public:
 	HRESULT Load(LPCWSTR szId);
 };
 
-#if !defined(__ORBIS__) && !defined(_XBOX_ONE)
 typedef VOID * XMEMDECOMPRESSION_CONTEXT;
 typedef VOID * XMEMCOMPRESSION_CONTEXT;
 
@@ -486,7 +421,6 @@ typedef struct _XMEMCODEC_PARAMETERS_LZX {
 
 void XMemDestroyCompressionContext(XMEMCOMPRESSION_CONTEXT Context);
 void XMemDestroyDecompressionContext(XMEMDECOMPRESSION_CONTEXT Context);
-#endif
 
 typedef struct {
     BYTE type;
@@ -618,11 +552,9 @@ const int XC_LOCALE_LATIN_AMERICA		=240;
 
 
 
-#if !(defined _DURANGO || defined __PS3__ || defined __ORBIS__ || defined __PSVITA__)
 DWORD XGetLanguage();
 DWORD XGetLocale();
 DWORD XEnableGuestSignin(BOOL fEnable);
-#endif
 
 class D3DXVECTOR3
 {

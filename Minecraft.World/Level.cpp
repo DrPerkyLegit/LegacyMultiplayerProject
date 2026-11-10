@@ -2445,12 +2445,7 @@ void Level::tick(shared_ptr<Entity> e, bool actual)
 	int xc = Mth::floor(e->x);
 	int zc = Mth::floor(e->z);
 	int r = 32;
-#ifdef __PSVITA__
-	// AP - make sure the dragon ticks all the time, even when there aren't any chunks.
-	if (actual && e->GetType() != eTYPE_ENDERDRAGON && !hasChunksAt(xc - r, 0, zc - r, xc + r, 0, zc + r))
-#else
 	if (actual && !hasChunksAt(xc - r, 0, zc - r, xc + r, 0, zc + r))
-#endif
 	{
 		return;
 	}
@@ -2461,12 +2456,7 @@ void Level::tick(shared_ptr<Entity> e, bool actual)
 	e->yRotO = e->yRot;
 	e->xRotO = e->xRot;
 
-#ifdef __PSVITA__
-	// AP - make sure the dragon ticks all the time, even when there aren't any chunks.
-	if (actual && (e->GetType() == eTYPE_ENDERDRAGON || e->inChunk) )
-#else
 	if (actual && e->inChunk )
-#endif
 	{
 		if (e->riding != NULL)
 		{
@@ -3242,11 +3232,7 @@ void Level::tickClientSideTiles(int xo, int zo, LevelChunk *lc)
 			if (player != NULL && player->distanceToSqr(x + 0.5, y + 0.5, z + 0.5) > 2 * 2)
 			{
 				// 4J-PB - Fixed issue with cave audio event having 2 sounds at 192k
-#ifdef _XBOX
-				this->playSound(x + 0.5, y + 0.5, z + 0.5,eSoundType_AMBIENT_CAVE_CAVE2, 0.7f, 0.8f + random->nextFloat() * 0.2f);
-#else
 				this->playSound(x + 0.5, y + 0.5, z + 0.5,eSoundType_AMBIENT_CAVE_CAVE, 0.7f, 0.8f + random->nextFloat() * 0.2f);
-#endif
 				delayUntilNextMoodSound = random->nextInt(20 * 60 * 10) + 20 * 60 * 5;
 			}
 		}
@@ -3414,39 +3400,7 @@ void Level::checkLight(LightLayer::variety layer, int xc, int yc, int zc, bool f
 
 	EnterCriticalSection(&m_checkLightCS);
 
-#ifdef __PSVITA__
-	// AP - only clear the one array element required to check if something has changed 
-	cachewritten = false;
-	if( cache != NULL )
-	{
-		int idx;
-		if( !(yc & 0xffffff00) )
-		{
-			idx = GetIndex(xc, yc, zc);
-			cache[idx] = 0;
-			idx = GetIndex(xc - 1, yc, zc);
-			cache[idx] = 0;
-			idx = GetIndex(xc + 1, yc, zc);
-			cache[idx] = 0;
-			idx = GetIndex(xc, yc, zc - 1);
-			cache[idx] = 0;
-			idx = GetIndex(xc, yc, zc + 1);
-			cache[idx] = 0;
-		}
-		if( !((yc-1) & 0xffffff00) )
-		{
-			idx = GetIndex(xc, yc - 1, zc);
-			cache[idx] = 0;
-		}
-		if( !((yc+1) & 0xffffff00) )
-		{
-			idx = GetIndex(xc, yc + 1, zc);
-			cache[idx] = 0;
-		}
-	}
-#else
 	initCache(cache);
-#endif
 
 	// If we're in cached mode, then use memory allocated after the cached data itself for the toCheck array, in an attempt to make both that & the other cached data sit on the CPU L2 cache better.
 	
@@ -3499,48 +3453,6 @@ void Level::checkLight(LightLayer::variety layer, int xc, int yc, int zc, bool f
 
         }
 
-#ifdef __PSVITA__
-		// AP - we only need to memset the entire array if we discover something has changed
-		if( ex != cc && cache )
-		{
-			lightCache_t old[7];
-			if( !(yc & 0xffffff00) )
-			{
-				old[0] = cache[GetIndex(xc, yc, zc)];
-				old[1] = cache[GetIndex(xc - 1, yc, zc)];
-				old[2] = cache[GetIndex(xc + 1, yc, zc)];
-				old[5] = cache[GetIndex(xc, yc, zc - 1)];
-				old[6] = cache[GetIndex(xc, yc, zc + 1)];
-			}
-			if( !((yc-1) & 0xffffff00) )
-			{
-				old[3] = cache[GetIndex(xc, yc - 1, zc)];
-			}
-			if( !((yc+1) & 0xffffff00) )
-			{
-				old[4] = cache[GetIndex(xc, yc + 1, zc)];
-			}
-
-			XMemSet128(cache,0,16*16*16*sizeof(lightCache_t));
-
-			if( !(yc & 0xffffff00) )
-			{
-				cache[GetIndex(xc, yc, zc)] = old[0];
-				cache[GetIndex(xc - 1, yc, zc)] = old[1];
-				cache[GetIndex(xc + 1, yc, zc)] = old[2];
-				cache[GetIndex(xc, yc, zc - 1)] = old[5];
-				cache[GetIndex(xc, yc, zc + 1)] = old[6];
-			}
-			if( !((yc-1) & 0xffffff00) )
-			{
-				cache[GetIndex(xc, yc - 1, zc)] = old[3];
-			}
-			if( !((yc+1) & 0xffffff00) )
-			{
-				cache[GetIndex(xc, yc + 1, zc)] = old[4];
-			}
-		}
-#endif
 
         if (ex > cc)
 		{
@@ -3736,14 +3648,6 @@ vector<shared_ptr<Entity> > *Level::getEntities(shared_ptr<Entity> except, AABB 
 	int zc0 = Mth::floor((bb->z0 - 2) / 16);
 	int zc1 = Mth::floor((bb->z1 + 2) / 16);
 
-#ifdef __PSVITA__
-#ifdef _ENTITIES_RW_SECTION
-	// AP - RW critical sections are expensive so enter it here so we only have to call it once instead of X times
-	EnterCriticalRWSection(&LevelChunk::m_csEntities, false);
-#else
-	EnterCriticalSection(&LevelChunk::m_csEntities);
-#endif
-#endif
 
 	for (int xc = xc0; xc <= xc1; xc++)
 		for (int zc = zc0; zc <= zc1; zc++)
@@ -3755,13 +3659,6 @@ vector<shared_ptr<Entity> > *Level::getEntities(shared_ptr<Entity> except, AABB 
 		}
 	MemSect(0);
 
-#ifdef __PSVITA__
-#ifdef _ENTITIES_RW_SECTION
-	LeaveCriticalRWSection(&LevelChunk::m_csEntities, false);
-#else
-	LeaveCriticalSection(&LevelChunk::m_csEntities);
-#endif
-#endif
 
 	return &es;
 }
@@ -3775,14 +3672,6 @@ vector<shared_ptr<Entity> > *Level::getEntitiesOfClass(const type_info& baseClas
 	int zc1 = Mth::floor((bb->z1 + 2) / 16);
 	vector<shared_ptr<Entity> > *es = new vector<shared_ptr<Entity> >();
 
-#ifdef __PSVITA__
-#ifdef _ENTITIES_RW_SECTION
-	// AP - RW critical sections are expensive so enter it here so we only have to call it once instead of X times
-	EnterCriticalRWSection(&LevelChunk::m_csEntities, false);
-#else
-	EnterCriticalSection(&LevelChunk::m_csEntities);
-#endif
-#endif
 
 	for (int xc = xc0; xc <= xc1; xc++)
 		for (int zc = zc0; zc <= zc1; zc++)
@@ -3793,13 +3682,6 @@ vector<shared_ptr<Entity> > *Level::getEntitiesOfClass(const type_info& baseClas
 			}
 		}
 
-#ifdef __PSVITA__
-#ifdef _ENTITIES_RW_SECTION
-	LeaveCriticalRWSection(&LevelChunk::m_csEntities, false);
-#else
-	LeaveCriticalSection(&LevelChunk::m_csEntities);
-#endif
-#endif
 
 	return es;
 }

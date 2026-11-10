@@ -42,20 +42,9 @@
 #include "ClientConstants.h"
 #include "..\Minecraft.World\SoundTypes.h"
 #include "TexturePackRepository.h"
-#ifdef _XBOX
-#include "Common\XUI\XUI_Scene_Trading.h"
-#else
 #include "Common\UI\UI.h"
-#endif
-#ifdef __PS3__
-#include "PS3/Network/SonyVoiceChat.h"
-#endif
 #include "DLCTexturePack.h"
 
-#ifdef _DURANGO
-#include "..\Minecraft.World\DurangoStats.h"
-#include "..\Minecraft.World\GenericStats.h"
-#endif
 
 ClientConnection::ClientConnection(Minecraft *minecraft, const wstring& ip, int port)
 {
@@ -212,12 +201,6 @@ void ClientConnection::handleLogin(shared_ptr<LoginPacket> packet)
 				bRes=app.IsFileInMemoryTextures(wstr);
 				if(!bRes)
 				{			
-#ifdef _XBOX
-					C4JStorage::ETMSStatus eTMSStatus;
-					eTMSStatus=StorageManager.ReadTMSFile(iUserID,C4JStorage::eGlobalStorage_Title,C4JStorage::eTMS_FileType_Graphic,pMojangData->wchSkin,&pBuffer, &dwSize);
-
-					bRes=(eTMSStatus==C4JStorage::ETMSStatus_Idle);
-#endif
 				}
 
 				if(bRes)
@@ -234,11 +217,6 @@ void ClientConnection::handleLogin(shared_ptr<LoginPacket> packet)
 				bRes=app.IsFileInMemoryTextures(wstr);
 				if(!bRes)
 				{		
-#ifdef _XBOX
-					C4JStorage::ETMSStatus eTMSStatus;
-					eTMSStatus=StorageManager.ReadTMSFile(iUserID,C4JStorage::eGlobalStorage_Title,C4JStorage::eTMS_FileType_Graphic,pMojangData->wchCape,&pBuffer, &dwSize);
-					bRes=(eTMSStatus==C4JStorage::ETMSStatus_Idle);
-#endif
 				}
 
 				if(bRes)
@@ -749,14 +727,8 @@ void ClientConnection::handleAddPlayer(shared_ptr<AddPlayerPacket> packet)
 	player->yHeadRot = packet->yHeadRot * 360 / 256.0f;
 	player->setXuid(packet->xuid);
 
-#ifdef _DURANGO
-	// On Durango request player display name from network manager
-	INetworkPlayer *networkPlayer = g_NetworkManager.GetPlayerByXuid(player->getXuid());
-	if (networkPlayer != NULL) player->displayName = networkPlayer->GetDisplayName();
-#else
 	// On all other platforms display name is just gamertag so don't check with the network manager
 	player->displayName = player->name;
-#endif
 
 	//	printf("\t\t\t\t%d: Add player\n",packet->id,packet->yRot);
 
@@ -1628,338 +1600,18 @@ void ClientConnection::handlePreLogin(shared_ptr<PreLoginPacket> packet)
 		}
 	}
 
-#ifdef _XBOX
-	if(!g_NetworkManager.IsHost() && !app.GetGameHostOption(eGameHostOption_FriendsOfFriends))
-	{
-		if(m_userIndex == ProfileManager.GetPrimaryPad() )
-		{
-			for(DWORD idx = 0; idx < XUSER_MAX_COUNT; ++idx)
-			{
-				if(ProfileManager.IsSignedIn(m_userIndex) && ProfileManager.IsGuest(idx))
-				{
-					canPlay = FALSE;
-					isFriendsWithHost = FALSE;
-				}
-				else
-				{
-					PlayerUID playerXuid = INVALID_XUID;
-					if( ProfileManager.IsSignedInLive(idx) )
-					{
- 						ProfileManager.GetXUID(idx,&playerXuid,true);
-					}
-					if( playerXuid != INVALID_XUID )
-					{
-						// Is this user friends with the host player?			
-						BOOL result;
-						DWORD error;
-						error = XUserAreUsersFriends(idx,&packet->m_playerXuids[packet->m_hostIndex],1,&result,NULL);
-						if(error == ERROR_SUCCESS && result != TRUE)
-						{
-							canPlay = FALSE;
-							isFriendsWithHost = FALSE;
-						}
-					}
-				}
-				if(!canPlay) break;
-			}
-		}
-		else
-		{
-			if(ProfileManager.IsSignedIn(m_userIndex) && ProfileManager.IsGuest(m_userIndex))
-			{
-				canPlay = FALSE;
-				isFriendsWithHost = FALSE;
-			}
-			else
-			{
-				PlayerUID playerXuid = INVALID_XUID;
-				if( ProfileManager.IsSignedInLive(m_userIndex) )
-				{
- 					ProfileManager.GetXUID(m_userIndex,&playerXuid,true);
-				}
-				if( playerXuid != INVALID_XUID )
-				{
-					// Is this user friends with the host player?			
-					BOOL result;
-					DWORD error;
-					error = XUserAreUsersFriends(m_userIndex,&packet->m_playerXuids[packet->m_hostIndex],1,&result,NULL);
-					if(error == ERROR_SUCCESS && result != TRUE)
-					{
-						canPlay = FALSE;
-						isFriendsWithHost = FALSE;
-					}
-				}
-			}
-		}
-	}
-
-	if( canPlay )
-	{
-		for(DWORD i = 0; i < packet->m_dwPlayerCount; ++i)
-		{
-			bool localPlayer = false;
-			for(DWORD idx = 0; idx < XUSER_MAX_COUNT; ++idx)
-			{
-				if( ProfileManager.IsSignedInLive(idx) )
-				{
-					// need to use the XUID here
- 					PlayerUID playerXUID = INVALID_XUID;
-					if( !ProfileManager.IsGuest( idx ) )
-					{
-						// Guest don't have an offline XUID as they cannot play offline, so use their online one
- 						ProfileManager.GetXUID(idx,&playerXUID,true);
-					}
-					if( ProfileManager.AreXUIDSEqual(playerXUID,packet->m_playerXuids[i]) ) localPlayer = true;
-				}
-				else if (ProfileManager.IsSignedIn(idx))
-				{
-					// If we aren't signed into live then they have to be a local player
-					localPlayer = true;
-				}
-			}
-			if(!localPlayer)
-			{
-				// First check our own permissions to see if we can play with this player
-				if(m_userIndex == ProfileManager.GetPrimaryPad() )
-				{
-					canPlayLocal = ProfileManager.CanViewPlayerCreatedContent(m_userIndex,false,&packet->m_playerXuids[i],1);
-
-					// 4J Stu - Everyone joining needs to have at least one friend in the game
-					// Local players are implied friends
-					if( isAtLeastOneFriend != TRUE )
-					{
-						BOOL result;
-						DWORD error;
-						for(DWORD idx = 0; idx < XUSER_MAX_COUNT; ++idx)
-						{
-							if( ProfileManager.IsSignedIn(idx) && !ProfileManager.IsGuest(idx) )
-							{
-								error = XUserAreUsersFriends(idx,&packet->m_playerXuids[i],1,&result,NULL);
-								if(error == ERROR_SUCCESS && result == TRUE) isAtLeastOneFriend = TRUE;
-							}
-						}
-					}
-				}
-				else
-				{
-					// Friends with the primary player on this system
-					isAtLeastOneFriend = true;
-
-					canPlayLocal = ProfileManager.CanViewPlayerCreatedContent(m_userIndex,true,&packet->m_playerXuids[i],1);
-				}
-
-				// If we can play with them, then check if they can play with us
-				if( canPlayLocal && ( packet->m_friendsOnlyBits & (1<<i) ) )
-				{
-					// If this is the primary pad then check all local players against the list in the packet (this happens when joining the game for the first time)
-					// If not the primary pad, then just check against this index. It happens on joining at the start, but more importantly players trying to join during the game
-					bool thisQuadrantOnly = true;
-					if( m_userIndex == ProfileManager.GetPrimaryPad() ) thisQuadrantOnly = false;
-
-					BOOL result;
-					DWORD error;
-					for(DWORD idx = 0; idx < XUSER_MAX_COUNT; ++idx)
-					{
-						if( (!thisQuadrantOnly || m_userIndex == idx) && ProfileManager.IsSignedIn(idx) && !ProfileManager.IsGuest(idx) )
-						{
-							error = XUserAreUsersFriends(idx,&packet->m_playerXuids[i],1,&result,NULL);
-							if(error == ERROR_SUCCESS) canPlay &= result;
-						}
-						if(!canPlay) break;
-					}
-				}
-				if(!canPlay || !canPlayLocal) break;
-			}
-		}
-	}
-#else
 	// TODO - handle this kind of things for non-360 platforms
 	canPlay = TRUE;
 	canPlayLocal = TRUE;
 	isAtLeastOneFriend = TRUE;
 	cantPlayContentRestricted= FALSE;
 
-#if ( defined __PS3__ || defined __ORBIS__ || defined __PSVITA__)
-
-	if(!g_NetworkManager.IsHost() && !app.GetGameHostOption(eGameHostOption_FriendsOfFriends))
-	{
-		bool bChatRestricted=false;
-
-		ProfileManager.GetChatAndContentRestrictions(m_userIndex,true,&bChatRestricted,NULL,NULL);
-
-		// Chat restricted orbis players can still play online
-#ifndef __ORBIS__
-		canPlay = !bChatRestricted;
-#endif
-
-		if(m_userIndex == ProfileManager.GetPrimaryPad() )
-		{
-			// Is this user friends with the host player?			
-			bool isFriend = true;
-			unsigned int friendCount = 0;
-#ifdef __PS3__
-			int ret = sceNpBasicGetFriendListEntryCount(&friendCount);
-#elif defined __PSVITA__
-			sce::Toolkit::NP::Utilities::Future<sce::Toolkit::NP::FriendsList> friendList;
-			int ret = -1;
-			if(!CGameNetworkManager::usingAdhocMode())	// we don't need to be friends in PSN for adhoc mode
-			{
-				int ret = sce::Toolkit::NP::Friends::Interface::getFriendslist(&friendList, false);
-				if(ret == SCE_TOOLKIT_NP_SUCCESS)
-				{
-					if( friendList.hasResult() )
-					{
-						friendCount = friendList.get()->size();
-					}
-				}
-			}
-#else // __ORBIS__
-
-			sce::Toolkit::NP::Utilities::Future<sce::Toolkit::NP::FriendsList> friendList;
-
-			sce::Toolkit::NP::FriendInfoRequest requestParam;
-			memset(&requestParam,0,sizeof(requestParam));
-			requestParam.flag = SCE_TOOLKIT_NP_FRIENDS_LIST_ALL;
-			requestParam.limit = 0;
-			requestParam.offset = 0;
-			requestParam.userInfo.userId = ProfileManager.getUserID(ProfileManager.GetPrimaryPad());
-
-			int ret = sce::Toolkit::NP::Friends::Interface::getFriendslist(&friendList, &requestParam, false);	  
-			if( ret == 0 )
-			{
-				if( friendList.hasResult() )
-				{
-					friendCount = friendList.get()->size();
-				}
-			}
-#endif
-			if( ret == 0 )
-			{			
-				isFriend = false;
-				SceNpId npid;
-				for( unsigned int i = 0; i < friendCount; i++ )
-				{
-#ifdef __PS3__
-					ret = sceNpBasicGetFriendListEntry( i, &npid );
-#else
-					npid = friendList.get()->at(i).npid;
-#endif
-					if( ret == 0 )
-					{
-						if(strcmp(npid.handle.data, packet->m_playerXuids[packet->m_hostIndex].getOnlineID()) == 0)
-						{
-							isFriend = true;
-							break;
-						}
-					}
-				}
-			}
-
-			if( !isFriend )
-			{
-				canPlay = FALSE;
-				isFriendsWithHost = FALSE;
-			}
-		}
-	}
-	// is it an online game, and a player has chat restricted?
-	else if(!g_NetworkManager.IsLocalGame())
-	{
-		// if the player is chat restricted, then they can't play an online game
-		bool bChatRestricted=false;
-		bool bContentRestricted=false;
-
-		// If this is a pre-login packet for the first player on the machine, then accumulate up these flags for everyone signed in. We can handle exiting the game
-		// much more cleanly at this point by exiting the level, rather than waiting for a prelogin packet for the other players, when we have to exit the player
-		// which seems to be very unstable at the point of starting up the game
-		if(m_userIndex == ProfileManager.GetPrimaryPad())
-		{
-			ProfileManager.GetChatAndContentRestrictions(m_userIndex,false,&bChatRestricted,&bContentRestricted,NULL);
-		}
-		else
-		{
-			ProfileManager.GetChatAndContentRestrictions(m_userIndex,true,&bChatRestricted,&bContentRestricted,NULL);
-		}
-
-		// Chat restricted orbis players can still play online
-#ifndef __ORBIS__
-		canPlayLocal = !bChatRestricted;
-#endif
-
-		cantPlayContentRestricted = bContentRestricted ? 1 : 0;
-	}
 
 
-#endif
-
-#ifdef _XBOX_ONE
-	if(!g_NetworkManager.IsHost() && m_userIndex == ProfileManager.GetPrimaryPad())
-	{
-		long long startTime = System::currentTimeMillis();
-
-		auto friendsXuids = DQRNetworkManager::GetFriends();
-
-		if (app.GetGameHostOption(eGameHostOption_FriendsOfFriends))
-		{
-			// Check that the user has at least one friend in the game
-			isAtLeastOneFriend = false;
-
-			for (int i = 0; i < friendsXuids->Size; i++)
-			{
-				auto friendsXuid = friendsXuids->GetAt(i);
-
-				// Check this friend against each player, if we find them we have at least one friend
-				for (int j = 0; j < g_NetworkManager.GetPlayerCount(); j++)
-				{
-					Platform::String^ xboxUserId = ref new Platform::String(g_NetworkManager.GetPlayerByIndex(j)->GetUID().toString().data());
-					if (friendsXuid == xboxUserId)
-					{
-						isAtLeastOneFriend = true;
-						break;
-					}
-				}				
-			}
-
-			app.DebugPrintf("ClientConnection::handlePreLogin: User has at least one friend? %s\n", isAtLeastOneFriend ? "Yes" : "No");
-		}
-		else
-		{
-			// Check that the user is friends with the host
-			bool isFriend = false;
-
-			Platform::String^ hostXboxUserId = ref new Platform::String(g_NetworkManager.GetHostPlayer()->GetUID().toString().data());
-
-			for (int i = 0; i < friendsXuids->Size; i++)
-			{
-				if (friendsXuids->GetAt(i) == hostXboxUserId)
-				{
-					isFriend = true;
-					break;
-				}
-			}
-
-			if( !isFriend )
-			{
-				canPlay = FALSE;
-				isFriendsWithHost = FALSE;
-			}
-
-			app.DebugPrintf("ClientConnection::handlePreLogin: User is friends with the host? %s\n", isFriendsWithHost ? "Yes" : "No");
-		}
-
-		app.DebugPrintf("ClientConnection::handlePreLogin: Friendship checks took %i ms\n", System::currentTimeMillis() - startTime);
-	}
-#endif
-
-#endif // _XBOX
 
 	if(!canPlay || !canPlayLocal || !isAtLeastOneFriend || cantPlayContentRestricted)
 	{
-#ifndef __PS3__
 		DisconnectPacket::eDisconnectReason reason = DisconnectPacket::eDisconnect_NoUGC_Remote;
-#else
-		DisconnectPacket::eDisconnectReason reason = DisconnectPacket::eDisconnect_None;
-#endif		
 		if(m_userIndex == ProfileManager.GetPrimaryPad())			
 		{
 			if(!isFriendsWithHost) reason = DisconnectPacket::eDisconnect_NotFriendsWithHost;
@@ -2031,18 +1683,9 @@ void ClientConnection::handlePreLogin(shared_ptr<PreLoginPacket> packet)
 			// Guest don't have an offline XUID as they cannot play offline, so use their online one
  			ProfileManager.GetXUID(m_userIndex,&onlineXUID,true);
 		}
-#ifdef __PSVITA__
-		if(CGameNetworkManager::usingAdhocMode() && onlineXUID.getOnlineID()[0] == 0)
-		{
-			// player doesn't have an online UID, set it from the player name
-			onlineXUID.setForAdhoc();
-		}
-#endif
 
 		// On PS3, all non-signed in players (even guests) can get a useful offlineXUID
-#if !(defined __PS3__ || defined _DURANGO ) 
 		if( !ProfileManager.IsGuest( m_userIndex ) )
-#endif
 		{
 			// All other players we use their offline XUID so that they can play the game offline
  			ProfileManager.GetXUID(m_userIndex,&offlineXUID,false);
@@ -2462,9 +2105,6 @@ void ClientConnection::handleRespawn(shared_ptr<RespawnPacket> packet)
         //minecraft->setScreen(new ReceivingLevelScreen(this));
 //		minecraft->addPendingLocalConnection(m_userIndex, this);
 
-#ifdef _XBOX
-		TelemetryManager->RecordLevelStart(m_userIndex, eSen_FriendOrMatch_Playing_With_Invited_Friends, eSen_CompeteOrCoop_Coop_and_Competitive, Minecraft::GetInstance()->getLevel(packet->dimension)->difficulty, app.GetLocalPlayerCount(), g_NetworkManager.GetOnlinePlayerCount());
-#endif
 
 		if( minecraft->localgameModes[m_userIndex] != NULL )
 		{
@@ -2873,26 +2513,10 @@ void ClientConnection::handleGameEvent(shared_ptr<GameEventPacket> gameEventPack
 	{
 		ui.SetWinUserIndex( (BYTE)gameEventPacket->param );
 		
-#ifdef _XBOX
-
-		// turn off the gamertags in splitscreen for the primary player, since they are about to be made fullscreen
-		ui.HideAllGameUIElements();
-
-		// Hide the other players scenes
-		ui.ShowOtherPlayersBaseScene(ProfileManager.GetPrimaryPad(), false);
-
-		// This just allows it to be shown
-		if(minecraft->localgameModes[ProfileManager.GetPrimaryPad()] != NULL) minecraft->localgameModes[ProfileManager.GetPrimaryPad()]->getTutorial()->showTutorialPopup(false);
-		// Temporarily make this scene fullscreen
-		CXuiSceneBase::SetPlayerBaseScenePosition( ProfileManager.GetPrimaryPad(), CXuiSceneBase::e_BaseScene_Fullscreen );
-
-		app.CloseXuiScenesAndNavigateToScene(ProfileManager.GetPrimaryPad(),eUIScene_EndPoem);
-#else
 		app.DebugPrintf("handleGameEvent packet for WIN_GAME - %d\n", m_userIndex);
 		// This just allows it to be shown
 		if(minecraft->localgameModes[ProfileManager.GetPrimaryPad()] != NULL) minecraft->localgameModes[ProfileManager.GetPrimaryPad()]->getTutorial()->showTutorialPopup(false);
 		ui.NavigateToScene(ProfileManager.GetPrimaryPad(), eUIScene_EndPoem, NULL, eUILayer_Scene, eUIGroup_Fullscreen);
-#endif
 	}
 	else if( event == GameEventPacket::START_SAVING )
 	{
@@ -3157,24 +2781,9 @@ void ClientConnection::handleCustomPayload(shared_ptr<CustomPayloadPacket> custo
 		{
 			shared_ptr<Merchant> trader = nullptr;
 
-#ifdef _XBOX
-			HXUIOBJ scene = app.GetCurrentScene(m_userIndex);
-			HXUICLASS thisClass = XuiFindClass( L"CXuiSceneTrading" );
-			HXUICLASS objClass = XuiGetObjectClass( scene );
-
-			// Also returns TRUE if they are the same (which is what we want)
-			if( XuiClassDerivesFrom( objClass, thisClass ) )
-			{
-				CXuiSceneTrading *screen;
-				HRESULT hr = XuiObjectFromHandle(scene, (void **) &screen);
-				if (FAILED(hr)) return;
-				trader = screen->getMerchant();
-			}
-#else
 			UIScene *scene = ui.GetTopScene(m_userIndex, eUILayer_Scene);
 			UIScene_TradingMenu *screen = (UIScene_TradingMenu *)scene;
 			trader = screen->getMerchant();
-#endif
 			
 			MerchantRecipeList *recipeList = MerchantRecipeList::createFromStream(&input);
 			trader->overrideOffers(recipeList);
@@ -3270,22 +2879,6 @@ int ClientConnection::HostDisconnectReturned(void *pParam,int iPad,C4JStorage::E
 		}
 	}
 
-#if defined(_XBOX_ONE) || defined(__ORBIS__)
-	// Give the player the option to save their game
-	// does the save exist?
-	bool bSaveExists;
-	StorageManager.DoesSaveExist(&bSaveExists);
-	// 4J-PB - we check if the save exists inside the libs
-	// we need to ask if they are sure they want to overwrite the existing game
-	if(bSaveExists && StorageManager.GetSaveDisabled())
-	{
-		UINT uiIDA[2];
-		uiIDA[0]=IDS_CONFIRM_CANCEL;
-		uiIDA[1]=IDS_CONFIRM_OK;
-		ui.RequestMessageBox(IDS_TITLE_SAVE_GAME, IDS_CONFIRM_SAVE_GAME, uiIDA, 2, ProfileManager.GetPrimaryPad(),&ClientConnection::ExitGameAndSaveReturned,NULL, app.GetStringTable());
-	}
-	else
-#else
 	// Give the player the option to save their game
 	// does the save exist?
 	bool bSaveExists;
@@ -3300,11 +2893,7 @@ int ClientConnection::HostDisconnectReturned(void *pParam,int iPad,C4JStorage::E
 		ui.RequestMessageBox(IDS_TITLE_SAVE_GAME, IDS_CONFIRM_SAVE_GAME, uiIDA, 2, ProfileManager.GetPrimaryPad(),&ClientConnection::ExitGameAndSaveReturned,NULL, app.GetStringTable());
 	}
 	else
-#endif
 	{
-#if defined(_XBOX_ONE) || defined(__ORBIS__)
-				StorageManager.SetSaveDisabled(false);
-#endif
 		MinecraftServer::getInstance()->setSaveOnExit( true );
 		// flag a app action of exit game
 		app.SetAction(iPad,eAppAction_ExitWorld);
@@ -3321,9 +2910,6 @@ int ClientConnection::ExitGameAndSaveReturned(void *pParam,int iPad,C4JStorage::
 		//INT saveOrCheckpointId = 0;
 		//bool validSave = StorageManager.GetSaveUniqueNumber(&saveOrCheckpointId);
 		//SentientManager.RecordLevelSaveOrCheckpoint(ProfileManager.GetPrimaryPad(), saveOrCheckpointId);
-#if defined(_XBOX_ONE) || defined(__ORBIS__)
-				StorageManager.SetSaveDisabled(false);
-#endif
 		MinecraftServer::getInstance()->setSaveOnExit( true );
 	}
 	else
@@ -3338,10 +2924,5 @@ int ClientConnection::ExitGameAndSaveReturned(void *pParam,int iPad,C4JStorage::
 // 
 wstring ClientConnection::GetDisplayNameByGamertag(wstring gamertag)
 {
-#ifdef _DURANGO
-	wstring displayName = g_NetworkManager.GetDisplayNameByGamertag(gamertag);
-	return displayName;
-#else
 	return gamertag;
-#endif
 }

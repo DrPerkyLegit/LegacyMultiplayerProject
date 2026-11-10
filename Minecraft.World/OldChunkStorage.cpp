@@ -65,15 +65,11 @@ File OldChunkStorage::getFile(int x, int z)
 
 	wchar_t xRadix36[64];
 	wchar_t zRadix36[64];
-#if ( defined __PS3__ || defined __ORBIS__ || defined __PSVITA__ )
-	assert(0);	// need a gcc verison of _itow ?
-#else
 	_itow(x,xRadix36,36);
 	_itow(z,zRadix36,36);
 	swprintf(name,MAX_PATH_SIZE,L"c.%ls.%ls.dat",xRadix36,zRadix36);
 	_itow(x & 63,path1,36);
 	_itow(z & 63,path2,36);
-#endif
 	//sprintf(file,"%s\\%s",dir,path1);
 	File file( dir, wstring( path1 ) );
 	if( !file.exists() )

@@ -1,13 +1,8 @@
 #pragma once
 #include <np.h>
-#ifdef __PS3__
-#include <netex\libnetctl.h>
-#include <netex\net.h>
-#else
 #include <libnetctl.h>
 #include <net.h>
 #include <np_toolkit.h>
-#endif
 #include <queue>
 
 #include <unordered_map>
@@ -33,11 +28,7 @@ protected:
 
 
 	static const int MAX_FRIENDS = 100;
-#ifdef __PS3__
-	static const int RUDP_THREAD_PRIORITY = 999;
-#else // __ORBIS_
 	static const int RUDP_THREAD_PRIORITY = 500;
-#endif
 	static const int RUDP_THREAD_STACK_SIZE = 32878;
 	static const int MAX_SIMULTANEOUS_INVITES = 10;
 	
@@ -104,9 +95,6 @@ public:
 		SceNpId											m_NpId;
 		SessionID										m_sessionId;
 		void											*m_extData;
-#ifdef __PSVITA__
-		SceNetInAddr									m_netAddr;
-#endif
 	};
 
 protected:
@@ -248,10 +236,6 @@ public:
 	// General 
 	virtual void						Tick() = 0;
 	virtual void						Initialise() = 0;
-#ifdef __PSVITA__
-	virtual void						UnInitialise() = 0; // to switch from PSN to Adhoc
-	virtual bool						IsInitialised() = 0;
-#endif
 	virtual void						Terminate() = 0;
 	virtual eSQRNetworkManagerState		GetState() = 0;
 	virtual bool						IsHost() = 0;

@@ -188,30 +188,16 @@ typedef struct _SaveListDetails
 	int saveId;
 	PBYTE pbThumbnailData;
 	DWORD dwThumbnailSize;
-#ifdef _DURANGO
-	wchar_t UTF16SaveName[128];
-	wchar_t UTF16SaveFilename[MAX_SAVEFILENAME_LENGTH];
-#else
 	char UTF8SaveName[128];
-#ifndef _XBOX
 	char UTF8SaveFilename[MAX_SAVEFILENAME_LENGTH];
-#endif
-#endif
 
 	_SaveListDetails()
 	{
 		saveId = 0;
 		pbThumbnailData = NULL;
 		dwThumbnailSize = 0;
-#ifdef _DURANGO
-		ZeroMemory(UTF16SaveName,sizeof(wchar_t)*128);
-		ZeroMemory(UTF16SaveFilename,sizeof(wchar_t)*MAX_SAVEFILENAME_LENGTH);
-#else
 		ZeroMemory(UTF8SaveName,128);
-#ifndef _XBOX
 		ZeroMemory(UTF8SaveFilename,MAX_SAVEFILENAME_LENGTH);
-#endif
-#endif
 	}
 
 } SaveListDetails;
@@ -308,17 +294,11 @@ typedef struct _LoadingInputParams
 } LoadingInputParams;
 
 // Tutorial
-#ifndef _XBOX
 class UIScene;
-#endif
 class Tutorial;
 typedef struct _TutorialPopupInfo
 {
-#ifdef _XBOX
-	CXuiScene *interactScene;
-#else
 	UIScene *interactScene;
-#endif
 	LPCWSTR desc;
 	LPCWSTR title;
 	int icon;

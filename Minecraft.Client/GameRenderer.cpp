@@ -146,14 +146,8 @@ GameRenderer::GameRenderer(Minecraft *mc)
 		lightTexture[i] = mc->textures->getTexture(img);		// 4J - changed to one light texture per level to support split screen
 	}
 	delete img;
-#ifdef __PS3__
-	// we're using the RSX now to upload textures to vram, so we need the main ram textures allocated from io space
-	for(int i=0;i<NUM_LIGHT_TEXTURES;i++)
-		lightPixels[i] = intArray((int*)RenderManager.allocIOMem(16*16*sizeof(int)), 16*16);
-#else
 	for(int i=0;i<NUM_LIGHT_TEXTURES;i++)
 		lightPixels[i] = intArray(16*16);
-#endif
 
 #ifdef MULTITHREAD_ENABLE
 	m_updateEvents  = new C4JThread::EventArray(eUpdateEventCount, C4JThread::EventArray::e_modeAutoClear);
@@ -161,9 +155,6 @@ GameRenderer::GameRenderer(Minecraft *mc)
 
 	InitializeCriticalSection(&m_csDeleteStack);
 	m_updateThread = new C4JThread(runUpdate, NULL, "Chunk update");
-#ifdef __PS3__
-	m_updateThread->SetPriority(THREAD_PRIORITY_ABOVE_NORMAL);
-#endif// __PS3__
 	m_updateThread->SetProcessor(CPU_CORE_CHUNK_UPDATE);
 	m_updateThread->Run();
 #endif
@@ -955,13 +946,7 @@ void GameRenderer::updateLightTexture(float a)
 			int g = (int) (_g * 255);
 			int b = (int) (_b * 255);
 
-#if ( defined _DURANGO || defined _WIN64 || __PSVITA__ )
 			lightPixels[j][i] = a << 24 | b << 16 | g << 8 | r;
-#elif ( defined _XBOX || defined __ORBIS__ )
-			lightPixels[j][i] = a << 24 | r << 16 | g << 8 | b;
-#else
-			lightPixels[j][i] = r << 24 | g << 16 | b << 8 | a;
-#endif
 		}
 
 		mc->textures->replaceTextureDirect( lightPixels[j], 16, 16, getLightTexture(j,level) );
@@ -1361,10 +1346,6 @@ void GameRenderer::renderLevel(float a, __int64 until)
 			cameraPos->y = cameraPosTemp->y;
 			cameraPos->z = cameraPosTemp->z;
 			levelRenderer->renderEntities(cameraPos, frustum, a);
-#ifdef __PSVITA__
-			// AP - make sure we're using the Alpha cut out effect for particles
-			glEnable(GL_ALPHA_TEST);
-#endif
 			PIXEndNamedEvent();
 			PIXBeginNamedEvent(0,"Particle render");
 			turnOnLightLayer(a);		// 4J - brought forward from 1.8.2
@@ -1702,16 +1683,6 @@ void GameRenderer::renderSnowAndRain(float a)
 
                     float br = 1;
                     t->offset(-xo * 1, -yo * 1, -zo * 1);
-#ifdef __PSVITA__
-					// AP - this will set up the 4 vertices in half the time
-					float Alpha = ((1 - dd * dd) * 0.5f + 0.5f) * rainLevel;
-					int tex2 = (level->getLightColor(x, yl, z, 0) * 3 + 0xf000f0) / 4;
-					t->tileRainQuad(x - xa + 0.5, yy0, z - za + 0.5, 0 * s, yy0 * s / 4.0f + ra * s,
-									x + xa + 0.5, yy0, z + za + 0.5, 1 * s, yy0 * s / 4.0f + ra * s, 
-									x + xa + 0.5, yy1, z + za + 0.5, 1 * s, yy1 * s / 4.0f + ra * s, 
-									x - xa + 0.5, yy1, z - za + 0.5, 0 * s, yy1 * s / 4.0f + ra * s, 
-									br, br, br, Alpha, br, br, br, 0, tex2);
-#else
                     t->tex2(level->getLightColor(x, yl, z, 0));
                     t->color(br, br, br, ((1 - dd * dd) * 0.5f + 0.5f) * rainLevel);
                     t->vertexUV(x - xa + 0.5, yy0, z - za + 0.5, 0 * s, yy0 * s / 4.0f + ra * s);
@@ -1719,7 +1690,6 @@ void GameRenderer::renderSnowAndRain(float a)
 					t->color(br, br, br, 0.0f);														// 4J - added to soften the top visible edge of the rain
                     t->vertexUV(x + xa + 0.5, yy1, z + za + 0.5, 1 * s, yy1 * s / 4.0f + ra * s);
 					t->vertexUV(x - xa + 0.5, yy1, z - za + 0.5, 0 * s, yy1 * s / 4.0f + ra * s);
-#endif
 					t->offset(0, 0, 0);
 					t->end();
 				}
@@ -1740,23 +1710,12 @@ void GameRenderer::renderSnowAndRain(float a)
                     float dd = (float) sqrt(xd * xd + zd * zd) / r;
                     float br = 1;
                     t->offset(-xo * 1, -yo * 1, -zo * 1);
-#ifdef __PSVITA__
-					// AP - this will set up the 4 vertices in half the time
-					float Alpha = ((1 - dd * dd) * 0.3f + 0.5f) * rainLevel;
-					int tex2 = (level->getLightColor(x, yl, z, 0) * 3 + 0xf000f0) / 4;
-					t->tileRainQuad(x - xa + 0.5, yy0, z - za + 0.5, 0 * s + uo, yy0 * s / 4.0f + ra * s + vo,
-									x + xa + 0.5, yy0, z + za + 0.5, 1 * s + uo, yy0 * s / 4.0f + ra * s + vo, 
-									x + xa + 0.5, yy1, z + za + 0.5, 1 * s + uo, yy1 * s / 4.0f + ra * s + vo, 
-									x - xa + 0.5, yy1, z - za + 0.5, 0 * s + uo, yy1 * s / 4.0f + ra * s + vo, 
-									br, br, br, Alpha, br, br, br, Alpha, tex2);
-#else
                     t->tex2((level->getLightColor(x, yl, z, 0) * 3 + 0xf000f0) / 4);
                     t->color(br, br, br, ((1 - dd * dd) * 0.3f + 0.5f) * rainLevel);
                     t->vertexUV(x - xa + 0.5, yy0, z - za + 0.5, 0 * s + uo, yy0 * s / 4.0f + ra * s + vo);
                     t->vertexUV(x + xa + 0.5, yy0, z + za + 0.5, 1 * s + uo, yy0 * s / 4.0f + ra * s + vo);
                     t->vertexUV(x + xa + 0.5, yy1, z + za + 0.5, 1 * s + uo, yy1 * s / 4.0f + ra * s + vo);
                     t->vertexUV(x - xa + 0.5, yy1, z - za + 0.5, 0 * s + uo, yy1 * s / 4.0f + ra * s + vo);
-#endif
                     t->offset(0, 0, 0);
                 }
 			}

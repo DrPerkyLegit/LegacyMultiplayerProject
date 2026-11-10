@@ -24,11 +24,6 @@
 #include "..\Minecraft.World\net.minecraft.world.level.storage.h"
 #include "..\Minecraft.World\net.minecraft.world.level.saveddata.h"
 #include "..\Minecraft.World\JavaMath.h"
-#ifdef _XBOX
-#include "Xbox\Network\NetworkPlayerXbox.h"
-#elif defined(__PS3__) || defined(__ORBIS__)
-#include "Common\Network\Sony\NetworkPlayerSony.h"
-#endif
 
 // 4J - this class is fairly substantially altered as there didn't seem any point in porting code for banning, whitelisting, ops etc.
 
@@ -42,9 +37,7 @@ PlayerList::PlayerList(MinecraftServer *server)
 	overrideGameMode = NULL;
 	allowCheatsForAllPlayers = false;
 
-#ifdef __PSVITA__
-	viewDistance = 3;
-#elif defined _LARGE_WORLDS
+#if defined(_LARGE_WORLDS)
 	viewDistance = 16;
 #else
 	viewDistance = 10;
@@ -86,16 +79,6 @@ void PlayerList::placeNewPlayer(Connection *connection, shared_ptr<ServerPlayer>
 			player->setPlayerGamePrivilege(Player::ePlayerGamePrivilege_HOST,1);
 		}
 
-#if defined(__PS3__) || defined(__ORBIS__)
-		// PS3 networking library doesn't automatically assign PlayerUIDs to the network players for anything remote, so need to tell it what to set from the data in this packet now
-		if( !g_NetworkManager.IsLocalGame() )
-		{
-			if( networkPlayer != NULL )
-			{
-				((NetworkPlayerSony *)networkPlayer)->SetUID( packet->m_onlineXuid );
-			}
-		}
-#endif
 
 		// 4J Stu - TU-1 hotfix
 		// Fix for #13150 - When a player loads/joins a game after saving/leaving in the nether, sometimes they are spawned on top of the nether and cannot mine down
@@ -220,7 +203,7 @@ void PlayerList::placeNewPlayer(Connection *connection, shared_ptr<ServerPlayer>
         sendLevelInfo(player, level);
 
         // 4J-PB - removed, since it needs to be localised in the language the client is in
-		//server->players->broadcastAll( shared_ptr<ChatPacket>( new ChatPacket(L"§e" + playerEntity->name + L" joined the game.") ) );
+		//server->players->broadcastAll( shared_ptr<ChatPacket>( new ChatPacket(L"ï¿½e" + playerEntity->name + L" joined the game.") ) );
 		broadcastAll( shared_ptr<ChatPacket>( new ChatPacket(player->name, ChatPacket::e_ChatPlayerJoinedGame) ) );
 
 		MemSect(14);
@@ -380,7 +363,7 @@ void PlayerList::add(shared_ptr<ServerPlayer> player)
 	// Some code from here has been moved to the above validatePlayerSpawnPosition function
 
 	// 4J Stu - Swapped these lines about so that we get the chunk visiblity packet way ahead of all the add tracked entity packets
-	// Fix for #9169 - ART : Sign text is replaced with the words “Awaiting approval”.
+	// Fix for #9169 - ART : Sign text is replaced with the words ï¿½Awaiting approvalï¿½.
     changeDimension(player, NULL);
     level->addEntity(player);
 

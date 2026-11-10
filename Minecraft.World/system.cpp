@@ -1,7 +1,4 @@
 #include "stdafx.h"
-#ifdef __PS3__
-#include <sys/sys_time.h>
-#endif
 #include "System.h"
 
 template <class T> void System::arraycopy(arrayWithLength<T> src, unsigned int srcPos, arrayWithLength<T> *dst, unsigned int dstPos, unsigned int length)
@@ -65,30 +62,6 @@ __int64 System::nanoTime()
 //the difference, measured in milliseconds, between the current time and midnight, January 1, 1970 UTC.
 __int64 System::currentTimeMillis()
 {
-#ifdef __PS3__
-//	sys_time_get_current_time() obtains the elapsed time since Epoch (1970/01/01 00:00:00 UTC). 
-//	The value is separated into two parts: sec stores the elapsed time in seconds, and nsec 
-//  stores the value that is smaller than a second in nanoseconds.
-	sys_time_sec_t sec;
-	sys_time_nsec_t nsec;
-	sys_time_get_current_time(&sec, &nsec);
-	__int64 msec = (sec * 1000) + (nsec / (1000*1000));
-	return msec;
-
-#elif defined __ORBIS__
-	SceRtcTick tick;
-	int err = sceRtcGetCurrentTick(&tick);
-
-	return (int64_t)(tick.tick / 1000);
-#elif defined __PSVITA__
-	// AP - TRC states we can't use the RTC for measuring elapsed game time
-	return sceKernelGetProcessTimeWide() / 1000;
-/*	SceDateTime Time;
-	sceRtcGetCurrentClockLocalTime(&Time);
-	__int64 systTime = (((((((Time.day * 24) + Time.hour) * 60) + Time.minute) * 60) + Time.second) * 1000) + (Time.microsecond / 1000);
-	return systTime;*/
-
-#else
 
 	SYSTEMTIME UTCSysTime;
     GetSystemTime( &UTCSysTime );
@@ -102,20 +75,12 @@ __int64 System::currentTimeMillis()
 	li.LowPart = UTCFileTime.dwLowDateTime;
 
 	return li.QuadPart/10000;
-#endif // __PS3__
 }
 
 // 4J Stu - Added this so that we can use real-world timestamps in PSVita saves. Particularly required for the save transfers to be smooth
 __int64 System::currentRealTimeMillis()
 {
-#ifdef __PSVITA__
-	SceDateTime Time;
-	sceRtcGetCurrentClockLocalTime(&Time);
-	__int64 systTime = (((((((Time.day * 24) + Time.hour) * 60) + Time.minute) * 60) + Time.second) * 1000) + (Time.microsecond / 1000);
-	return systTime;
-#else
 	return currentTimeMillis();
-#endif
 }
 
 

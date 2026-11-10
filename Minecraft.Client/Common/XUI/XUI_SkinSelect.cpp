@@ -1312,40 +1312,6 @@ void CScene_SkinSelect::updateClipping()
 int CScene_SkinSelect::UnlockSkinReturned(void *pParam,int iPad,C4JStorage::EMessageResult result)
 {
 	CScene_SkinSelect* pScene = (CScene_SkinSelect*)pParam;
-#ifdef _XBOX
-	if(result==C4JStorage::EMessage_ResultAccept)
-	{
-		if(ProfileManager.IsSignedIn(iPad))
-		{	
-			ULONGLONG ullIndexA[1];
-			DLC_INFO *pDLCInfo = app.GetDLCInfoForTrialOfferID(pScene->m_currentPack->getPurchaseOfferId());
-
-			if(pDLCInfo!=NULL)
-			{
-				ullIndexA[0]=pDLCInfo->ullOfferID_Full;
-			}
-			else
-			{
-				ullIndexA[0]=pScene->m_currentPack->getPurchaseOfferId();
-			}
-
-			// If we're in-game, then we need to enable DLC downloads. They'll be set back to Auto on leaving the pause menu
-			if(Minecraft::GetInstance()->level!=NULL)
-			{
-				// need to allow downloads here, or the player would need to quit the game to let the download of a skin pack happen. This might affect the network traffic, since the download could take all the bandwidth...
-				XBackgroundDownloadSetMode(XBACKGROUND_DOWNLOAD_MODE_ALWAYS_ALLOW);
-			}
-
-			StorageManager.InstallOffer(1,ullIndexA,NULL,NULL);
-
-			// the license change coming in when the offer has been installed will cause this scene to refresh	
-		}
-	}
-	else
-	{
-		TelemetryManager->RecordUpsellResponded(iPad, eSet_UpsellID_Skin_DLC, ( pScene->m_currentPack->getPurchaseOfferId() & 0xFFFFFFFF ), eSen_UpsellOutcome_Declined);
-	}
-#endif
 	return 0;
 }
 

@@ -69,9 +69,6 @@ private:
 	static int m_iTutorialFreezeTimeValue;
 	eTutorial_State m_CurrentState;
 	bool m_hasStateChanged;
-#ifdef _XBOX
-	HXUIOBJ m_hTutorialScene; // to store the popup scene (splitscreen or normal)
-#endif
 	bool m_bSceneIsSplitscreen;
 
 	bool m_bHasTickedOnce;
@@ -110,11 +107,7 @@ private:
 	bool hasRequestedUI;
 	bool uiTempDisabled;
 
-#ifdef _XBOX
-	CXuiScene *m_UIScene;
-#else
 	UIScene *m_UIScene;
-#endif
 
 	int m_iPad;
 public:
@@ -138,11 +131,7 @@ public:
 	void setCompleted( int completableId );
 	bool getCompleted( int completableId );
 
-#ifdef _XBOX
-	void changeTutorialState(eTutorial_State newState, CXuiScene *scene = NULL);
-#else
 	void changeTutorialState(eTutorial_State newState, UIScene *scene = NULL);
-#endif
 	bool isSelectedItemState();
 
 	bool setMessage(PopupMessageDetails *message);
@@ -184,11 +173,7 @@ public:
 	vector<TutorialTask *> *getTasks();
 	unsigned int getCurrentTaskIndex();
 
-#ifdef _XBOX
-	CXuiScene *getScene() { return m_UIScene; }
-#else
 	UIScene *getScene() { return m_UIScene; }
-#endif
 	eTutorial_State getCurrentState() { return m_CurrentState; }
 
 	// These are required so that we have a consistent mapping of the completion bits stored in the profile data

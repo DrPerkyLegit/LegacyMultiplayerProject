@@ -37,14 +37,6 @@ HRESULT CXuiSceneInventory::OnInit( XUIMessageInit *pInitData, BOOL &bHandled )
 		}
 	}
 
-#ifdef _XBOX
-	if( pMinecraft->localgameModes[initData->iPad] != NULL )
-	{
-		TutorialMode *gameMode = (TutorialMode *)pMinecraft->localgameModes[initData->iPad];
-		m_previousTutorialState = gameMode->getTutorial()->getCurrentState();
-		gameMode->getTutorial()->changeTutorialState(e_Tutorial_State_Inventory_Menu, this);
-	}
-#endif
 
 	InventoryMenu *menu = dynamic_cast<InventoryMenu *>( initData->player->inventoryMenu );
 

@@ -364,17 +364,10 @@ void MultiPlayerLevel::tickTiles()
 	PIXEndNamedEvent();
 
 	PIXBeginNamedEvent(0,"Ticking client side tiles");
-#ifdef __PSVITA__
-	// AP - see CustomSet.h for and explanation
-	for( int i = 0;i < chunksToPoll.end();i += 1 )
-	{
-		ChunkPos cp = chunksToPoll.get(i);
-#else
 	AUTO_VAR(itEndCtp, chunksToPoll.end());
 	for (AUTO_VAR(it, chunksToPoll.begin()); it != itEndCtp; it++)
 	{
 		ChunkPos cp = *it;
-#endif
 		int xo = cp.x * 16;
 		int zo = cp.z * 16;
 

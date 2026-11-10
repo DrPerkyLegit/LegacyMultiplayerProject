@@ -30,10 +30,6 @@ private:
 		eHTPButton_Trading,
 		eHTPButton_NetherPortal,
 		eHTPButton_TheEnd,
-#ifdef _XBOX
-		eHTPButton_SocialMedia,
-		eHTPButton_BanningLevels,
-#endif
 		eHTPButton_HostOptions,
 		eHTPButton_Max,
 	};

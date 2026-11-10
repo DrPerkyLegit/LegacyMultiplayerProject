@@ -192,9 +192,6 @@ bool IUIScene_CraftingMenu::handleKeyDown(int iPad, int iAction, bool bRepeat)
 		bHandled = true;
 		break;
 	case ACTION_MENU_A:
-#ifdef __ORBIS__
-	case ACTION_MENU_TOUCHPAD_PRESS:
-#endif
 		// Do some crafting!
 		if(m_pPlayer && m_pPlayer->inventory)
 		{	
@@ -408,9 +405,6 @@ bool IUIScene_CraftingMenu::handleKeyDown(int iPad, int iAction, bool bRepeat)
 	{
 		bNoScrollSlots = true;
 	}
-#ifdef __PSVITA__
-	bNoScrollSlots = true;
-#endif
 
 	// 4J Stu - We did used to swap the thumsticks based on Southpaw in this scene, but ONLY in this scene
 	switch(iAction)
@@ -980,9 +974,6 @@ void IUIScene_CraftingMenu::UpdateVerticalSlots()
 		{
 			bNoScrollSlots = true;
 		}
-#ifdef __PSVITA__
-		bNoScrollSlots = true;
-#endif
 
 		for(int i=0;i<iSlots;i++)
 		{

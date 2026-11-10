@@ -11,10 +11,6 @@ public:
 	static const int  IS_GRASS_SIDE = 1;
 	static const int  IS_GRASS_TOP = 2;
 
-#ifdef __PSVITA__
-	// AP - alpha cut out is expensive on vita so we mark which icons require it
-	static const int  IS_ALPHA_CUT_OUT = 4;
-#endif
 
 	virtual int getX() const = 0;
 	virtual int getY() const = 0;

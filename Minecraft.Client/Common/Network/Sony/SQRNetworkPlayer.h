@@ -7,16 +7,9 @@
 
 class SQRNetworkPlayer
 {
-#ifdef __ORBIS__
-	friend class SQRNetworkManager_Orbis;
-	friend class SonyVoiceChat_Orbis;
-#elif defined __PS3__
-	friend class SQRNetworkManager_PS3;
-#else // __PSVITA__
 	friend class SQRNetworkManager_Vita;
 	friend class SQRNetworkManager_AdHoc_Vita;
 	friend class SonyVoiceChat_Vita;
-#endif
 	friend class SQRNetworkManager;
 	friend class NetworkPlayerSony;
 	friend class CPlatformNetworkManagerSony;
@@ -80,10 +73,6 @@ class SQRNetworkPlayer
 	void						ConfirmReady();
 	void						SendInternal(const void *data, unsigned int dataSize);
 	void						SendMoreInternal();
-#ifdef __PSVITA__
-	void						SendInternal_VitaAdhoc(const void *data, unsigned int dataSize, EAdhocDataTag tag = e_dataTag_Normal);
-	void						SendMoreInternal_VitaAdhoc();
-#endif
 	void						SetNameFromUID();
 	void						SetName(char *name);
 	int							GetSessionIndex();

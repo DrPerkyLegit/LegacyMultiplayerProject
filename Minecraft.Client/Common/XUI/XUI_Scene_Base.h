@@ -426,7 +426,5 @@ public:
 	// Returns details on the fully transformed (ie screen space) base scene position, adjusted for safe zones
 	static bool					GetBaseSceneSafeZone( unsigned int iPad, D3DXVECTOR2 &origin, float &width, float &height);
 
-#ifndef _XBOX
 	static void					CreateBaseSceneInstance();
-#endif
 };

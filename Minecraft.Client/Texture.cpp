@@ -4,14 +4,6 @@
 #include "TextureManager.h"
 #include "Texture.h"
 
-#ifdef __PS3__
-#include "PS3\SPU_Tasks\Texture_blit\Texture_blit.h"
-#include "C4JSpursJob.h"
-static const int sc_maxTextureBlits = 256;
-static Texture_blit_DataIn g_textureBlitDataIn[sc_maxTextureBlits] __attribute__((__aligned__(16)));
-static int g_currentTexBlit = 0;
-C4JSpursJobQueue::Port* g_texBlitJobQueuePort;
-#endif //__PS3__
 
 #define MAX_MIP_LEVELS 5
 
@@ -22,10 +14,6 @@ Texture::Texture(const wstring &name, int mode, int width, int height, int depth
 
 void Texture::_init(const wstring &name, int mode, int width, int height, int depth, int wrapMode, int format, int minFilter, int magFilter, bool mipMap)
 {
-#ifdef __PS3__
-	if(g_texBlitJobQueuePort == NULL)
-		g_texBlitJobQueuePort = new C4JSpursJobQueue::Port("C4JSpursJob_Texture_blit");
-#endif
 	this->name = name;
 	this->mode = mode;
 	this->width = width;
@@ -75,13 +63,6 @@ void Texture::_init(const wstring &name, int mode, int width, int height, int de
 		if(m_iMipLevels > MAX_MIP_LEVELS) m_iMipLevels = MAX_MIP_LEVELS;
 	}
 
-#ifdef __PSVITA__
-	// vita doesn't have a mipmap conditional shader because it's too slow so make sure this texture don't look awful at the lower mips
-	if( name == L"terrain" )
-	{
-		m_iMipLevels = 3;
-	}
-#endif
 
 	if (mode != TM_CONTAINER)
 	{
@@ -117,11 +98,7 @@ void Texture::_init(const wstring &name, int mode, int width, int height, int de
 			{
 				tempBytes[index] = 0;
 			}
-#ifdef __PS3__
-			data[0] = new ByteBuffer_IO(tempBytes.length);
-#else
 			data[0] = ByteBuffer::allocateDirect(tempBytes.length);
-#endif // __{S3__
 			data[0]->clear();
 			data[0]->put(tempBytes);
 			data[0]->position(0)->limit(tempBytes.length);
@@ -141,11 +118,7 @@ void Texture::_init(const wstring &name, int mode, int width, int height, int de
 						tempBytes[index] = 0;
 					}
 
-#ifdef __PS3__
-					data[level] = new ByteBuffer_IO(tempBytes.length);
-#else
 					data[level] = ByteBuffer::allocateDirect(tempBytes.length);
-#endif // __PS3__
 					data[level]->clear();
 					data[level]->put(tempBytes);
 					data[level]->position(0)->limit(tempBytes.length);
@@ -395,70 +368,6 @@ void Texture::blit(int x, int y, Texture *source, bool rotated)
 		data[level]->position(0);
 		srcBuffer->position(0);
 
-#if defined __PS3__ && !defined DISABLE_SPU_CODE
-		if(g_texBlitJobQueuePort->hasCompleted())
-		{
-			// all outstanding blits have completed, so reset to the start of the blit list
-			g_currentTexBlit = 0;
-		}
-		Texture_blit_DataIn& dataIn = g_textureBlitDataIn[g_currentTexBlit];
-		g_currentTexBlit++;
-		if(g_currentTexBlit >= sc_maxTextureBlits)
-		{
-			app.DebugPrintf("ran out of tex blit slots, stalling for completion\n");
-			g_texBlitJobQueuePort->waitForCompletion();
-			g_currentTexBlit = 0;
-		}
-		dataIn.pSrcData = srcBuffer->getBuffer();
-		dataIn.pDstData = data[level]->getBuffer();
-		dataIn.yy = yy;
-		dataIn.xx = xx;
-		dataIn.hh = hh;
-		dataIn.ww = ww;
-		dataIn.shh = shh;
-		dataIn.sww = sww;
-		dataIn.rotated = rotated;
-
-		C4JSpursJob_Texture_blit blitJob(&dataIn);
-		g_texBlitJobQueuePort->submitJob(&blitJob);
-// 		p.waitForCompletion();
-
-#elif __PSVITA__
-		unsigned int *src = (unsigned int *) srcBuffer->getBuffer();
-		unsigned int *dst = (unsigned int *) data[level]->getBuffer();
-
-		for (int srcY = 0; srcY < shh; srcY++)
-		{
-			int dstY = yy + srcY;
-			int srcLine = srcY * sww;
-			int dstLine = dstY * ww;
-
-			if (rotated)
-			{
-				dstY = yy + (shh - srcY);
-			}
-
-			if (!rotated)
-			{
-				memcpy(dst + dstLine + xx, src + srcLine, sww * 4);
-			}
-			else
-			{
-				for (int srcX = 0; srcX < sww; srcX++)
-				{
-					int dstPos = dstLine + (srcX + xx);
-					int srcPos = srcLine + srcX;
-
-					if (rotated)
-					{
-						dstPos = (xx + srcX * ww) + dstY;
-					}
-
-					dst[dstPos] = src[srcPos];
-				}
-			}
-		}
-#else
 
 		for (int srcY = 0; srcY < shh; srcY++)
 		{
@@ -489,7 +398,6 @@ void Texture::blit(int x, int y, Texture *source, bool rotated)
 		}
 		// Don't delete this, as it belongs to the source texture
 		//delete srcBuffer;
-#endif
 		data[level]->position(ww * hh * 4);
 	}
 
@@ -565,11 +473,7 @@ void Texture::transferFromImage(BufferedImage *image)
 // 	int byteRemapRGBA[] = { 0, 1, 2, 3 };
 // 	int byteRemapBGRA[] = { 2, 1, 0, 3 };
 // #else
-#ifdef _XBOX
-	int byteRemapRGBA[] = { 0, 1, 2, 3 };
-#else
 	int byteRemapRGBA[] = { 3, 0, 1, 2 };
-#endif
 	int byteRemapBGRA[] = { 3, 2, 1, 0 };
 // #endif
 	int *byteRemap = ((format == TFMT_BGRA) ? byteRemapBGRA : byteRemapRGBA);
@@ -605,11 +509,7 @@ void Texture::transferFromImage(BufferedImage *image)
 	}
 
 	MemSect(51);
-#ifdef __PS3__
-	data[0] = new ByteBuffer_IO(tempBytes.length);
-#else
 	data[0] = ByteBuffer::allocateDirect(tempBytes.length);
-#endif // __{S3__
 	MemSect(0);
 	data[0]->clear();
 	data[0]->put(tempBytes);
@@ -658,13 +558,11 @@ void Texture::transferFromImage(BufferedImage *image)
 						int c1 = data[level - 1]->getInt(((x * 2 + 1) + (y * 2 + 0) * ow) * 4);
 						int c2 = data[level - 1]->getInt(((x * 2 + 1) + (y * 2 + 1) * ow) * 4);
 						int c3 = data[level - 1]->getInt(((x * 2 + 0) + (y * 2 + 1) * ow) * 4);
-#ifndef _XBOX
 						// 4J - convert our RGBA texels to ARGB that crispBlend is expecting
 						c0 = ( ( c0 >> 8 ) & 0x00ffffff ) | ( c0 << 24 );
 						c1 = ( ( c1 >> 8 ) & 0x00ffffff ) | ( c1 << 24 );
 						c2 = ( ( c2 >> 8 ) & 0x00ffffff ) | ( c2 << 24 );
 						c3 = ( ( c3 >> 8 ) & 0x00ffffff ) | ( c3 << 24 );
-#endif
 						int col = crispBlend(crispBlend(c0, c1), crispBlend(c2, c3));
 						// 4J - and back from ARGB -> RGBA
 						//col = ( col << 8 ) | (( col >> 24 ) & 0xff);
@@ -683,11 +581,7 @@ void Texture::transferFromImage(BufferedImage *image)
 			}
 
 			MemSect(51);
-#ifdef __PS3__
-			data[level] = new ByteBuffer_IO(tempBytes.length);
-#else
 			data[level] = ByteBuffer::allocateDirect(tempBytes.length);
-#endif // __{S3__
 			MemSect(0);
 			data[level]->clear();
 			data[level]->put(tempBytes);
@@ -823,17 +717,7 @@ void Texture::updateOnGPU()
 		{			
 			RenderManager.TextureSetTextureLevels(m_iMipLevels);	// 4J added
 
-#ifdef __PSVITA__
-			// AP - replace the dynamic ram buffer to one that points to a newly allocated video ram texture buffer. This means we don't have to memcpy
-			// the ram based buffer to it any more inside RenderManager.TextureDataUpdate
-			unsigned char *newData = RenderManager.TextureData(width,height,data[0]->getBuffer(),0,C4JRender::TEXTURE_FORMAT_RxGyBzAw);
-			ByteBuffer *oldBuffer = data[0];
-			data[0] = new ByteBuffer(data[0]->getSize(), (byte*) newData);
-			delete oldBuffer;
-			newData += width * height * 4;
-#else
 			RenderManager.TextureData(width,height,data[0]->getBuffer(),0,C4JRender::TEXTURE_FORMAT_RxGyBzAw);
-#endif
 
 			if(mipmapped)
 			{
@@ -842,17 +726,7 @@ void Texture::updateOnGPU()
 					int levelWidth = width >> level;
 					int levelHeight = height >> level;
 
-#ifdef __PSVITA__
-					// AP - replace the dynamic ram buffer to one that points to a newly allocated video ram texture buffer. This means we don't have to memcpy
-					// the ram based buffer to it any more inside RenderManager.TextureDataUpdate
-					RenderManager.TextureDataUpdate(0, 0,levelWidth,levelHeight,data[level]->getBuffer(),level);
-					ByteBuffer *oldBuffer = data[level];
-					data[level] = new ByteBuffer(data[level]->getSize(), (byte*) newData);
-					delete oldBuffer;
-					newData += levelWidth * levelHeight * 4;
-#else
 					RenderManager.TextureData(levelWidth,levelHeight,data[level]->getBuffer(),level,C4JRender::TEXTURE_FORMAT_RxGyBzAw);
-#endif
 				}
 			}
 
@@ -860,11 +734,7 @@ void Texture::updateOnGPU()
 		}
 		else
 		{
-#ifdef _XBOX
-			RenderManager.TextureDataUpdate(data[0]->getBuffer(),0);
-#else
 			RenderManager.TextureDataUpdate(0, 0,width,height,data[0]->getBuffer(),0);
-#endif
 
 			if(mipmapped)
 			{
@@ -875,11 +745,7 @@ void Texture::updateOnGPU()
 						int levelWidth = width >> level;
 						int levelHeight = height >> level;
 					
-#ifdef _XBOX
-						RenderManager.TextureDataUpdate(data[level]->getBuffer(),level);
-#else
 						RenderManager.TextureDataUpdate(0, 0,levelWidth,levelHeight,data[level]->getBuffer(),level);
-#endif
 					}
 				}
 			}

@@ -8,10 +8,6 @@ private:
 	IggyName m_funcInitLeaderboard, m_funcAddDataSet;
 	IggyName m_funcResetLeaderboard;
 	IggyName m_funcSetupTitles, m_funcSetColumnIcon;
-#ifdef __PSVITA__
-	IggyName m_funcSetTouchFocus;
-	bool m_bTouchInitialised;
-#endif
 public:
 	enum ELeaderboardIcons
 	{
@@ -44,7 +40,4 @@ public:
 	void setColumnIcon(int iColumn, int iType);
 	void addDataSet(bool bLast, int iId, int iRank, const wstring &gamertag, bool bDisplayMessage, const wstring &col0, const wstring &col1, const wstring &col2, const wstring &col3, const wstring &col4, const wstring &col5, const wstring &col6);
 
-#ifdef __PSVITA__
-	void SetTouchFocus(S32 iX, S32 iY, bool bRepeat);
-#endif
 };

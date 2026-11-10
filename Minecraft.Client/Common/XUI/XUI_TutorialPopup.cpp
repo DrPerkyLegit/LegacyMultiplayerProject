@@ -250,33 +250,6 @@ HRESULT CScene_TutorialPopup::SetDescription(int iPad, TutorialPopupInfo *info)
 {
 	HRESULT hr = S_OK;
 
-#ifdef _XBOX
-	HXUIOBJ hObj = app.GetCurrentTutorialScene(iPad);
-	HXUICLASS thisClass = XuiFindClass( L"CScene_TutorialPopup" );
-	HXUICLASS objClass = XuiGetObjectClass( hObj );
-
-	// Also returns TRUE if they are the same (which is what we want)
-	if( XuiClassDerivesFrom( objClass, thisClass ) )
-	{
-
-		CScene_TutorialPopup *pThis;
-		hr = XuiObjectFromHandle(hObj, (void **) &pThis);
-		if (FAILED(hr))
-			return hr;
-
-		wstring parsed = pThis->_SetIcon(info->icon, info->iAuxVal, info->isFoil, info->desc);
-		parsed = pThis->_SetImage( parsed );
-		parsed = CScene_TutorialPopup::ParseDescription(iPad, parsed);
-		if(parsed.empty())
-		{
-			hr = pThis->_SetDescription( info->interactScene, NULL, NULL, info->allowFade, info->isReminder );
-		}
-		else
-		{
-			hr = pThis->_SetDescription( info->interactScene, parsed.c_str(), info->title, info->allowFade, info->isReminder );
-		}
-	}
-#endif
 	return hr;
 }
 

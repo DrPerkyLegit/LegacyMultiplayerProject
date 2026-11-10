@@ -4,26 +4,6 @@
 #include "..\Minecraft.World\ArrayWithLength.h"
 #include "BufferedImage.h"
 
-#ifdef _XBOX
-typedef struct
-{
-	unsigned int   filesz;
-	unsigned short creator1;
-	unsigned short creator2;
-	unsigned int	 bmp_offset;
-	unsigned int	 header_sz;
-	unsigned int	 width;
-	unsigned int	 height;
-	unsigned short nplanes;
-	unsigned short bitspp;
-	unsigned int	 compress_type;
-	unsigned int	 bmp_bytesz;
-	int			 hres;
-	int			 vres;
-	unsigned int	 ncolors;
-	unsigned int	 nimpcolors;
-} BITMAPINFOHEADER;
-#endif
 
 BufferedImage::BufferedImage(int width,int height,int type)
 {
@@ -57,62 +37,6 @@ BufferedImage::BufferedImage(const wstring& File, bool filenameHasExtension /*=f
 	wDrive = drive;
 	if(wDrive.empty())
 	{
-#ifdef _XBOX
-		if(bTitleUpdateTexture)
-		{
-			// Make the content package point to to the UPDATE: drive is needed
-#ifdef _TU_BUILD
-			wDrive=L"UPDATE:\\";
-#else
-
-			wDrive=L"GAME:\\res\\TitleUpdate\\";
-#endif
-		}
-		else
-		{
-			wDrive=L"GAME:\\";
-		}
-#else
-
-#ifdef __PS3__
-
-		char *pchUsrDir;
-		if(app.GetBootedFromDiscPatch())
-		{
-			const char *pchTextureName=wstringtofilename(File);
-			pchUsrDir = app.GetBDUsrDirPath(pchTextureName);
-		}
-		else
-		{
-			pchUsrDir=getUsrDirPath();
-		}
-
-		wstring wstr (pchUsrDir, pchUsrDir+strlen(pchUsrDir));
-
-		if(bTitleUpdateTexture)
-		{
-			// Make the content package point to to the UPDATE: drive is needed
-			wDrive= wstr + L"\\Common\\res\\TitleUpdate\\";
-		}
-		else
-		{
-			wDrive= wstr + L"/Common/";
-		}
-#elif __PSVITA__
-
-		/*char *pchUsrDir=getUsrDirPath();
-
-		wstring wstr (pchUsrDir, pchUsrDir+strlen(pchUsrDir));
-
-		if(bTitleUpdateTexture)
-		{
-			// Make the content package point to to the UPDATE: drive is needed
-			wDrive= wstr + L"\\Common\\res\\TitleUpdate\\";
-		}
-		else
-		{
-			wDrive= wstr + L"/Common/";
-		}*/
 
 		if(bTitleUpdateTexture)
 		{
@@ -123,19 +47,7 @@ BufferedImage::BufferedImage(const wstring& File, bool filenameHasExtension /*=f
 		{
 			wDrive= L"Common/";
 		}
-#else
-		if(bTitleUpdateTexture)
-		{
-			// Make the content package point to to the UPDATE: drive is needed
-			wDrive= L"Common\\res\\TitleUpdate\\";
-		}
-		else
-		{
-			wDrive= L"Common/";
-		}
-#endif
 
-#endif
 	}
 
 	for( int l = 0 ; l < 10; l++ )

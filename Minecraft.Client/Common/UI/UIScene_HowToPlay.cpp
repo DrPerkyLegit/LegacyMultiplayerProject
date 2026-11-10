@@ -26,10 +26,6 @@ static UIScene_HowToPlay::SHowToPlayPageDef gs_aPageDefs[ eHowToPlay_NumPages ] 
 	{ IDS_HOW_TO_PLAY_TRADING,		UIScene_HowToPlay::eHowToPlay_LabelTrading_Inventory,	5},			// eHowToPlay_Trading
 	{ IDS_HOW_TO_PLAY_NETHERPORTAL,	0,									0},			// eHowToPlay_NetherPortal
 	{ IDS_HOW_TO_PLAY_THEEND,		0,									0},			// eHowToPlay_NetherPortal
-#ifdef _XBOX
-	{ IDS_HOW_TO_PLAY_SOCIALMEDIA,	0,									0},			// eHowToPlay_SocialMedia
-	{ IDS_HOW_TO_PLAY_BANLIST,		0,									0},			// eHowToPlay_BanList
-#endif
 	{ IDS_HOW_TO_PLAY_HOSTOPTIONS,	0,									0},			// eHowToPlay_HostOptions
 };
 
@@ -58,10 +54,6 @@ int gs_pageToFlashMapping[eHowToPlay_NumPages] =
 
 	16, //eHowToPlay_NetherPortal,
 	17, //eHowToPlay_TheEnd,
-#ifdef _XBOX
-	18, //eHowToPlay_SocialMedia,
-	19, //eHowToPlay_BanList,
-#endif
 	20, //eHowToPlay_HostOptions,
 };
 
@@ -138,19 +130,6 @@ void UIScene_HowToPlay::updateTooltips()
 	int iPage = ( int )( m_eCurrPage );
 
 	int firstPage = eHowToPlay_WhatsNew;
-#ifdef __PS3__
-	// If it's the blu ray, or the first Japanese digital game, there's no What's New until the first patch, which will take this line out
-	if(StorageManager.GetBootTypeDisc() || (app.GetProductSKU()==e_sku_SCEJ))
-	{
-		++firstPage;
-	}
-#elif defined(__ORBIS__) || defined(_DURANGO) || defined(__PSVITA__)
-	// No What's New for the first PS4 and Xbox One builds
-	if(true)
-	{
-		++firstPage;
-	}
-#endif
 
 	int iA = -1;
 	int iX = -1;
@@ -191,9 +170,6 @@ void UIScene_HowToPlay::handleInput(int iPad, int key, bool repeat, bool pressed
 		}
 		break;
 	case ACTION_MENU_A:
-#ifdef __ORBIS__
-	case ACTION_MENU_TOUCHPAD_PRESS:
-#endif
 		if(pressed)
 		{
 			// Next page
@@ -212,29 +188,6 @@ void UIScene_HowToPlay::handleInput(int iPad, int key, bool repeat, bool pressed
 			// Previous page
 			int iPrevPage = ( int )( m_eCurrPage ) - 1;
 
-#ifdef __PS3__
-			// If it's the blu ray, or the first Japanese digital game, there's no What's New until the first patch, which will take this line out
-			if(StorageManager.GetBootTypeDisc() || (app.GetProductSKU()==e_sku_SCEJ))
-			{
-				if ( iPrevPage >= 0 && !((iPrevPage==eHowToPlay_WhatsNew))) 
-				{
-					StartPage( ( EHowToPlayPage )( iPrevPage ) );
-					ui.PlayUISFX(eSFX_Press);
-				}
-			}
-			else
-#elif defined(__ORBIS__) || defined(_DURANGO) || defined(__PSVITA__)
-			// No What's New for the first PS4 and Xbox One builds
-			if(true)
-			{
-				if ( iPrevPage >= 0 && !((iPrevPage==eHowToPlay_WhatsNew))) 
-				{
-					StartPage( ( EHowToPlayPage )( iPrevPage ) );
-					ui.PlayUISFX(eSFX_Press);
-				}
-			}
-			else
-#endif			
 			{
 				if ( iPrevPage >= 0 ) 
 				{
@@ -268,9 +221,6 @@ void UIScene_HowToPlay::StartPage( EHowToPlayPage ePage )
 //	replacedText = replaceAll(replacedText,L"{*TITLE_UPDATE_NAME*}",app.GetString(IDS_TITLE_UPDATE_NAME));
 #ifndef _WINDOWS64
 	replacedText = replaceAll(replacedText,L"{*KICK_PLAYER_DESCRIPTION*}",app.GetString(IDS_KICK_PLAYER_DESCRIPTION));
-#endif
-#ifdef _XBOX_ONE
-	replacedText = replaceAll(replacedText,L"{*PLATFORM_NAME*}",app.GetString(IDS_PLATFORM_NAME));
 #endif
 	replacedText = replaceAll(replacedText,L"{*BACK_BUTTON*}",app.GetString(IDS_BACK_BUTTON));
 	replacedText = replaceAll(replacedText,L"{*DISABLES_ACHIEVEMENTS*}",app.GetString(IDS_HOST_OPTION_DISABLES_ACHIEVEMENTS));
@@ -322,7 +272,4 @@ void UIScene_HowToPlay::StartPage( EHowToPlayPage ePage )
 
 	TelemetryManager->RecordMenuShown(m_iPad, eUIScene_HowToPlay, (ETelemetry_HowToPlay_SubMenuId)ePage);
 
-#ifdef __PSVITA__
-	ui.TouchBoxRebuild(this);
-#endif
 }

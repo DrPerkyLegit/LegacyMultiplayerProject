@@ -1,9 +1,6 @@
 #pragma once
 #include "FileHeader.h"
 
-#ifdef _XBOX_ONE
-#include "..\Minecraft.Client\Durango\DurangoExtras\xcompress.h"
-#endif
 
 class Compression
 {
@@ -45,9 +42,7 @@ public:
 	HRESULT DecompressLZXRLE(void *pDestination, unsigned int *pDestSize, void *pSource, unsigned int SrcSize);
 	HRESULT CompressRLE(void *pDestination, unsigned int *pDestSize, void *pSource, unsigned int SrcSize);
 	HRESULT DecompressRLE(void *pDestination, unsigned int *pDestSize, void *pSource, unsigned int SrcSize);
-#ifndef _XBOX
 	static VOID VitaVirtualDecompress(void *pDestination, unsigned int *pDestSize, void *pSource, unsigned int SrcSize);
-#endif
 
 	void SetDecompressionType(ECompressionTypes type) { m_decompressType = type; }  // for loading a save from a different platform (Sony cloud storage cross play)
 	ECompressionTypes GetDecompressionType() { return m_decompressType; }  
@@ -59,11 +54,8 @@ private:
 
 	HRESULT DecompressWithType(void *pDestination, unsigned int *pDestSize, void *pSource, unsigned int SrcSize);
 
-#if defined __ORBIS__ || defined __PS3__
-#else
 	XMEMCOMPRESSION_CONTEXT compressionContext;
 	XMEMDECOMPRESSION_CONTEXT decompressionContext;
-#endif
 	CRITICAL_SECTION rleCompressLock;
 	CRITICAL_SECTION rleDecompressLock;
 
@@ -77,10 +69,4 @@ private:
 
 //extern Compression gCompression;
 
-#if defined __ORBIS__ || defined _DURANGO || defined _WIN64 || defined __PSVITA__
 #define APPROPRIATE_COMPRESSION_TYPE Compression::eCompressionType_ZLIBRLE
-#elif defined __PS3__
-#define APPROPRIATE_COMPRESSION_TYPE Compression::eCompressionType_PS3ZLIB
-#else
-#define APPROPRIATE_COMPRESSION_TYPE Compression::eCompressionType_LZXRLE
-#endif

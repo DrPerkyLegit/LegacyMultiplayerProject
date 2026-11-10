@@ -908,9 +908,6 @@ int CScene_LoadGameSettings::DeleteSaveDialogReturned(void *pParam,int iPad,C4JS
 	// results switched for this dialog
 	if(result==C4JStorage::EMessage_ResultDecline) 
 	{
-#ifdef _XBOX
- 		StorageManager.DeleteSaveData(&pClass->m_XContentData,CScene_LoadGameSettings::DeleteSaveDataReturned,pClass);
-#endif
 	}
 	else
 	{
@@ -1636,40 +1633,6 @@ HRESULT CScene_LoadGameSettings::OnCustomMessage_DLCMountingComplete()
 int CScene_LoadGameSettings::TexturePackDialogReturned(void *pParam,int iPad,C4JStorage::EMessageResult result)
 {
 	CScene_LoadGameSettings *pClass = (CScene_LoadGameSettings *)pParam;
-#ifdef _XBOX
-	pClass->m_currentTexturePackIndex = pClass->m_pTexturePacksList->GetCurSel();
-	// Exit with or without saving
-	// Decline means install full version of the texture pack in this dialog
-	if(result==C4JStorage::EMessage_ResultDecline || result==C4JStorage::EMessage_ResultAccept) 
-	{
-		// we need to enable background downloading for the DLC
-		XBackgroundDownloadSetMode(XBACKGROUND_DOWNLOAD_MODE_ALWAYS_ALLOW);
-
-		ULONGLONG ullOfferID_Full;
-		ULONGLONG ullIndexA[1];
-		CXuiCtrl4JList::LIST_ITEM_INFO ListItem;
-		// get the current index of the list, and then get the data
-		ListItem=pClass->m_pTexturePacksList->GetData(pClass->m_currentTexturePackIndex);
-		app.GetDLCFullOfferIDForPackID(ListItem.iData,&ullOfferID_Full);
-
-		if( result==C4JStorage::EMessage_ResultAccept ) // Full version
-		{
-			ullIndexA[0]=ullOfferID_Full;
-			StorageManager.InstallOffer(1,ullIndexA,NULL,NULL);
-
-		}
-		else // trial version
-		{
-			// if there is no trial version, this is a Cancel
-			DLC_INFO *pDLCInfo=app.GetDLCInfoForFullOfferID(ullOfferID_Full);
-			if(pDLCInfo->ullOfferID_Trial!=0LL)
-			{
-				ullIndexA[0]=pDLCInfo->ullOfferID_Trial;
-				StorageManager.InstallOffer(1,ullIndexA,NULL,NULL);
-			}
-		}		
-	}
-#endif
 	pClass->m_bIgnoreInput=false;
 	return 0;
 }
@@ -1678,9 +1641,6 @@ HRESULT CScene_LoadGameSettings::OnNavReturn(HXUIOBJ hObj,BOOL& rfHandled)
 {
 	// update the tooltips
 	int iRB=-1;
-#ifdef _XBOX
-
-#endif
 	CXuiSceneBase::SetTooltips( DEFAULT_XUI_MENU_USER, IDS_TOOLTIPS_SELECT,IDS_TOOLTIPS_BACK, -1, -1,-1,-1,-1,iRB);
 	return S_OK;
 }

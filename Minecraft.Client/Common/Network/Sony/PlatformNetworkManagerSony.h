@@ -64,12 +64,6 @@ public:
 
 	virtual bool _RunNetworkGame();
 
-#ifdef __PSVITA__
-	bool usingAdhocMode() { return m_bUsingAdhocMode; }
-	bool setAdhocMode(bool bAdhoc);
-	void startAdhocMatching();
-	bool checkValidInviteData(const INVITE_INFO* pInviteInfo);
-#endif
 	
 private:
 	bool isSystemPrimaryPlayer(SQRNetworkPlayer *pQNetPlayer);
@@ -77,11 +71,6 @@ private:
 	virtual void _HostGame(int dwUsersMask, unsigned char publicSlots = MINECRAFT_NET_MAX_PLAYERS, unsigned char privateSlots = 0);
 	virtual bool _StartGame();
 
-#ifdef __PSVITA__
-	bool							m_bUsingAdhocMode;
-	SQRNetworkManager_Vita*         m_pSQRNet_Vita;
-	SQRNetworkManager_AdHoc_Vita*   m_pSQRNet_Vita_Adhoc;
-#endif
     SQRNetworkManager *             m_pSQRNet;             // pointer to SQRNetworkManager interface
 
 	HANDLE m_notificationListener;

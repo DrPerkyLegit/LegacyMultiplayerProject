@@ -78,7 +78,7 @@ Stat* CommonStats::get_timePlayed() { return Stats::timePlayed; }
 
 Stat* CommonStats::get_blocksPlaced(int blockId)
 { 
-#if (defined _EXTENDED_ACHIEVEMENTS) && (!defined _XBOX_ONE)
+#if defined(_EXTENDED_ACHIEVEMENTS)
 	return Stats::blocksPlaced[blockId];
 #else
 	return NULL;
@@ -92,7 +92,7 @@ Stat *CommonStats::get_itemsCollected(int itemId, int itemAux)
 	// 4J-JEV: We don't need itemsCollected(emerald) so I'm using it to
 	// stor itemsBought(emerald) so I don't have to make yet another massive
 	// StatArray for Items Bought.
-#if (defined _EXTENDED_ACHIEVEMENTS) && (!defined _XBOX_ONE)
+#if defined(_EXTENDED_ACHIEVEMENTS)
 	if (itemId == Tile::cloth_Id)			return Stats::rainbowCollection[itemAux];
 #endif
 
@@ -106,7 +106,7 @@ Stat *CommonStats::get_itemsSmelted(int itemId) { return Stats::itemsCrafted[ite
 
 Stat *CommonStats::get_itemsUsed(int itemId)
 {
-#if (defined _EXTENDED_ACHIEVEMENTS) && (!defined _XBOX_ONE)
+#if defined(_EXTENDED_ACHIEVEMENTS)
 	// 4J-JEV: I've done the same thing here, we can't place these items anyway.
 	if (itemId == Item::porkChop_cooked_Id)	return Stats::blocksPlaced[itemId];
 #endif
@@ -130,7 +130,7 @@ Stat *CommonStats::get_completeTheEnd() { return Stats::completeTheEnd; }
 
 Stat *CommonStats::get_enteredBiome(int biomeId)
 {
-#if (defined _EXTENDED_ACHIEVEMENTS) && (!defined _XBOX_ONE)
+#if defined(_EXTENDED_ACHIEVEMENTS)
 	return Stats::biomesVisisted[biomeId];
 #else
 	return NULL;
@@ -168,7 +168,6 @@ Stat *CommonStats::get_achievement(eAward achievementId)
 	case eAward_arrowKillCreeper:	return (Stat *) Achievements::arrowKillCreeper;	
 	case eAward_socialPost:			return (Stat *) Achievements::socialPost;
 
-#ifndef _XBOX
 	case eAward_snipeSkeleton:		return (Stat *) Achievements::snipeSkeleton;
 	case eAward_diamonds:			return (Stat *) Achievements::diamonds;
 	case eAward_portal:				return (Stat *) NULL;						// TODO
@@ -178,7 +177,6 @@ Stat *CommonStats::get_achievement(eAward achievementId)
 	case eAward_theEnd:				return (Stat *) Achievements::theEnd;
 	case eAward_winGame:			return (Stat *) Achievements::winGame;
 	case eAward_enchantments:		return (Stat *) Achievements::enchantments;
-#endif
 
 #ifdef _EXTENDED_ACHIEVEMENTS
 	case eAward_overkill:				return (Stat *) Achievements::overkill;		// Restored old ach.

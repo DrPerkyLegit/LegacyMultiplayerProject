@@ -40,9 +40,6 @@
 #include "..\Minecraft.World\SparseLightStorage.h"
 #include "..\Minecraft.World\SparseDataStorage.h"
 #include "..\Minecraft.World\compression.h"
-#ifdef _XBOX
-#include "Common\XUI\XUI_DebugSetCamera.h"
-#endif
 #include "ServerCommandDispatcher.h"
 #include "..\Minecraft.World\BiomeSource.h"
 #include "PlayerChunkMap.h"
@@ -148,7 +145,7 @@ bool MinecraftServer::initServer(__int64 seed, NetworkGameInitData *initData, DW
         //localIp = settings->getString(L"server-ip", L"");
         //onlineMode = settings->getBoolean(L"online-mode", true);
 		//motd = settings->getString(L"motd", L"A Minecraft Server");
-        //motd.replace('§', '$');
+        //motd.replace('ï¿½', '$');
 
         setAnimals(settings->getBoolean(L"spawn-animals", true));
 		setNpcsEnabled(settings->getBoolean(L"spawn-npcs", true));
@@ -230,11 +227,7 @@ bool MinecraftServer::initServer(__int64 seed, NetworkGameInitData *initData, DW
 
 		if( findSeed )
 		{
-#ifdef __PSVITA__
-			seed = BiomeSource::findSeed(pLevelType, &running);
-#else
 			seed = BiomeSource::findSeed(pLevelType);
-#endif
 		}
 
 		setMaxBuildHeight(settings->getInt(L"max-build-height", Level::maxBuildHeight));
@@ -313,13 +306,6 @@ int MinecraftServer::runPostUpdate(void* lpParam)
 		server->m_postProcessRequests.pop_back();
 		LeaveCriticalSection(&server->m_postProcessCS);
 		request.chunkSource->postProcess(request.chunkSource, request.x, request.z );
-#ifdef __PS3__
-#ifndef _CONTENT_PACKAGE
-		if((server->m_postProcessRequests.size() % 10) == 0)
-			printf("processing request %00d\n", server->m_postProcessRequests.size());
-#endif
-		Sleep(1);
-#endif
 		EnterCriticalSection(&server->m_postProcessCS);
 	}
 	LeaveCriticalSection(&server->m_postProcessCS);
@@ -517,11 +503,7 @@ bool MinecraftServer::loadLevel(LevelStorageSource *storageSource, const wstring
 	__int64 startTime = System::currentTimeMillis();
 
 	// 4J Stu - Added this to temporarily make starting games on vita faster
-#ifdef __PSVITA__
-	int r = 48;
-#else
 	int r = 196;	
-#endif
 
 	//  4J JEV: load gameRules.
 	ConsoleSavePath filepath(GAME_RULE_SAVENAME);
@@ -752,9 +734,7 @@ void MinecraftServer::saveAllChunks()
     for (unsigned int i = 0; i < levels.length; i++)
 	{
 		// 4J Stu - Due to the way save mounting is handled on XboxOne, we can actually save after the player has signed out.
-#ifndef _XBOX_ONE
 		if( m_bPrimaryPlayerSignedOut ) break;
-#endif
 		// 4J Stu - Save the levels in reverse order so we don't overwrite the level.dat
 		// with the data from the nethers leveldata.
 		// Fix for #7418 - Functional: Gameplay: Saving after sleeping in a bed will place player at nighttime when restarting.
@@ -863,9 +843,6 @@ void MinecraftServer::stopServer()
 {
 
 	// 4J-PB - need to halt the rendering of the data, since we're about to remove it
-#ifdef __PS3__
-	if( ShutdownManager::ShouldRun(ShutdownManager::eServerThread )	)		// This thread will take itself out if we are shutting down
-#endif
 	{
 		Minecraft::GetInstance()->gameRenderer->DisableUpdateThread();
 	}
@@ -877,17 +854,8 @@ void MinecraftServer::stopServer()
 	// 4J-PB - If the primary player has signed out, then don't attempt to save anything
 	
 	// also need to check for a profile switch here - primary player signs out, and another player signs in before dismissing the dash
-#ifdef _DURANGO
-	// On Durango check if the primary user is signed in OR mid-sign-out
-	if(ProfileManager.GetUser(0, true) != nullptr)
-#else
 	if((m_bPrimaryPlayerSignedOut==false) && ProfileManager.IsSignedIn(ProfileManager.GetPrimaryPad()))
-#endif
 	{
-#if defined(_XBOX_ONE) || defined(__ORBIS__)
-		// Always save on exit! Except if saves are disabled.
-		if(!saveOnExitAnswered()) m_saveOnExit = true;
-#endif
 		// if trial version or saving is disabled, then don't save anything
 		if(m_saveOnExit && ProfileManager.IsFullVersion() && (!StorageManager.GetSaveDisabled()))
 		{	
@@ -921,12 +889,6 @@ void MinecraftServer::stopServer()
 
 	// On Durango/Orbis, we need to wait for all the asynchronous saving processes to complete before destroying the levels, as that will ultimately delete
 	// the directory level storage & therefore the ConsoleSaveSplit instance, which needs to be around until all the sub files have completed saving.
-#if defined(_DURANGO) || defined(__ORBIS__) || defined(__PSVITA__)
-	while(StorageManager.GetSaveState() != C4JStorage::ESaveGame_Idle )
-	{
-		Sleep(10);
-	}
-#endif
 
 	// 4J-PB remove the server levels
 	unsigned int iServerLevelC=levels.length;
@@ -939,10 +901,6 @@ void MinecraftServer::stopServer()
 		}
 	}
 
-#if defined(__PS3__) || defined(__ORBIS__)
-	// Clear the update flags as it's possible they could be out of sync, causing a crash when starting a new world after the first new level ticks
-	// Fix for PS3 #1538 - [IN GAME] If the user 'Exit without saving' from inside the Nether or The End, the title can hang when loading back into the save.
-#endif
 
 	delete connection;
 	connection = NULL;
@@ -1186,54 +1144,6 @@ void MinecraftServer::run(__int64 seed, void *lpParameter)
 				switch(eAction)
 				{
 				case eXuiServerAction_AutoSaveGame:
-#if defined(_XBOX_ONE) || defined(__ORBIS__)
-					{
-						PIXBeginNamedEvent(0,"Autosave");
-
-						// Get the frequency of the timer
-						LARGE_INTEGER qwTicksPerSec, qwTime, qwNewTime, qwDeltaTime;
-						float fElapsedTime = 0.0f;
-						QueryPerformanceFrequency( &qwTicksPerSec );
-						float fSecsPerTick = 1.0f / (float)qwTicksPerSec.QuadPart;
-
-						// Save the start time
-						QueryPerformanceCounter( &qwTime );
-
-						if (players != NULL)
-						{
-							players->saveAll(NULL);
-						}
-
-						for (unsigned int j = 0; j < levels.length; j++)
-						{
-							if( s_bServerHalted ) break;
-							// 4J Stu - Save the levels in reverse order so we don't overwrite the level.dat
-							// with the data from the nethers leveldata.
-							// Fix for #7418 - Functional: Gameplay: Saving after sleeping in a bed will place player at nighttime when restarting.
-							ServerLevel *level = levels[levels.length - 1 - j];
-							PIXBeginNamedEvent(0, "Saving level %d",levels.length - 1 - j);
-							level->save(false, NULL, true);
-							PIXEndNamedEvent();
-						}
-						if( !s_bServerHalted )
-						{
-							PIXBeginNamedEvent(0,"Saving game rules");
-							saveGameRules();
-							PIXEndNamedEvent();
-
-							PIXBeginNamedEvent(0,"Save to disc");
-							levels[0]->saveToDisc(Minecraft::GetInstance()->progressRenderer, true);
-							PIXEndNamedEvent();
-						}
-						PIXEndNamedEvent();
-
-						QueryPerformanceCounter( &qwNewTime );
-						qwDeltaTime.QuadPart = qwNewTime.QuadPart - qwTime.QuadPart;
-						fElapsedTime = fSecsPerTick * ((FLOAT)(qwDeltaTime.QuadPart));
-						app.DebugPrintf("Autosave: Elapsed time %f\n", fElapsedTime);
-					}
-					break;
-#endif
 				case eXuiServerAction_SaveGame:
 					app.EnterSaveNotificationSection();
 					if (players != NULL)
@@ -1320,11 +1230,7 @@ void MinecraftServer::run(__int64 seed, void *lpParameter)
 					if( !s_bServerHalted )
 					{
 						ConsoleSchematicFile::XboxSchematicInitParam *initData = (ConsoleSchematicFile::XboxSchematicInitParam *)param;
-#ifdef _XBOX
-						File targetFileDir(File::pathRoot + File::pathSeparator + L"Schematics");
-#else
 						File targetFileDir(L"Schematics");
-#endif
 						if(!targetFileDir.exists())	targetFileDir.mkdir();
 
 						wchar_t filename[128];
@@ -1496,17 +1402,6 @@ void MinecraftServer::tick()
 			// as the player is getting flagged as to be removed (from the normal dimension) when going to the nether, but Actually gets removed only when it returns
 			if( ( players->getPlayerCount(level) > 0) || ( level->hasEntitiesToRemove() ) )
 			{
-#ifdef __PSVITA__
-				// AP - the PlayerList->viewDistance initially starts out at 3 to make starting a level speedy
-				// the problem with this is that spawned monsters are always generated on the edge of the known map
-				// which means they wont process (unless they are surrounded by 2 visible chunks). This means
-				// they wont checkDespawn so they are NEVER removed which results in monsters not spawning.
-				// This bit of hack will modify the view distance once the level is up and running.
-				int newViewDistance = 5;
-				level->getServer()->getPlayers()->setViewDistance(newViewDistance);
-				level->getTracker()->updateMaxRange();
-				level->getChunkMap()->setRadius(level->getServer()->getPlayers()->getViewDistance());
-#endif
 				level->tickEntities();
 			}
 			PIXEndNamedEvent();
@@ -1562,9 +1457,6 @@ void MinecraftServer::handleConsoleInputs()
 
 void MinecraftServer::main(__int64 seed, void *lpParameter)
 {
-#if __PS3__
-	ShutdownManager::HasStarted(ShutdownManager::eServerThread );
-#endif
 	server = new MinecraftServer();
 	server->run(seed, lpParameter);
 	delete server;

@@ -3,18 +3,6 @@
 #include "net.minecraft.world.level.h"
 #include "BiomeOverrideLayer.h"
 
-#ifdef __PSVITA__
-// AP - this is used to perform fast 64bit divides of known values
-#include "..\Minecraft.Client\PSVita\PSVitaExtras\libdivide.h"
-
-libdivide::divider<long long> fast_d2(2);
-libdivide::divider<long long> fast_d3(3);
-libdivide::divider<long long> fast_d4(4);
-libdivide::divider<long long> fast_d5(5);
-libdivide::divider<long long> fast_d6(6);
-libdivide::divider<long long> fast_d7(7);
-libdivide::divider<long long> fast_d10(10);
-#endif
 
 LayerArray Layer::getDefaultLayers(__int64 seed, LevelType *levelType)
 {
@@ -147,50 +135,8 @@ void Layer::initRandom(__int64 x, __int64 y)
 
 int Layer::nextRandom(int max)
 {
-#ifdef __PSVITA__
-	// AP - 64bit mods are very slow on Vita. Replaced with a divide/mult for general case and a fast divide library for specific numbers
-	// todo - this can sometimes yield a different number to the original. There's a strange bug sometimes with Vita where if the line
-	// "result = (int) ((rval >> 24) % max);" is done twice in a row 'result' will not be the same. Need to speak to Sony about that
-	// Also need to compare level against a different platform using the same seed
-	int result;
-	long long temp = rval;
-	temp >>= 24;
-	if( max == 2 )
-	{
-		result = temp-(temp/fast_d2)*2;
-	}
-	else if( max == 3 )
-	{
-		result = temp-(temp/fast_d3)*3;
-	}
-	else if( max == 4 )
-	{
-		result = temp-(temp/fast_d4)*4;
-	}
-	else if( max == 5 )
-	{
-		result = temp-(temp/fast_d5)*5;
-	}
-	else if( max == 6 )
-	{
-		result = temp-(temp/fast_d6)*6;
-	}
-	else if( max == 7 )
-	{
-		result = temp-(temp/fast_d7)*7;
-	}
-	else if( max == 10 )
-	{
-		result = temp-(temp/fast_d10)*10;
-	}
-	else
-	{
-		result = temp-(temp/max)*max;
-	}
-#else
 
 	int result = (int) ((rval >> 24) % max);
-#endif
 
 	if (result < 0) result += max;
 	rval *= rval * 6364136223846793005l + 1442695040888963407l;

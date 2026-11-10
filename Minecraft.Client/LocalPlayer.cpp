@@ -49,9 +49,7 @@
 #include "Options.h"
 #include "..\Minecraft.World\Dimension.h"
 
-#ifndef _DURANGO
 #include "..\Minecraft.World\CommonStats.h"
-#endif
 
 
 
@@ -742,17 +740,6 @@ void LocalPlayer::displayClientMessage(int messageId)
 
 void LocalPlayer::awardStat(Stat *stat, byteArray param)
 {
-#ifdef _DURANGO
-	// 4J-JEV: Maybe we want to fine tune this later? #TODO
-	if (	   !ProfileManager.IsGuest(GetXboxPad()) 
-			&& app.CanRecordStatsAndAchievements()
-			&& ProfileManager.IsFullVersion()
-		)
-	{
-		stat->handleParamBlob(dynamic_pointer_cast<LocalPlayer>(shared_from_this()), param);
-	}
-	delete [] param.data;
-#else
 	int count = CommonStats::readParam(param);
 	delete [] param.data;
 
@@ -879,24 +866,6 @@ void LocalPlayer::awardStat(Stat *stat, byteArray param)
 			
 		}
 
-#ifdef _XBOX
-		// AWARD: Have we killed 10 creepers?
-		if ( pStats->getTotalValue( GenericStats::killsCreeper() ) >= 10 )
-		{
-			awardStat( GenericStats::kill10Creepers(), GenericStats::param_noArgs());
-		}
-
-		// AWARD : Have we been playing for 100 game days?
-		if ( pStats->getTotalValue( GenericStats::timePlayed() ) >= ( Level::TICKS_PER_DAY * 100 ) )
-		{
-			awardStat( GenericStats::play100Days(), GenericStats::param_noArgs());
-		}
-		// AWARD : Have we mined 100 blocks?
-		if ( pStats->getTotalValue( GenericStats::totalBlocksMined() ) >= 100 )
-		{
-			awardStat( GenericStats::mine100Blocks(), GenericStats::param_noArgs());
-		}
-#endif
 
 #ifdef _EXTENDED_ACHIEVEMENTS
 
@@ -1058,7 +1027,6 @@ void LocalPlayer::awardStat(Stat *stat, byteArray param)
 		}
 #endif
 	}
-#endif
 }
 
 bool LocalPlayer::isSolidBlock(int x, int y, int z)

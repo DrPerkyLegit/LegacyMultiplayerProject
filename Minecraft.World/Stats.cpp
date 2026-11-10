@@ -23,7 +23,7 @@ vector<ItemStat *> *Stats::blocksMinedStats = new vector<ItemStat *>;
 vector<ItemStat *> *Stats::itemsCollectedStats = new vector<ItemStat *>;
 vector<ItemStat *> *Stats::itemsCraftedStats = new vector<ItemStat *>;
 
-#if (defined _EXTENDED_ACHIEVEMENTS) && (!defined _DURANGO)
+#if defined(_EXTENDED_ACHIEVEMENTS)
 vector<ItemStat *> *Stats::blocksPlacedStats = new vector<ItemStat *>;
 #endif
 
@@ -56,7 +56,7 @@ StatArray Stats::blocksMined;
 StatArray Stats::itemsCollected;
 StatArray Stats::itemsCrafted;
 
-#if (defined _EXTENDED_ACHIEVEMENTS) && (!defined _DURANGO)
+#if defined(_EXTENDED_ACHIEVEMENTS)
 StatArray Stats::blocksPlaced;
 StatArray Stats::rainbowCollection;
 StatArray Stats::biomesVisisted;
@@ -473,7 +473,7 @@ void Stats::buildAdditionalStats()
 	Stats::completeTheEnd = (new GeneralStat(offset++, L"stat.completeTheEnd"))->postConstruct();
 
 
-#if (defined _EXTENDED_ACHIEVEMENTS) && (!defined _DURANGO)
+#if defined(_EXTENDED_ACHIEVEMENTS)
 	{
 		ItemStat *itemStat = new ItemStat(offset++, L"craftItem.flowerPot", Item::flowerPot_Id);
 		itemsCraftedStats->push_back(itemStat);

@@ -11,9 +11,6 @@
 #include "../../DLCTexturePack.h"
 #include "Common/DLC/DLCAudioFile.h"
 
-#ifdef __PSVITA__
-#include <audioout.h>
-#endif
 
 #include "../../Minecraft.Client/Windows64/Windows64_App.h"
 
@@ -27,81 +24,12 @@
 #include <memory>
 #include <mutex>
 
-#ifdef __ORBIS__
-#include <audioout.h>
-//#define __DISABLE_MILES__			// MGH disabled for now as it crashes if we call sceNpMatching2Initialize
-#endif 
 
 // take out Orbis until they are done
-#if defined _XBOX 
 
-SoundEngine::SoundEngine() {}
-void SoundEngine::init(Options* pOptions)
-{
-}
-
-void SoundEngine::tick(shared_ptr<Mob>* players, float a)
-{
-}
-void SoundEngine::destroy() {}
-void SoundEngine::play(int iSound, float x, float y, float z, float volume, float pitch)
-{
-	app.DebugPrintf("PlaySound - %d\n", iSound);
-}
-void SoundEngine::playStreaming(const wstring& name, float x, float y, float z, float volume, float pitch, bool bMusicDelay) {}
-void SoundEngine::playUI(int iSound, float volume, float pitch) {}
-
-void SoundEngine::updateMusicVolume(float fVal) {}
-void SoundEngine::updateSoundEffectVolume(float fVal) {}
-
-void SoundEngine::add(const wstring& name, File* file) {}
-void SoundEngine::addMusic(const wstring& name, File* file) {}
-void SoundEngine::addStreaming(const wstring& name, File* file) {}
-char* SoundEngine::ConvertSoundPathToName(const wstring& name, bool bConvertSpaces) { return nullptr; }
-bool SoundEngine::isStreamingWavebankReady() { return true; }
-void SoundEngine::playMusicTick() {};
-
-#else
-
-#ifdef _WINDOWS64
 char SoundEngine::m_szSoundPath[] = { "Windows64Media\\Sound\\" };
 char SoundEngine::m_szMusicPath[] = { "music\\" };
 char SoundEngine::m_szRedistName[] = { "redist64" };
-#elif defined _DURANGO
-char SoundEngine::m_szSoundPath[] = { "Sound\\" };
-char SoundEngine::m_szMusicPath[] = { "music\\" };
-char SoundEngine::m_szRedistName[] = { "redist64" };
-#elif defined __ORBIS__
-
-#ifdef _CONTENT_PACKAGE
-char SoundEngine::m_szSoundPath[] = { "Sound/" };
-#elif defined _ART_BUILD
-char SoundEngine::m_szSoundPath[] = { "Sound/" };
-#else
-// just use the host Durango folder for the sound. In the content package, we'll have moved this in the .gp4 file
-char SoundEngine::m_szSoundPath[] = { "Durango/Sound/" };
-#endif
-char SoundEngine::m_szMusicPath[] = { "music/" };
-char SoundEngine::m_szRedistName[] = { "redist64" };
-#elif defined __PSVITA__
-char SoundEngine::m_szSoundPath[] = { "PSVita/Sound/" };
-char SoundEngine::m_szMusicPath[] = { "music/" };
-char SoundEngine::m_szRedistName[] = { "redist" };
-#elif defined __PS3__
-//extern const char* getPS3HomePath();
-char SoundEngine::m_szSoundPath[] = { "PS3/Sound/" };
-char SoundEngine::m_szMusicPath[] = { "music/" };
-char SoundEngine::m_szRedistName[] = { "redist" };
-
-#define USE_SPURS
-
-#ifdef USE_SPURS
-#include <cell/spurs.h>
-#else
-#include <sys/spu_image.h>
-#endif
-
-#endif
 
 const char* SoundEngine::m_szStreamFileA[eStream_Max] =
 {
@@ -347,9 +275,6 @@ inline void SoundEngine::getGameModeMusicID(Minecraft* pMinecraft, unsigned int 
 //
 /////////////////////////////////////////////
 
-#ifdef __PSVITA__
-static S32 running = AIL_ms_count();
-#endif
 
 void SoundEngine::tick(shared_ptr<Mob>* players, float a)
 {
@@ -406,12 +331,7 @@ void SoundEngine::tick(shared_ptr<Mob>* players, float a)
 	}
 	m_validListenerCount = listenerCount;
 
-#ifdef __PSVITA__
-	// AP - Show that a change has occurred so we know to update the values at the next Mixer callback
-	SoundEngine_Change = true;
-#else
 	updateMiniAudio();
-#endif
 }
 
 /////////////////////////////////////////////
@@ -451,9 +371,6 @@ SoundEngine::SoundEngine()
 	memset(CurrentSoundsPlaying, 0, sizeof(int) * (eSoundType_MAX + eSFX_MAX));
 	memset(m_ListenerA, 0, sizeof(AUDIO_LISTENER) * XUSER_MAX_COUNT);
 
-#ifdef __ORBIS__
-	m_hBGMAudio = GetAudioBGMHandle();
-#endif
 }
 
 void SoundEngine::destroy() {}
@@ -975,9 +892,7 @@ int SoundEngine::OpenStreamThreadProc(void* lpParameter)
 void SoundEngine::playMusicTick()
 {
 	// AP - vita will update the music during the mixer callback
-#ifndef __PSVITA__
 	playMusicUpdate();
-#endif
 }
 
 // AP - moved to a separate function so it can be called from the mixer callback on Vita
@@ -1009,26 +924,7 @@ void SoundEngine::playMusicUpdate()
 			// start playing it
 
 
-#if ( defined __PS3__  || defined __PSVITA__ || defined __ORBIS__ )
-
-#ifdef __PS3__
-			// 4J-PB - Need to check if we are a patched BD build
-			if (app.GetBootedFromDiscPatch())
-			{
-				sprintf(m_szStreamName, "%s/%s", app.GetBDUsrDirPath(m_szMusicPath), m_szMusicPath);
-				app.DebugPrintf("SoundEngine::playMusicUpdate - (booted from disc patch) music path - %s", m_szStreamName);
-			}
-			else
-			{
-				sprintf(m_szStreamName, "%s/%s", getUsrDirPath(), m_szMusicPath);
-			}
-#else
-			sprintf(m_szStreamName, "%s/%s", getUsrDirPath(), m_szMusicPath);
-#endif
-
-#else
 			strcpy((char*)m_szStreamName, m_szMusicPath);
-#endif
 			// are we using a mash-up pack?
 			//if(pMinecraft && !pMinecraft->skins->isUsingDefaultSkin() && pMinecraft->skins->getSelected()->hasAudio())
 			if (Minecraft::GetInstance()->skins->getSelected()->hasAudio())
@@ -1050,24 +946,13 @@ void SoundEngine::playMusicUpdate()
 					SetIsPlayingStreamingCDMusic(false);
 					m_StreamingAudioInfo.bIs3D = false;
 
-#ifdef _XBOX_ONE
-					wstring& wstrSoundName = dlcAudioFile->GetSoundName(m_musicID);
-					wstring wstrFile = L"TPACK:\\Data\\" + wstrSoundName + L".wav";
-					std::wstring mountedPath = StorageManager.GetMountedPath(wstrFile);
-					wcstombs(m_szStreamName, mountedPath.c_str(), 255);
-#else
 					wstring& wstrSoundName = dlcAudioFile->GetSoundName(m_musicID);
 					char szName[255];
 					wcstombs(szName, wstrSoundName.c_str(), 255);
 
-#if defined __PS3__ || defined __ORBIS__ || defined __PSVITA__
-					string strFile = "TPACK:/Data/" + string(szName) + ".wav";
-#else
 					string strFile = "TPACK:\\Data\\" + string(szName) + ".wav";
-#endif
 					std::string mountedPath = StorageManager.GetMountedPath(strFile);
 					strcpy(m_szStreamName, mountedPath.c_str());
-#endif
 				}
 				else
 				{
@@ -1084,47 +969,6 @@ void SoundEngine::playMusicUpdate()
 			else
 			{
 				// 4J-PB - if this is a PS3 disc patch, we have to check if the music file is in the patch data
-#ifdef __PS3__
-				if (app.GetBootedFromDiscPatch() && (m_musicID < m_iStream_CD_1))
-				{
-					// rebuild the path for the music
-					strcpy((char*)m_szStreamName, m_szMusicPath);
-					strcat((char*)m_szStreamName, "music/");
-					strcat((char*)m_szStreamName, m_szStreamFileA[m_musicID]);
-					strcat((char*)m_szStreamName, ".wav");
-
-					// check if this is in the patch data
-					sprintf(m_szStreamName, "%s/%s", app.GetBDUsrDirPath(m_szStreamName), m_szMusicPath);
-					strcat((char*)m_szStreamName, "music/");
-					strcat((char*)m_szStreamName, m_szStreamFileA[m_musicID]);
-					strcat((char*)m_szStreamName, ".wav");
-
-					SetIsPlayingStreamingGameMusic(true);
-					SetIsPlayingStreamingCDMusic(false);
-					m_StreamingAudioInfo.bIs3D = false;
-				}
-				else if (m_musicID < m_iStream_CD_1)
-				{
-					SetIsPlayingStreamingGameMusic(true);
-					SetIsPlayingStreamingCDMusic(false);
-					m_StreamingAudioInfo.bIs3D = false;
-					// build the name
-					strcat((char*)m_szStreamName, "music/");
-					strcat((char*)m_szStreamName, m_szStreamFileA[m_musicID]);
-					strcat((char*)m_szStreamName, ".wav");
-				}
-
-				else
-				{
-					SetIsPlayingStreamingGameMusic(false);
-					SetIsPlayingStreamingCDMusic(true);
-					m_StreamingAudioInfo.bIs3D = true;
-					// build the name
-					strcat((char*)m_szStreamName, "cds/");
-					strcat((char*)m_szStreamName, m_szStreamFileA[m_musicID]);
-					strcat((char*)m_szStreamName, ".wav");
-				}
-#else						
 				if (m_musicID < m_iStream_CD_1)
 				{
 					SetIsPlayingStreamingGameMusic(true);
@@ -1144,7 +988,6 @@ void SoundEngine::playMusicUpdate()
 				strcat((char*)m_szStreamName, m_szStreamFileA[m_musicID]);
 				strcat((char*)m_szStreamName, ".wav");
 
-#endif
 			}
 
 			// 			wstring name = m_szStreamFileA[m_musicID];
@@ -1512,5 +1355,3 @@ char* SoundEngine::ConvertSoundPathToName(const wstring& name, bool bConvertSpac
 	buf[name.length()] = 0;
 	return buf;
 }
-
-#endif

@@ -10,9 +10,6 @@
 #include "XUI_Ctrl_4JIcon.h"
 #include "XUI_DLCOffers.h"
 #include "..\..\..\Minecraft.World\StringHelpers.h"
-#ifdef _XBOX
-#include <xavatar.h>
-#endif
 
 #define TIMER_ID_NETWORK_CONNECTION 1
 #define TIMER_ID_NAVIGATE_BACK 2

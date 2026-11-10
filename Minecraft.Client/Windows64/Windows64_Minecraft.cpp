@@ -57,15 +57,7 @@ uint16_t ui16GlobalText[256];
 #define NUM_PROFILE_SETTINGS 4
 DWORD dwProfileSettingsA[NUM_PROFILE_VALUES]=
 {
-#ifdef _XBOX
-	XPROFILE_OPTION_CONTROLLER_VIBRATION,
-	XPROFILE_GAMER_YAXIS_INVERSION,
-	XPROFILE_GAMER_CONTROL_SENSITIVITY,
-	XPROFILE_GAMER_ACTION_MOVEMENT_CONTROL,
-	XPROFILE_TITLE_SPECIFIC1,
-#else
 	0,0,0,0,0
-#endif
 };
 
 //-------------------------------------------------------------------------------------

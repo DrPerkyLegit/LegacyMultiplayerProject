@@ -126,7 +126,6 @@ void Achievements::staticCtor()
 	Achievements::arrowKillCreeper		= (new Achievement(eAward_arrowKillCreeper,		L"arrowKillCreeper",	0, 0,	Tile::treeTrunk,	(Achievement *) buildSword))->postConstruct();
 	Achievements::socialPost			= (new Achievement(eAward_socialPost,			L"socialPost",			0, 0,	Tile::treeTrunk,	(Achievement *) buildSword))->postConstruct();
 
-#ifndef _XBOX
 // WARNING: NO NEW ACHIEVMENTS CAN BE ADDED HERE
 // These stats (achievements) are directly followed by new stats/achievements in the profile data, so cannot be changed without migrating the profile data
 
@@ -146,7 +145,6 @@ void Achievements::staticCtor()
 	Achievements::enchantments			= (new Achievement(eAward_enchantments,			L"enchantments",		-4, 4,	Tile::enchantTable,	(Achievement *)enchantments) )->postConstruct();
  //   Achievements::overkill				= (new Achievement(eAward_overkill,				L"overkill",			-4, 1,	Item::sword_diamond, (Achievement *)enchantments) )->setGolden()->postConstruct();
  //   Achievements::bookcase				= (new Achievement(eAward_bookcase,				L"bookcase",			-3, 6,	Tile::bookshelf,	(Achievement *)enchantments) )->postConstruct();
-#endif
 
 #ifdef _EXTENDED_ACHIEVEMENTS
 	Achievements::overkill				= (new Achievement(eAward_overkill,					L"overkill",				-4,1,	Item::sword_diamond,	(Achievement *)enchantments) )->setGolden()->postConstruct();

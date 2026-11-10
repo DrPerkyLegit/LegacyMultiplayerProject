@@ -52,7 +52,6 @@ protected:
 
 		eSectionInventoryCreativeUsing,
 		eSectionInventoryCreativeSelector,
-#ifndef _XBOX
 		eSectionInventoryCreativeTab_0,
 		eSectionInventoryCreativeTab_1,
 		eSectionInventoryCreativeTab_2,
@@ -62,7 +61,6 @@ protected:
 		eSectionInventoryCreativeTab_6,
 		eSectionInventoryCreativeTab_7,
 		eSectionInventoryCreativeSlider,
-#endif
 		eSectionInventoryCreativeMax,
 		
 		eSectionEnchantUsing,
@@ -132,18 +130,6 @@ protected:
 	int				m_iCurrSlotX;
 	int				m_iCurrSlotY;
 
-#ifdef __ORBIS__
-	bool m_bFirstTouchStored[XUSER_MAX_COUNT]; // monitor the first position of a touch, so we can use relative distances of movement
-	UIVec2D m_oldvPointerPos;
-	UIVec2D m_oldvTouchPos;
-	// store the multipliers to map the UI window to the touchpad window
-	float m_fTouchPadMulX;
-	float m_fTouchPadMulY;
-	float m_fTouchPadDeadZoneX; // usese the multipliers
-	float m_fTouchPadDeadZoneY;
-
-
-#endif
 
 	// ENum indexes of the first section for this scene, and 1+the last section
 	ESceneSection m_eFirstSection, m_eMaxSection;

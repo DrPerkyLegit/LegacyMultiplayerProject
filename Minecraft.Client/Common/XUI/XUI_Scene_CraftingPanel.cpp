@@ -164,21 +164,6 @@ HRESULT CXuiSceneCraftingPanel::OnInit( XUIMessageInit* pInitData, BOOL& bHandle
 	// Update the tutorial state
 	Minecraft *pMinecraft = Minecraft::GetInstance();
 
-#ifdef _XBOX
-	if( pMinecraft->localgameModes[m_iPad] != NULL )
-	{
-		TutorialMode *gameMode = (TutorialMode *)pMinecraft->localgameModes[m_iPad];
-		m_previousTutorialState = gameMode->getTutorial()->getCurrentState();
-		if(m_iContainerType==RECIPE_TYPE_2x2)
-		{
-			gameMode->getTutorial()->changeTutorialState(e_Tutorial_State_2x2Crafting_Menu, this);
-		}
-		else
-		{
-			gameMode->getTutorial()->changeTutorialState(e_Tutorial_State_3x3Crafting_Menu, this);
-		}
-	}
-#endif
 
 	XuiSetTimer(m_hObj,IGNORE_KEYPRESS_TIMERID,IGNORE_KEYPRESS_TIME);
 
@@ -351,13 +336,6 @@ HRESULT CXuiSceneCraftingPanel::OnDestroy()
 {
 	Minecraft *pMinecraft = Minecraft::GetInstance();
 
-#ifdef _XBOX
-	if( pMinecraft->localgameModes[m_iPad] != NULL )
-	{
-		TutorialMode *gameMode = (TutorialMode *)pMinecraft->localgameModes[m_iPad];
-		if(gameMode != NULL) gameMode->getTutorial()->changeTutorialState(m_previousTutorialState);
-	}
-#endif
 
 	// We need to make sure that we call closeContainer() anytime this menu is closed, even if it is forced to close by some other reason (like the player dying)	
 	if(Minecraft::GetInstance()->localplayers[m_iPad] != NULL) Minecraft::GetInstance()->localplayers[m_iPad]->closeContainer();

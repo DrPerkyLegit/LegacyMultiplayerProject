@@ -407,11 +407,7 @@ void BiomeSource::update()
 //#define DEBUG_SEEDS 50
 
 // 4J added - find a seed for this biomesource that matches certain criteria
-#ifdef __PSVITA__
-__int64 BiomeSource::findSeed(LevelType *generator, bool* pServerRunning)	// MGH - added pRunning, so we can early out of this on Vita as it can take up to 60 secs
-#else
 __int64 BiomeSource::findSeed(LevelType *generator)	
-#endif
 {
 
 	__int64 bestSeed = 0;
@@ -466,11 +462,7 @@ __int64 BiomeSource::findSeed(LevelType *generator)
 				tryCount++;
 
 				mcprogress->progressStagePercentage( tryCount % 100 );
-#ifdef __PSVITA__
-			} while (!matchFound && *pServerRunning);
-#else
 			} while (!matchFound);
-#endif
 
 			// Clean up
 			delete pr;

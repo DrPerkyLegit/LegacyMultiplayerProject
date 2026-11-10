@@ -123,7 +123,6 @@ F64 UIScene::getSafeZoneHalfHeight()
 
 	float safeHeight = 0.0f;
 
-#ifndef __PSVITA__
 	if( !RenderManager.IsHiDef() && RenderManager.IsWidescreen() )
 	{
 		// 90% safezone
@@ -134,7 +133,6 @@ F64 UIScene::getSafeZoneHalfHeight()
 		// 90% safezone
 		safeHeight = height * (0.1f / 2);
 	}
-#endif
 	return safeHeight;
 }
 
@@ -143,7 +141,6 @@ F64 UIScene::getSafeZoneHalfWidth()
 	float width = ui.getScreenWidth();
 
 	float safeWidth = 0.0f;
-#ifndef __PSVITA__
 	if( !RenderManager.IsHiDef() && RenderManager.IsWidescreen() )
 	{
 		// 85% safezone
@@ -154,7 +151,6 @@ F64 UIScene::getSafeZoneHalfWidth()
 		// 90% safezone
 		safeWidth = width * (0.1f / 2);
 	}
-#endif
 	return safeWidth;
 }
 
@@ -233,21 +229,6 @@ void UIScene::initialiseMovie()
 	m_bUpdateOpacity = true;
 }
 
-#ifdef __PSVITA__
-void UIScene::SetFocusToElement(int iID)
-{
-	IggyDataValue result;
-	IggyDataValue value[1];
-
-	value[0].type = IGGY_DATATYPE_number;
-	value[0].number = iID;
-
-	IggyResult out = IggyPlayerCallMethodRS ( getMovie() , &result, IggyPlayerRootPath( getMovie() ), m_funcSetFocus , 1 , value );
-
-	// also trigger handle focus change (just in case if anything else in relation needs updating!)
-	_handleFocusChange(iID, 0);
-}
-#endif
 
 bool UIScene::mapElementsAndNames()
 {
@@ -269,21 +250,6 @@ void UIScene::loadMovie()
 	EnterCriticalSection(&UIController::ms_reloadSkinCS);		// MGH - added to prevent crash loading Iggy movies while the skins were being reloaded
 	wstring moviePath = getMoviePath();
 
-#ifdef __PS3__
-	if(RenderManager.IsWidescreen())
-	{
-		moviePath.append(L"720.swf");
-		m_loadedResolution = eSceneResolution_720;
-	}
-	else
-	{
-		moviePath.append(L"480.swf");
-		m_loadedResolution = eSceneResolution_480;
-	}
-#elif defined __PSVITA__
-	moviePath.append(L"Vita.swf");
-	m_loadedResolution = eSceneResolution_Vita;
-#elif defined _WINDOWS64
 	if(ui.getScreenHeight() == 720)
 	{
 		moviePath.append(L"720.swf");
@@ -304,10 +270,6 @@ void UIScene::loadMovie()
 		moviePath.append(L"1080.swf");
 		m_loadedResolution = eSceneResolution_1080;
 	}
-#else
-	moviePath.append(L"1080.swf");
-	m_loadedResolution = eSceneResolution_1080;
-#endif
 
 	if(!app.hasArchiveFile(moviePath))
 	{
@@ -529,15 +491,6 @@ void UIScene::removeControl( UIControl_Base *control, bool centreScene)
 	value[1].boolval = centreScene;
 	IggyResult out = IggyPlayerCallMethodRS ( getMovie() , &result, IggyPlayerRootPath( getMovie() ), m_funcRemoveObject , 2 , value );
 
-#ifdef __PSVITA__
-	// update the button positions since they may have changed
-	UpdateSceneControls();
-
-	// mark the button as removed
-	control->setHidden(true);
-	// remove it from the touchboxes
-	ui.TouchBoxRebuild(control->getParentScene());
-#endif
 
 }
 
@@ -621,18 +574,10 @@ void UIScene::customDrawSlotControl(IggyCustomDrawCallbackRegion *region, int iP
 				int list = m_parentLayer->m_parentGroup->getCommandBufferList();
 
 				bool useCommandBuffers = false;
-#ifdef _XBOX_ONE
-				useCommandBuffers = true;
-
-				// 4J Stu - Temporary until we fix the glint animation which needs updated if we are just replaying a command buffer
-				m_needsCacheRendered = true;
-#endif
 
 				if(!useCommandBuffers || m_needsCacheRendered)
 				{
-#if (!defined __PS3__) && (!defined __PSVITA__)
 					if(useCommandBuffers) RenderManager.CBuffStart(list, true);
-#endif
 					PIXBeginNamedEvent(0,"Draw uncached");
 					ui.setupCustomDrawMatrices(this, customDrawRegion);	
 					_customDrawSlotControl(customDrawRegion, iPad, item, fAlpha, isFoil, bDecorations, useCommandBuffers);
@@ -650,15 +595,11 @@ void UIScene::customDrawSlotControl(IggyCustomDrawCallbackRegion *region, int iP
 						delete drawData;
 					}
 					PIXEndNamedEvent();
-#ifndef __PS3__
 					if(useCommandBuffers) RenderManager.CBuffEnd();
-#endif
 				}
 				m_cachedSlotDraw.clear();
 
-#ifndef __PS3__
 				if(useCommandBuffers) RenderManager.CBuffCall(list);
-#endif
 
 				// Finish GDraw and anything else that needs to be finalised
 				ui.endCustomDraw(region);
@@ -804,10 +745,6 @@ void UIScene::navigateBack()
 	{
 //		m_parentLayer->removeScene(this);
 
-#ifdef _DURANGO
-		if (ui.GetTopScene(0))
-			InputManager.SetEnabledGtcButtons( ui.GetTopScene(0)->getDefaultGtcButtons() );
-#endif
 	}
 
 }
@@ -875,9 +812,6 @@ void UIScene::loseFocus()
 
 void UIScene::handleGainFocus(bool navBack)
 {
-#ifdef _DURANGO
-	InputManager.SetEnabledGtcButtons( this->getDefaultGtcButtons() );
-#endif
 }
 
 void UIScene::updateTooltips()
@@ -909,9 +843,6 @@ int UIScene::convertGameActionToIggyKeycode(int action)
 	int keycode = -1;
 	switch(action)
 	{
-#ifdef __ORBIS__
-	case ACTION_MENU_TOUCHPAD_PRESS:
-#endif
 	case ACTION_MENU_A:
 		keycode = IGGY_KEYCODE_ENTER;
 		break;
@@ -1221,17 +1152,6 @@ UIScene *UIScene::getBackScene()
 {
 	return m_backScene;
 }
-#ifdef __PSVITA__
-void UIScene::UpdateSceneControls()
-{
-	AUTO_VAR(itEnd, GetControls()->end());
-	for (AUTO_VAR(it, GetControls()->begin()); it != itEnd; it++)
-	{
-		UIControl *control=(UIControl *)*it;
-		control->UpdateControl();
-	}
-}
-#endif
 
 size_t UIScene::GetCallbackUniqueId()
 {

@@ -2,9 +2,6 @@
 #include "UI.h"
 #include "UIScene_QuadrantSignin.h"
 #include "..\..\Minecraft.h"
-#if defined(__ORBIS__)
-#include "Common\Network\Sony\SonyHttp.h"
-#endif
 
 UIScene_QuadrantSignin::UIScene_QuadrantSignin(int iPad, void *_initData, UILayer *parentLayer) : UIScene(iPad, parentLayer)
 {
@@ -52,16 +49,6 @@ UIScene_QuadrantSignin::UIScene_QuadrantSignin(int iPad, void *_initData, UILaye
 		}
 	}
 
-#if defined(__PS3__) || defined(__ORBIS__) || defined(__PSVITA__)
-	if(InputManager.IsCircleCrossSwapped())
-	{
-		IggyDataValue result;
-		IggyDataValue value[1];
-		value[0].type = IGGY_DATATYPE_boolean;
-		value[0].boolval = true;
-		IggyResult out = IggyPlayerCallMethodRS ( getMovie() , &result, IggyPlayerRootPath( getMovie() ), m_funcSetABSwap , 1 , value );
-	}
-#endif
 
 	parentLayer->addComponent(iPad,eUIComponent_MenuBackground);
 }
@@ -115,15 +102,6 @@ void UIScene_QuadrantSignin::handleInput(int iPad, int key, bool repeat, bool pr
 			{
 				if(pressed)
 				{
-#ifdef _DURANGO
-					if(InputManager.IsPadLocked(iPad))
-					{
-						if(iPad != ProfileManager.GetPrimaryPad())
-						{
-							ProfileManager.RemoveGamepadFromGame(iPad);
-						}
-						else
-#endif
 						{
 							m_bIgnoreInput = true;
 							m_signInInfo.Func(m_signInInfo.lpParam,false,iPad);
@@ -132,15 +110,9 @@ void UIScene_QuadrantSignin::handleInput(int iPad, int key, bool repeat, bool pr
 							navigateBack();
 						}
 					}
-#ifdef _DURANGO
-				}
-#endif
 			}
 			break;
 		case ACTION_MENU_OK:
-#ifdef __ORBIS__
-		case ACTION_MENU_TOUCHPAD_PRESS:
-#endif
 			if(pressed)
 			{
 				m_bIgnoreInput = true;
@@ -149,10 +121,6 @@ void UIScene_QuadrantSignin::handleInput(int iPad, int key, bool repeat, bool pr
 					app.DebugPrintf("Signed in pad pressed\n");
 					ProfileManager.CancelProfileAvatarRequest();
 
-#ifdef _DURANGO
-					// On Durango, if we don't navigate forward here, then when we are on the main menu, it (re)gains focus & that causes our users to get cleared
-					ui.NavigateToScene(m_iPad, eUIScene_Timer);
-#endif
 					navigateBack();
 					m_signInInfo.Func(m_signInInfo.lpParam,true,m_iPad);
 				}
@@ -182,13 +150,6 @@ int UIScene_QuadrantSignin::SignInReturned(void *pParam,bool bContinue, int iPad
 
 	UIScene_QuadrantSignin *pClass = (UIScene_QuadrantSignin *)pParam;
 
-#ifdef _DURANGO
-	if(bContinue && pClass->m_signInInfo.requireOnline && ProfileManager.IsSignedIn(iPad))
-	{
-		ProfileManager.CheckMultiplayerPrivileges(iPad, true, &checkAllPrivilegesCallback, pClass);
-	}
-	else
-#endif
 	{
 		pClass->m_bIgnoreInput = false;
 		pClass->updateState();
@@ -197,19 +158,6 @@ int UIScene_QuadrantSignin::SignInReturned(void *pParam,bool bContinue, int iPad
 	return 0;
 }
 
-#ifdef _DURANGO
-void UIScene_QuadrantSignin::checkAllPrivilegesCallback(LPVOID lpParam, bool hasPrivileges, int iPad)
-{
-	UIScene_QuadrantSignin* pClass = (UIScene_QuadrantSignin*)lpParam;
-
-	if(!hasPrivileges)
-	{
-		ProfileManager.RemoveGamepadFromGame(iPad);
-	}
-	pClass->m_bIgnoreInput = false;
-	pClass->updateState();
-}
-#endif
 
 void UIScene_QuadrantSignin::updateState()
 {

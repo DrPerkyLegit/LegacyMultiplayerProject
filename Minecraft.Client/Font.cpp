@@ -117,13 +117,11 @@ Font::Font(Options *options, const wstring& name, Textures* textures, bool enfor
 	}
 }
 
-#ifndef _XBOX
 // 4J Stu - This dtor clashes with one in xui! We never delete these anyway so take it out for now. Can go back when we have got rid of XUI
 Font::~Font()
 {
 	delete[] charWidths;
 }
-#endif
 
 void Font::renderCharacter(wchar_t c)
 {	

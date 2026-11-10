@@ -1,20 +1,10 @@
 #include "stdafx.h"
 #include "SQRNetworkPlayer.h"
 
-#ifdef __PS3__
-#include <cell/rudp.h>
-#include "PS3/Network/SonyVoiceChat.h"
-
-#elif defined __ORBIS__
-#include <rudp.h>
-#include "Orbis/Network/SonyVoiceChat_Orbis.h"
-
-#else // __PSVITA__
 #include <rudp.h>
 #include <adhoc_matching.h>
 #include "PSVita/Network/SonyVoiceChat_Vita.h"
 
-#endif
 
 
 static const bool sc_verbose = false;
@@ -87,14 +77,6 @@ SQRNetworkPlayer::SQRNetworkPlayer(SQRNetworkManager *manager, eSQRNetworkPlayer
 	if( pUID )
 	{
 		memcpy(&m_ISD.m_UID,pUID,sizeof(PlayerUID));
-#ifdef __PSVITA__
-		if(CGameNetworkManager::usingAdhocMode() && pUID->getOnlineID()[0] == 0)
-		{
-			assert(localPlayerIdx == 0);
-			// player doesn't have an online UID, set it from the player name
-			m_ISD.m_UID.setForAdhoc();
-	}
-#endif // __PSVITA__
 	}
 	else
 	{
@@ -102,22 +84,11 @@ SQRNetworkPlayer::SQRNetworkPlayer(SQRNetworkManager *manager, eSQRNetworkPlayer
 	}
 	SetNameFromUID();
 	InitializeCriticalSection(&m_csQueue);
-#ifdef __ORBIS__
-	if(IsLocal())
-	{
-		SonyVoiceChat_Orbis::initLocalPlayer(m_localPlayerIdx);
-	}
-#endif
 
 }
 
 SQRNetworkPlayer::~SQRNetworkPlayer()
 {
-#ifdef __ORBIS__
-	SQRNetworkManager_Orbis* pMan = (SQRNetworkManager_Orbis*)m_manager;
-// 	pMan->removePlayerFromVoiceChat(this);
-// 	m_roomMemberId = -1;
-#endif
 	DeleteCriticalSection(&m_csQueue);
 }
 
@@ -174,9 +145,6 @@ void SQRNetworkPlayer::InitialDataReceived(SQRNetworkPlayer::InitSendData *ISD)
 {
 	assert(m_ISD.m_smallId == ISD->m_smallId);
 	memcpy(&m_ISD, ISD, sizeof(InitSendData) );
-#ifdef __PSVITA__
-	SetNameFromUID();
-#endif
 	m_host ? app.DebugPrintf(sc_verbose, "host : ") : app.DebugPrintf(sc_verbose, "client:");
 	app.DebugPrintf(sc_verbose, ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>    Small ID confirmed\n");
 	m_flags |= SNP_FLAG_SMALLID_CONFIRMED;
@@ -190,11 +158,7 @@ bool SQRNetworkPlayer::HasSmallIdConfirmed()
 // To confirm to the host that we are ready, send a single byte with our small id.
 void SQRNetworkPlayer::ConfirmReady()
 {
-#ifdef __PS3__
-	int ret = cellRudpWrite( m_rudpCtx, &m_ISD, sizeof(InitSendData), CELL_RUDP_MSG_LATENCY_CRITICAL );
-#else //__ORBIS__
 	int ret = sceRudpWrite( m_rudpCtx, &m_ISD, sizeof(InitSendData), SCE_RUDP_MSG_LATENCY_CRITICAL );
-#endif
 	// TODO - error handling here?
 	assert ( ret == sizeof(InitSendData) );
 	// Final flag for a local player on the client, as we are now safe to send data on to the host
@@ -296,14 +260,8 @@ void SQRNetworkPlayer::SendMoreInternal()
 			// Attempt to send the full data in the first element in our queue
 			unsigned char *data= m_sendQueue.front().current;
 			int dataSize = m_sendQueue.front().end - m_sendQueue.front().current;
-#ifdef __PS3__
-			int ret = cellRudpWrite( m_rudpCtx, data, dataSize, 0);//CELL_RUDP_MSG_LATENCY_CRITICAL  );
-			int wouldBlockFlag =  CELL_RUDP_ERROR_WOULDBLOCK;
-
-#else // __ORBIS__
 			int ret = sceRudpWrite( m_rudpCtx, data, dataSize, 0);//CELL_RUDP_MSG_LATENCY_CRITICAL  );
 			int wouldBlockFlag =  SCE_RUDP_ERROR_WOULDBLOCK;
-#endif
 			if( ret == dataSize )
 			{
 				// Fully sent, remove from queue - will loop in the while loop to see if there's anything else in the queue we could send
@@ -342,14 +300,6 @@ void SQRNetworkPlayer::SetNameFromUID()
 {
 	mbstowcs(m_name, m_ISD.m_UID.getOnlineID(), 16);
 	m_name[16] = 0;
-#ifdef __PS3__ // only 1 player on vita, and they have to be online (or adhoc), and with PS4 all local players need to be signed in
-	// Not an online player? Add a suffix with the controller ID on
-	if( m_ISD.m_UID.isSignedIntoPSN() == 0)
-	{
-		int pos = wcslen(m_name);
-		swprintf(&m_name[pos], 5, L" (%d)", m_ISD.m_UID.getQuadrant() + 1 );
-	}
-#endif
 }
 
 void SQRNetworkPlayer::SetName(char *name)
@@ -365,35 +315,16 @@ int SQRNetworkPlayer::GetSessionIndex()
 
 bool SQRNetworkPlayer::HasVoice()
 {
-#ifdef __ORBIS__
-	return SonyVoiceChat_Orbis::hasMicConnected(this);
-#elif defined __PSVITA__
-	return SonyVoiceChat_Vita::hasMicConnected(this);
-#else
 	return SonyVoiceChat::hasMicConnected(&m_roomMemberId);
-#endif
 }
 
 bool SQRNetworkPlayer::IsTalking()
 {
-#ifdef __ORBIS__
-	return SonyVoiceChat_Orbis::isTalking(this);
-#elif defined __PSVITA__
-	return SonyVoiceChat_Vita::isTalking(this);
-#else
 	return SonyVoiceChat::isTalking(&m_roomMemberId);
-#endif
 }
 
 bool SQRNetworkPlayer::IsMutedByLocalUser(int userIndex)
 {
-#ifdef __ORBIS__
-// 	assert(0); // this is never called, so isn't implemented in the PS4 voice stuff at the moment
-	return false;
-#elif defined __PSVITA__
-	return false;// this is never called, so isn't implemented in the Vita voice stuff at the moment
-#else
 	SQRNetworkManager_PS3* pMan = (SQRNetworkManager_PS3*)m_manager;
 	return SonyVoiceChat::isMutedPlayer(pMan->m_roomSyncData.players[userIndex].m_roomMemberId);
-#endif
 }

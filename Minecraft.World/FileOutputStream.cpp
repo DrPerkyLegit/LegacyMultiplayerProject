@@ -19,17 +19,6 @@ FileOutputStream::FileOutputStream(const File &file) : m_fileHandle( INVALID_HAN
 		return;
 	}
 
-#ifdef _DURANGO
-	m_fileHandle = CreateFile(
-		file.getPath().c_str() , // file name
-		GENERIC_WRITE, // access mode
-		0, // share mode // TODO 4J Stu - Will we need to share file? Probably not but...
-		NULL, // Unused
-		OPEN_ALWAYS , // how to create
-		FILE_ATTRIBUTE_NORMAL , // file attributes
-		NULL // Unsupported
-		);
-#else
 	m_fileHandle = CreateFile(
 		wstringtofilename(file.getPath()) , // file name
 		GENERIC_WRITE, // access mode
@@ -39,7 +28,6 @@ FileOutputStream::FileOutputStream(const File &file) : m_fileHandle( INVALID_HAN
 		FILE_ATTRIBUTE_NORMAL , // file attributes
 		NULL // Unsupported
 		);
-#endif
 
 	if( m_fileHandle == INVALID_HANDLE_VALUE )
 	{

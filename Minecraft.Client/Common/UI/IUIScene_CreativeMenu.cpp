@@ -763,7 +763,6 @@ IUIScene_AbstractContainerMenu::ESceneSection IUIScene_CreativeMenu::GetSectionA
 			newSection = eSectionInventoryCreativeSelector;
 		}
 		break;
-#ifndef _XBOX
 	case eSectionInventoryCreativeTab_0:
 	case eSectionInventoryCreativeTab_1:
 	case eSectionInventoryCreativeTab_2:
@@ -775,7 +774,6 @@ IUIScene_AbstractContainerMenu::ESceneSection IUIScene_CreativeMenu::GetSectionA
 	case eSectionInventoryCreativeSlider:
 		/* do nothing */
 		break;
-#endif
 	default:
 		assert( false );
 		break;

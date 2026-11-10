@@ -19,11 +19,7 @@ private:
 	DWORD m_dwLicenseMask;
 	int m_dlcMountIndex;
 	XCONTENTDEVICEID m_dlcDeviceID;
-#ifdef _XBOX_ONE
-	wstring m_wsProductId;
-#else
 	ULONGLONG m_ullFullOfferId;
-#endif
 	bool m_isCorrupt;
 	DWORD m_packId;
 	DWORD m_packVersion;
@@ -32,9 +28,6 @@ private:
 public:
 
 	DLCPack(const wstring &name,DWORD dwLicenseMask);
-#ifdef _XBOX_ONE
-	DLCPack(const wstring &name,const wstring &productID,DWORD dwLicenseMask);
-#endif
 	~DLCPack();
 
 	wstring getFullDataPath() { return m_dataPath; }
@@ -68,11 +61,7 @@ public:
 	DWORD getLicenseMask( ) { return m_dwLicenseMask; }
 	
 	wstring getName() { return m_packName; }
-#ifdef _XBOX_ONE
-	wstring getPurchaseOfferId() { return m_wsProductId; }
-#else
 	ULONGLONG getPurchaseOfferId() { return m_ullFullOfferId; }
-#endif
 
 	DLCFile *addFile(DLCManager::EDLCType type, const wstring &path);
 	DLCFile *getFile(DLCManager::EDLCType type, DWORD index);

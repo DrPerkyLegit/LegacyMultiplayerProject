@@ -107,11 +107,7 @@ private:
 	void LoadSaveFromDisk(File *saveFile);
 
 	// callback
-#ifdef _XBOX
-	static bool GetSavesInfoCallback(LPVOID pParam,int iInstalledC, C4JStorage::CACHEINFOSTRUCT *InfoA, int iPad, HRESULT hRes);
-#else
 	static int GetSavesInfoCallback(LPVOID lpParam,const bool);
-#endif
 	static int DeleteSaveDialogReturned(void *pParam,int iPad,C4JStorage::EMessageResult result);
 	static int SaveOptionsDialogReturned(void *pParam,int iPad,C4JStorage::EMessageResult result);
 	static int DeviceRemovedDialogReturned(void *pParam,int iPad,C4JStorage::EMessageResult result);

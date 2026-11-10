@@ -135,11 +135,7 @@ public:
 					{
 						wcsncpy_s( wValue, pAttributes[i].strValue, pAttributes[i].ValueLen);			
 
-#ifdef _XBOX
-						iValue=_wtoi(wValue);
-#else
 						iValue=wcstol(wValue, NULL, 10);
-#endif
 					}
 				}
 			}
@@ -283,11 +279,7 @@ public:
 					{
 						wcsncpy_s( wConfig, pAttributes[i].strValue, pAttributes[i].ValueLen);			
 
-#ifdef _XBOX
-						iConfig=_wtoi(wConfig);
-#else
 						iConfig=wcstol(wConfig, NULL, 10);
-#endif
 					}
 				}
 				else if (_wcsicmp(wAttName,L"DataFile")==0)

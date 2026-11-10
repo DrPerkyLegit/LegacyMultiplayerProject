@@ -110,26 +110,6 @@ DLCPack *DLCManager::getPack(const wstring &name)
 	return pack;
 }
 
-#ifdef _XBOX_ONE
-DLCPack *DLCManager::getPackFromProductID(const wstring &productID)
-{
-	DLCPack *pack = NULL;
-	//DWORD currentIndex = 0;
-	DLCPack *currentPack = NULL;
-	for(AUTO_VAR(it, m_packs.begin()); it != m_packs.end(); ++it)
-	{
-		currentPack = *it;
-		wstring wsName=currentPack->getPurchaseOfferId();
-
-		if(wsName.compare(productID) == 0)
-		{
-			pack = currentPack;
-			break;
-		}
-	}
-	return pack;
-}
-#endif
 
 DLCPack *DLCManager::getPack(DWORD index, EDLCType type /*= e_DLCType_All*/)
 {
@@ -322,17 +302,9 @@ bool DLCManager::readDLCDataFile(DWORD &dwFilesProcessed, const string &path, DL
 	}
 	else if (fromArchive) return false;
 
-#ifdef _WINDOWS64
 	string finalPath = StorageManager.GetMountedPath(path.c_str());
 	if(finalPath.size() == 0) finalPath = path;
 	HANDLE file = CreateFile(finalPath.c_str(), GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-#elif defined(_DURANGO)
-	wstring finalPath = StorageManager.GetMountedPath(wPath.c_str());
-	if(finalPath.size() == 0) finalPath = wPath;
-	HANDLE file = CreateFile(finalPath.c_str(), GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-#else
-	HANDLE file = CreateFile(path.c_str(), GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-#endif
 	if( file == INVALID_HANDLE_VALUE )
 	{
 		DWORD error = GetLastError();
@@ -529,17 +501,9 @@ DWORD DLCManager::retrievePackIDFromDLCDataFile(const string &path, DLCPack *pac
 	DWORD packId = 0;
 	wstring wPath = convStringToWstring(path);
 
-#ifdef _WINDOWS64
 	string finalPath = StorageManager.GetMountedPath(path.c_str());
 	if(finalPath.size() == 0) finalPath = path;
 	HANDLE file = CreateFile(finalPath.c_str(), GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-#elif defined(_DURANGO)
-	wstring finalPath = StorageManager.GetMountedPath(wPath.c_str());
-	if(finalPath.size() == 0) finalPath = wPath;
-	HANDLE file = CreateFile(finalPath.c_str(), GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-#else
-	HANDLE file = CreateFile(path.c_str(), GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-#endif
 	if( file == INVALID_HANDLE_VALUE )
 	{
 		return 0;

@@ -5,9 +5,6 @@
 #include "..\Minecraft.World\JavaIntHash.h"
 #include "..\Minecraft.World\Level.h"
 #include <xmcore.h>
-#ifdef __PS3__
-#include "C4JSpursJob.h"
-#endif
 class MultiPlayerLevel;
 class Textures;
 class Chunk;
@@ -28,9 +25,6 @@ using namespace std;
 // of chunks built in a single group and reduce the chance of seeing through the landscape when digging near the edges/corners of a chunk.
 // I've added another chunk flag to mark a chunk critical so it swipes a bit from the reference count value (goes to 3 bits to 2). This works on Vita because it doesn't have 
 // split screen reference counting.
-#ifdef __PSVITA__
-#define _CRITICAL_CHUNKS
-#endif
 
 class LevelRenderer : public LevelListener
 {
@@ -43,15 +37,7 @@ public:
 	static const int CHUNK_SIZE = 16;
 #endif
 	static const int CHUNK_Y_COUNT = Level::maxBuildHeight / CHUNK_SIZE;
-#if defined _XBOX_ONE
-	static const int MAX_COMMANDBUFFER_ALLOCATIONS = 512 * 1024 * 1024;		// 4J - added
-#elif defined __ORBIS__
-	static const int MAX_COMMANDBUFFER_ALLOCATIONS = 448 * 1024 * 1024;		// 4J - added - hard limit is 512 so giving a lot of headroom here for fragmentation (have seen 16MB lost to fragmentation in multiplayer crash dump before)
-#elif defined __PS3__
-	static const int MAX_COMMANDBUFFER_ALLOCATIONS = 110 * 1024 * 1024;		// 4J - added
-#else
 	static const int MAX_COMMANDBUFFER_ALLOCATIONS = 55 * 1024 * 1024;		// 4J - added
-#endif
 public:
 	LevelRenderer(Minecraft *mc, Textures *textures);
 private:
@@ -96,13 +82,6 @@ public:
 	void tileLightChanged(int x, int y, int z);
 	void setTilesDirty(int x0, int y0, int z0, int x1, int y1, int z1, Level *level);	// 4J - added level param
 
-#ifdef __PS3__
-	void cull_SPU(int playerIndex, Culler *culler, float a);
-	void waitForCull_SPU();
-	C4JSpursJobQueue::Port* m_jobPort_CullSPU;
-	C4JSpursJobQueue::Port* m_jobPort_FindNearestChunk;
-	bool	m_bSPUCullStarted[4];
-#endif // __PS3__
 	void cull(Culler *culler, float a);
 	void playStreamingMusic(const wstring& name, int x, int y, int z);
 	void playSound(int iSound, double x, double y, double z, float volume, float pitch, float fSoundClipDist=16.0f);

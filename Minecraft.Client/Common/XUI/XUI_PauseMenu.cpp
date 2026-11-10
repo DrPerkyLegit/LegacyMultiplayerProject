@@ -820,17 +820,6 @@ int UIScene_PauseMenu::ExitGameSaveDialogReturned(void *pParam,int iPad,C4JStora
 				DLCPack *pDLCPack=pDLCTexPack->getDLCInfoParentPack();//tPack->getDLCPack();
 				if(!pDLCPack->hasPurchasedFile( DLCManager::e_DLCType_Texture, L"" ))
 				{					
-#ifdef _XBOX
-					// upsell
-					ULONGLONG ullOfferID_Full;
-					// get the dlc texture pack
-					DLCTexturePack *pDLCTexPack=(DLCTexturePack *)tPack;
-
-					app.GetDLCFullOfferIDForPackID(pDLCTexPack->getDLCParentPackId(),&ullOfferID_Full);
-
-					// tell sentient about the upsell of the full version of the skin pack
-					TelemetryManager->RecordUpsellPresented(iPad, eSet_UpsellID_Texture_DLC, ullOfferID_Full & 0xFFFFFFFF);
-#endif
 
 					UINT uiIDA[2];
 					uiIDA[0]=IDS_CONFIRM_OK;
@@ -1058,12 +1047,6 @@ void UIScene_PauseMenu::_ExitWorld(LPVOID lpParameter)
 					exitReasonStringId = IDS_NO_USER_CREATED_CONTENT_PRIVILEGE_SINGLE_LOCAL;
 					exitReasonTitleId = IDS_CONNECTION_FAILED;
 					break;
-#ifdef _XBOX
-				case DisconnectPacket::eDisconnect_NoUGC_Remote:
-					exitReasonStringId = IDS_NO_USER_CREATED_CONTENT_PRIVILEGE_REMOTE;
-					exitReasonTitleId = IDS_CONNECTION_FAILED;
-					break;
-#endif
 				case DisconnectPacket::eDisconnect_NoFlying:
 					exitReasonStringId = IDS_DISCONNECTED_FLYING;
 					break;
@@ -1149,12 +1132,6 @@ void UIScene_PauseMenu::_ExitWorld(LPVOID lpParameter)
 				exitReasonStringId = IDS_NO_USER_CREATED_CONTENT_PRIVILEGE_SINGLE_LOCAL;
 				exitReasonTitleId = IDS_CONNECTION_FAILED;
 				break;
-#ifdef _XBOX
-			case DisconnectPacket::eDisconnect_NoUGC_Remote:
-				exitReasonStringId = IDS_NO_USER_CREATED_CONTENT_PRIVILEGE_REMOTE;
-				exitReasonTitleId = IDS_CONNECTION_FAILED;
-				break;
-#endif
 			case DisconnectPacket::eDisconnect_Quitting:
 				exitReasonStringId = IDS_DISCONNECTED_SERVER_QUIT;
 				break;

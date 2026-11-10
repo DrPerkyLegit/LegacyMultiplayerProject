@@ -16,41 +16,17 @@ DLCPack::DLCPack(const wstring &name,DWORD dwLicenseMask)
 	m_dataPath = L"";
 	m_packName = name;
 	m_dwLicenseMask=dwLicenseMask;
-#ifdef _XBOX_ONE
-	m_wsProductId = L"";
-#else
 	m_ullFullOfferId = 0LL;
-#endif
 	m_isCorrupt = false;
 	m_packId = 0;
 	m_packVersion = 0;
 	m_parentPack = NULL;
 	m_dlcMountIndex = -1;
-#ifdef _XBOX
-	m_dlcDeviceID = XCONTENTDEVICE_ANY;
-#endif
 	
 	// This pointer is for all the data used for this pack, so deleting it invalidates ALL of it's children.
 	m_data = NULL;
 }
 
-#ifdef _XBOX_ONE
-DLCPack::DLCPack(const wstring &name,const wstring &productID,DWORD dwLicenseMask)
-{
-	m_dataPath = L"";
-	m_packName = name;
-	m_dwLicenseMask=dwLicenseMask;
-	m_wsProductId = productID;
-	m_isCorrupt = false;
-	m_packId = 0;
-	m_packVersion = 0;
-	m_parentPack = NULL;
-	m_dlcMountIndex = -1;
-
-	// This pointer is for all the data used for this pack, so deleting it invalidates ALL of it's children.
-	m_data = NULL;
-}
-#endif
 
 DLCPack::~DLCPack()
 {
@@ -197,16 +173,12 @@ DLCFile *DLCPack::addFile(DLCManager::EDLCType type, const wstring &path)
 			newFile = new DLCSkinFile(strippedPath);
 
 			// check to see if we can get the full offer id using this skin name
-#ifdef _XBOX_ONE
-			app.GetDLCFullOfferIDForSkinID(strippedPath,m_wsProductId);
-#else
 			ULONGLONG ullVal=0LL;
 
 			if(app.GetDLCFullOfferIDForSkinID(strippedPath,&ullVal))
 			{
 				m_ullFullOfferId=ullVal;
 			}
-#endif
 		}
 		break;
 	case DLCManager::e_DLCType_Cape:

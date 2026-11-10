@@ -7,16 +7,12 @@
 #ifndef _CONTENT_PACKAGE
 static VOID DebugSpewV( const CHAR* strFormat, const va_list pArgList )
 {
-#if defined __PS3__ || defined __ORBIS__ || defined __PSVITA__
-	assert(0);
-#else
 	CHAR str[2048];
 	// Use the secure CRT to avoid buffer overruns. Specify a count of
 	// _TRUNCATE so that too long strings will be silently truncated
 	// rather than triggering an error.
 	_vsnprintf_s( str, _TRUNCATE, strFormat, pArgList );
 	OutputDebugStringA( str );
-#endif
 }
 #endif
 

@@ -106,11 +106,6 @@ public:
 	int getRenderWidth() { return m_renderWidth; }
 	int getRenderHeight() { return m_renderHeight; }
 
-#ifdef __PSVITA__
-	UILayer *GetParentLayer() {return m_parentLayer;}
-	EUIGroup GetParentLayerGroup() {return m_parentLayer->m_parentGroup->GetGroup();}
-	vector<UIControl *> *GetControls() {return &m_controls;}
-#endif
 
 protected:
 	virtual F64 getSafeZoneHalfHeight();
@@ -139,10 +134,6 @@ public:
 	virtual void tick();
 
 	IggyName registerFastName(const wstring &name);
-#ifdef __PSVITA__
-	void SetFocusToElement(int iID); 
-	void UpdateSceneControls();
-#endif
 protected:
 	void addTimer(int id, int ms);
 	void killTimer(int id);
@@ -248,9 +239,6 @@ public:
 	UIScene *getBackScene();
 	virtual void HandleDLCMountingComplete() {}
 	virtual void HandleDLCInstalled() {}
-#ifdef _XBOX_ONE
-	virtual void HandleDLCLicenseChange() {}
-#endif
 	void registerSubstitutionTexture(const wstring &textureName, PBYTE pbData, DWORD dwLength, bool deleteData = false);
 	bool hasRegisteredSubstitutionTexture(const wstring &textureName);
 
@@ -260,9 +248,6 @@ public:
 
 
 protected:
-#ifdef _DURANGO	
-	virtual long long getDefaultGtcButtons() { return _360_GTC_BACK; }
-#endif
 
 	size_t GetCallbackUniqueId();
 

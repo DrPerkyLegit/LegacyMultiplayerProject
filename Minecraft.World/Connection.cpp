@@ -114,10 +114,6 @@ Connection::Connection(Socket *socket, const wstring& id, PacketListener *packet
 	writeThread = new C4JThread(runWrite, this, writeThreadName, WRITE_STACK_SIZE);
 	readThread->SetProcessor(CPU_CORE_CONNECTIONS);
 	writeThread->SetProcessor(CPU_CORE_CONNECTIONS );
-#ifdef __ORBIS__
-	readThread->SetPriority(THREAD_PRIORITY_BELOW_NORMAL);	// On Orbis, this core is also used for Matching 2, and that priority of that seems to be always at default no matter what we set it to. Prioritise this below Matching 2.
-	writeThread->SetPriority(THREAD_PRIORITY_BELOW_NORMAL);	// On Orbis, this core is also used for Matching 2, and that priority of that seems to be always at default no matter what we set it to. Prioritise this below Matching 2.
-#endif
 
 	readThread->Run();
 	writeThread->Run();
@@ -307,7 +303,7 @@ bool Connection::readTick()
 //		printf("Con:0x%x readTick close EOS\n",this);
 
 		// 4J Stu - Remove this line
-		// Fix for #10410 - UI: If the player is removed from a splitscreened host’s game, the next game that player joins will produce a message stating that the host has left.
+		// Fix for #10410 - UI: If the player is removed from a splitscreened hostï¿½s game, the next game that player joins will produce a message stating that the host has left.
 		//close(DisconnectPacket::eDisconnect_EndOfStream);
 	}
 
@@ -534,9 +530,6 @@ int Connection::runRead(void* lpParam)
 
 	if (con == NULL)
 	{
-#ifdef __PS3__
-		ShutdownManager::HasFinished(ShutdownManager::eConnectionReadThreads);
-#endif
 		return 0;
 	}
 

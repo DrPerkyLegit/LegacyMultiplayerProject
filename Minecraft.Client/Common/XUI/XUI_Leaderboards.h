@@ -79,9 +79,6 @@ private:
 
 	unsigned int	m_currentLeaderboard;	//The current leaderboard selected for view
 
-#ifdef _XBOX
-	LeaderboardManager::EFilterMode m_currentFilter;		//The current filter selected
-#endif
 	unsigned int	m_currentDifficulty;	//The current difficulty selected
 	
 	unsigned int	m_newEntryIndex;		//Index of the first entry being read

@@ -37,14 +37,6 @@ HRESULT CXuiSceneFurnace::OnInit( XUIMessageInit* pInitData, BOOL& bHandled )
 		app.AdjustSplitscreenScene(m_hObj,&m_OriginalPosition,m_iPad);	
 	}
 
-#ifdef _XBOX
-	if( pMinecraft->localgameModes[m_iPad] != NULL )
-	{
-		TutorialMode *gameMode = (TutorialMode *)pMinecraft->localgameModes[m_iPad];
-		m_previousTutorialState = gameMode->getTutorial()->getCurrentState();
-		gameMode->getTutorial()->changeTutorialState(e_Tutorial_State_Furnace_Menu, this);
-	}
-#endif
 
 	FurnaceMenu* menu = new FurnaceMenu( initData->inventory, initData->furnace );
 	
@@ -68,13 +60,6 @@ HRESULT CXuiSceneFurnace::OnDestroy()
 {
 	Minecraft *pMinecraft = Minecraft::GetInstance();
 
-#ifdef _XBOX
-	if( pMinecraft->localgameModes[m_iPad] != NULL )
-	{
-		TutorialMode *gameMode = (TutorialMode *)pMinecraft->localgameModes[m_iPad];
-		if(gameMode != NULL) gameMode->getTutorial()->changeTutorialState(m_previousTutorialState);
-	}
-#endif
 
 	// 4J Stu - Fix for #11302 - TCR 001: Network Connectivity: Host crashed after being killed by the client while accessing a chest during burst packet loss.
 	// We need to make sure that we call closeContainer() anytime this menu is closed, even if it is forced to close by some other reason (like the player dying)	

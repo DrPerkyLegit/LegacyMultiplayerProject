@@ -94,10 +94,6 @@ private:
 	bool isLargeStat(Stat* stat);
 	void dumpStatsToTTY();
 
-#ifdef _XBOX
-	static void setLeaderboardProperty(XUSER_PROPERTY* prop, DWORD id, unsigned int value);
-	static void setLeaderboardRating(XUSER_PROPERTY* prop, LONGLONG value);
-#endif
 
 	void writeStats();
 };

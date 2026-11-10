@@ -116,11 +116,6 @@ public:
 	virtual void GetFullFriendSessionInfo( FriendSessionInfo *foundSession, void (* FriendSessionUpdatedFn)(bool success, void *pParam), void *pParam ) = 0;
 	virtual void ForceFriendsSessionRefresh() = 0;
 
-#ifndef _XBOX
 	virtual void FakeLocalPlayerJoined() {};		// Temporary method whilst we don't have real networking to make this happen
-#endif
 
-#ifdef _DURANGO
-	virtual wstring GetDisplayNameByGamertag(wstring gamertag) = 0;
-#endif
 };

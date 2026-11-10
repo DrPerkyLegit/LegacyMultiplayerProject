@@ -62,9 +62,6 @@ HRESULT CScene_DebugTips::OnKeyDown(XUIMessageInput* pInputData, BOOL& rfHandled
 		break;
 #ifndef _CONTENT_PACKAGE
 	case VK_PAD_LTHUMB_PRESS:
-#ifdef _XBOX
-		app.OverrideFontRenderer(true);
-#endif
 		break;
 #endif
 	}

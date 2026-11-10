@@ -68,13 +68,6 @@ private:
 	// Social post preview image struct.
 	XSOCIAL_PREVIEWIMAGE	m_PostPreviewImage;
 
-#ifdef _XBOX
-	// Social post image params.
-	XSOCIAL_IMAGEPOSTPARAMS	m_PostImageParams;
-
-	// Social post link params.
-	XSOCIAL_LINKPOSTPARAMS	m_PostLinkParams;
-#endif
 
 	// Image details for posting an image to social network.
 	unsigned char*			m_pMainImageBuffer;

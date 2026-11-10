@@ -11,9 +11,6 @@
 #include "..\..\EnderDragonRenderer.h"
 #include "..\..\MultiPlayerLocalPlayer.h"
 #include "UIFontData.h"
-#ifdef __PSVITA__
-#include <message_dialog.h>
-#endif
 
 // 4J Stu - Enable this to override the Iggy Allocator
 //#define ENABLE_IGGY_ALLOCATOR
@@ -30,18 +27,7 @@
 #define PM_ORIGIN_X 24
 #define PM_ORIGIN_Y 34
 
-#ifdef __ORBIS__
-#include "Orbis\Iggy\include\iggyperfmon.h"
-#include "Orbis\Iggy\include\iggyperfmon_orbis.h"
-#elif defined _DURANGO
-#include "Durango\Iggy\include\iggyperfmon.h"
-#elif defined __PS3__
-#include "PS3\Iggy\include\iggyperfmon.h"
-#include "PS3\Iggy\include\iggyperfmon_ps3.h"
-#elif defined __PSVITA__
-#include "PSVita\Iggy\include\iggyperfmon.h"
-#include "PSVita\Iggy\include\iggyperfmon_psp2.h"
-#elif defined __WINDOWS64
+#if defined(__WINDOWS64)
 #include "Windows64\Iggy\include\iggyperfmon.h"
 #endif
 
@@ -173,15 +159,9 @@ UIController::UIController()
 #endif
 
 	// 4J Stu - This is a bit of a hack until we change the Minecraft initialisation to store the proper screen size for other platforms
-#if defined _WINDOWS64 || defined _DURANGO || defined __ORBIS__
 	m_fScreenWidth = 1920.0f;
 	m_fScreenHeight = 1080.0f;
 	m_bScreenWidthSetup = true;
-#else
-	m_fScreenWidth = 1280.0f;
-	m_fScreenHeight = 720.0f;
-	m_bScreenWidthSetup = false;
-#endif
 
 	for(unsigned int i = 0; i < eLibrary_Count; ++i)
 	{
@@ -216,9 +196,6 @@ UIController::UIController()
 	InitializeCriticalSection(&m_registeredCallbackScenesCS);
 	//m_bSysUIShowing=false;
 	m_bSystemUIShowing=false;
-#ifdef __PSVITA__
-	m_bTouchscreenPressed=false;
-#endif
 
 	if(!ms_bReloadSkinCSInitialised)
 	{
@@ -314,21 +291,6 @@ void UIController::SetupFont()
 
 	switch(XGetLanguage())
 	{
-#if defined(__PS3__) || defined(__ORBIS__) || defined(__PSVITA__)
-	case XC_LANGUAGE_JAPANESE:
-		m_mcTTFFont = new UITTFFont("Common/Media/font/JPN/DF-DotDotGothic16.ttf", 0x203B); // JPN
-		break;
-	case XC_LANGUAGE_SCHINESE: //TODO
-	case XC_LANGUAGE_TCHINESE:
-		m_mcTTFFont = new UITTFFont("Common/Media/font/CHT/DFTT_R5.TTC", 0x203B); // CHT
-		break;
-	case XC_LANGUAGE_KOREAN:
-		m_mcTTFFont = new UITTFFont("Common/Media/font/KOR/candadite2.ttf", 0x203B); // KOR
-		break;
-		// 4J-JEV, Cyrillic characters have been added to this font now, (4/July/14)
-		//case XC_LANGUAGE_RUSSIAN:
-		//case XC_LANGUAGE_GREEK:
-#else
 	case XC_LANGUAGE_JAPANESE:
 		m_mcTTFFont = new UITTFFont("Common/Media/font/JPN/DFGMaruGothic-Md.ttf", 0x2022); // JPN
 		break;
@@ -339,7 +301,6 @@ void UIController::SetupFont()
 	case XC_LANGUAGE_KOREAN:
 		m_mcTTFFont = new UITTFFont("Common/Media/font/KOR/BOKMSD.ttf", 0x2022); // KOR
 		break;
-#endif
 	default:
 		bBitmapFont=true;
 		// m_mcTTFFont = new UITTFFont("Common/Media/font/Mojangles.ttf", 0x2022); // 4J-JEV: Shouldn't be using this.
@@ -421,11 +382,6 @@ void UIController::loadSkins()
 {
 	wstring platformSkinPath = L"";
 
-#ifdef __PS3__
-	platformSkinPath = L"skinPS3.swf";
-#elif defined __PSVITA__
-	platformSkinPath = L"skinVita.swf";
-#elif defined _WINDOWS64
 	if(m_fScreenHeight==1080.0f)
 	{
 		platformSkinPath = L"skinHDWin.swf";
@@ -434,26 +390,6 @@ void UIController::loadSkins()
 	{
 		platformSkinPath = L"skinWin.swf";	
 	}
-#elif defined _DURANGO
-	if(m_fScreenHeight==1080.0f)
-	{
-		platformSkinPath = L"skinHDDurango.swf";	
-	}
-	else
-	{
-		platformSkinPath = L"skinDurango.swf";	
-	}
-#elif defined __ORBIS__
-	if(m_fScreenHeight==1080.0f)
-	{
-		platformSkinPath = L"skinHDOrbis.swf";	
-	}
-	else
-	{
-		platformSkinPath = L"skinOrbis.swf";	
-	}
-
-#endif
 	// Every platform has one of these, so nothing shared
 	if(m_fScreenHeight==1080.0f)
 	{
@@ -464,20 +400,7 @@ void UIController::loadSkins()
 		m_iggyLibraries[eLibrary_Platform] = loadSkin(platformSkinPath, L"platformskin.swf");
 	}
 
-#if defined(__PS3__) || defined(__PSVITA__)
-	m_iggyLibraries[eLibrary_GraphicsDefault] = loadSkin(L"skinGraphics.swf", L"skinGraphics.swf");
-	m_iggyLibraries[eLibrary_GraphicsHUD] = loadSkin(L"skinGraphicsHud.swf", L"skinGraphicsHud.swf");
-	m_iggyLibraries[eLibrary_GraphicsInGame] = loadSkin(L"skinGraphicsInGame.swf", L"skinGraphicsInGame.swf");
-	m_iggyLibraries[eLibrary_GraphicsTooltips] = loadSkin(L"skinGraphicsTooltips.swf", L"skinGraphicsTooltips.swf");
-	m_iggyLibraries[eLibrary_GraphicsLabels] = loadSkin(L"skinGraphicsLabels.swf", L"skinGraphicsLabels.swf");
-	m_iggyLibraries[eLibrary_Labels] = loadSkin(L"skinLabels.swf", L"skinLabels.swf");
-	m_iggyLibraries[eLibrary_InGame] = loadSkin(L"skinInGame.swf", L"skinInGame.swf");
-	m_iggyLibraries[eLibrary_HUD] = loadSkin(L"skinHud.swf", L"skinHud.swf");
-	m_iggyLibraries[eLibrary_Tooltips] = loadSkin(L"skinTooltips.swf", L"skinTooltips.swf");
-	m_iggyLibraries[eLibrary_Default] = loadSkin(L"skin.swf", L"skin.swf");
-#endif
 
-#if ( defined(_WINDOWS64) || defined(_DURANGO) || defined(__ORBIS__) )
 
 #if defined(_WINDOWS64)
 	// 4J Stu - Load the 720/480 skins so that we have something to fallback on during development
@@ -505,7 +428,6 @@ void UIController::loadSkins()
 	m_iggyLibraries[eLibrary_HUD] = loadSkin(L"skinHDHud.swf", L"skinHDHud.swf");
 	m_iggyLibraries[eLibrary_Tooltips] = loadSkin(L"skinHDTooltips.swf", L"skinHDTooltips.swf");
 	m_iggyLibraries[eLibrary_Default] = loadSkin(L"skinHD.swf", L"skinHD.swf");
-#endif // HD platforms
 }
 
 IggyLibrary UIController::loadSkin(const wstring &skinPath, const wstring &skinName)
@@ -632,11 +554,7 @@ void UIController::CleanUpSkinReload()
 	{
 		if(!Minecraft::GetInstance()->skins->getSelected()->hasAudio())
 		{
-#ifdef _DURANGO			
-			DWORD result = StorageManager.UnmountInstalledDLC(L"TPACK");
-#else
 			DWORD result = StorageManager.UnmountInstalledDLC("TPACK");
-#endif
 		}
 	}
 
@@ -697,60 +615,13 @@ void UIController::handleInput()
 	// For each user, loop over each key type and send messages based on the state
 	for(unsigned int iPad = 0; iPad < XUSER_MAX_COUNT; ++iPad)
 	{
-#ifdef _DURANGO
-		// 4J-JEV: Added exception for primary play who migh've uttered speech commands.
-		if(iPad != ProfileManager.GetPrimaryPad() 
-			&& (!InputManager.IsPadConnected(iPad) || !InputManager.IsPadLocked(iPad)) ) continue;
-#endif
 		for(unsigned int key = 0; key <= ACTION_MAX_MENU; ++key)
 		{
 			handleKeyPress(iPad, key);
 		}
 
-#ifdef __PSVITA__
-		//CD - Vita requires key press 40 - select [MINECRAFT_ACTION_GAME_INFO]
-		handleKeyPress(iPad, MINECRAFT_ACTION_GAME_INFO);
-#endif
 	}
 
-#ifdef _DURANGO
-	if(!app.GetGameStarted())
-	{
-		bool repeat = false;
-		int firstUnfocussedUnhandledPad = -1;
-
-		// For durango, check for unmapped controllers
-		for(unsigned int iPad = XUSER_MAX_COUNT; iPad < (XUSER_MAX_COUNT + InputManager.MAX_GAMEPADS); ++iPad)
-		{
-			if(InputManager.IsPadLocked(iPad) || !InputManager.IsPadConnected(iPad) ) continue;
-
-			for(unsigned int key = 0; key <= ACTION_MAX_MENU; ++key)
-			{
-
-				bool pressed = InputManager.ButtonPressed(iPad,key); // Toggle
-				bool released = InputManager.ButtonReleased(iPad,key); // Toggle
-
-				if(pressed || released)
-				{
-					bool handled = false;
-
-					// Send the key to the fullscreen group first
-					m_groups[(int)eUIGroup_Fullscreen]->handleInput(iPad, key, repeat, pressed, released, handled);
-
-					if(firstUnfocussedUnhandledPad < 0 && !m_groups[(int)eUIGroup_Fullscreen]->HasFocus(iPad))
-					{
-						firstUnfocussedUnhandledPad = iPad;
-					}
-				}
-			}
-		}
-
-		if(ProfileManager.GetLockedProfile() >= 0 && !InputManager.IsPadLocked( ProfileManager.GetLockedProfile() ) && firstUnfocussedUnhandledPad >= 0)
-		{
-			ProfileManager.RequestSignInUI(false, false, false, false, true, NULL, NULL, firstUnfocussedUnhandledPad );
-		}
-	}
-#endif
 }
 
 void UIController::handleKeyPress(unsigned int iPad, unsigned int key)
@@ -761,159 +632,6 @@ void UIController::handleKeyPress(unsigned int iPad, unsigned int key)
 	bool released = false; // Toggle
 	bool repeat = false;
 
-#ifdef __PSVITA__
-	if(key==ACTION_MENU_OK)
-	{
-		bool bTouchScreenInput=false;
-
-		// check the touchscreen
-
-		// 4J-PB - use the touchscreen for quickselect
-		SceTouchData* pTouchData = InputManager.GetTouchPadData(iPad,false);
-
-		if((m_bTouchscreenPressed==false) && pTouchData->reportNum==1)
-		{
-			// no active touch? clear active and highlighted touch UI elements
-			m_ActiveUIElement = NULL;
-			m_HighlightedUIElement = NULL; 
-
-			// fullscreen first
-			UIScene *pScene=m_groups[(int)eUIGroup_Fullscreen]->getCurrentScene();
-			// also check tooltip scene if we're not touching anything in the main scene
-			UIScene *pToolTips=m_groups[(int)eUIGroup_Fullscreen]->getTooltips();
-			if(pScene)
-			{
-				// scene touch check
-				if(TouchBoxHit(pScene,pTouchData->report[0].x,pTouchData->report[0].y))
-				{
-					down=pressed=m_bTouchscreenPressed=true;
-					bTouchScreenInput=true;
-				}
-				// tooltip touch check
-				else if(TouchBoxHit(pToolTips,pTouchData->report[0].x,pTouchData->report[0].y))
-				{
-					down=pressed=m_bTouchscreenPressed=true;
-					bTouchScreenInput=true;
-				}
-			}
-			else
-			{
-				pScene=m_groups[(EUIGroup)(iPad+1)]->getCurrentScene();
-				pToolTips=m_groups[(int)iPad+1]->getTooltips();
-				if(pScene)
-				{
-					// scene touch check
-					if(TouchBoxHit(pScene,pTouchData->report[0].x,pTouchData->report[0].y))
-					{
-						down=pressed=m_bTouchscreenPressed=true;
-						bTouchScreenInput=true;
-					}
-					// tooltip touch check (if scene exists but not component has been touched)
-					else if(TouchBoxHit(pToolTips,pTouchData->report[0].x,pTouchData->report[0].y))
-					{
-						down=pressed=m_bTouchscreenPressed=true;
-						bTouchScreenInput=true;
-					}
-				}
-				else if(pToolTips)
-				{
-					// tooltip touch check (if scene does not exist)
-					if(TouchBoxHit(pToolTips,pTouchData->report[0].x,pTouchData->report[0].y))
-					{
-						down=pressed=m_bTouchscreenPressed=true;
-						bTouchScreenInput=true;
-					}
-				}
-			}
-		}	
-		else if(m_bTouchscreenPressed && pTouchData->reportNum==1)
-		{
-			// fullscreen first
-			UIScene *pScene=m_groups[(int)eUIGroup_Fullscreen]->getCurrentScene();
-			// also check tooltip scene if we're not touching anything in the main scene
-			UIScene *pToolTips=m_groups[(int)eUIGroup_Fullscreen]->getTooltips();
-			if(pScene)
-			{
-				// scene touch check
-				if(TouchBoxHit(pScene,pTouchData->report[0].x,pTouchData->report[0].y))
-				{
-					down=true;
-					bTouchScreenInput=true;
-				}
-				// tooltip touch check (if scene exists but not component has been touched)
-				else if(TouchBoxHit(pToolTips,pTouchData->report[0].x,pTouchData->report[0].y))
-				{
-					down=true;
-					bTouchScreenInput=true;
-				}
-			}
-			else
-			{
-				pScene=m_groups[(EUIGroup)(iPad+1)]->getCurrentScene();
-				pToolTips=m_groups[(int)iPad+1]->getTooltips();
-				if(pScene)
-				{
-					// scene touch check
-					if(TouchBoxHit(pScene,pTouchData->report[0].x,pTouchData->report[0].y))
-					{
-						down=true;
-						bTouchScreenInput=true;
-					}
-					// tooltip touch check (if scene exists but not component has been touched)
-					else if(TouchBoxHit(pToolTips,pTouchData->report[0].x,pTouchData->report[0].y))
-					{
-						down=true;
-						bTouchScreenInput=true;
-					}
-				}
-				else if(pToolTips)
-				{
-					// tooltip touch check (if scene does not exist)
-					if(TouchBoxHit(pToolTips,pTouchData->report[0].x,pTouchData->report[0].y))
-					{
-						down=true;
-						bTouchScreenInput=true;
-					}
-				}
-			}
-		}
-		else if(m_bTouchscreenPressed && pTouchData->reportNum==0)
-		{
-			// released
-			bTouchScreenInput=true;
-			m_bTouchscreenPressed=false;
-			released=true;
-		}
-
-		if(pressed)
-		{
-			// Start repeat timer
-			m_actionRepeatTimer[iPad][key] = GetTickCount() + UI_REPEAT_KEY_DELAY_MS;
-		}
-		else if (released)
-		{
-			// Stop repeat timer
-			m_actionRepeatTimer[iPad][key] = 0;
-		}
-		else if (down)
-		{
-			// Check is enough time has elapsed to be a repeat key
-			DWORD currentTime = GetTickCount();
-			if(m_actionRepeatTimer[iPad][key] > 0 && currentTime > m_actionRepeatTimer[iPad][key])
-			{
-				repeat = true;
-				pressed = true;
-				m_actionRepeatTimer[iPad][key] = currentTime + UI_REPEAT_KEY_REPEAT_RATE_MS;
-			}
-		}
-
-		// handle touch input
-		HandleTouchInput(iPad, key, pressed, repeat, released);
-
-		// ignore any other presses if the touchscreen has been used
-		if(bTouchScreenInput) return;
-	}
-#endif
 
 	down = InputManager.ButtonDown(iPad,key);
 	pressed = InputManager.ButtonPressed(iPad,key); // Toggle
@@ -974,74 +692,6 @@ void UIController::handleKeyPress(unsigned int iPad, unsigned int key)
 
 	// 4J Stu - Removed this function
 #if 0
-#ifdef __PS3__
-	//if (	pressed &&
-	//	!repeat &&
-	//	//app.GetGameSettingsDebugMask(ProfileManager.GetPrimaryPad())&(1L<<eDebugSetting_ToggleFont) &&
-	//	key == ACTION_MENU_STICK_PRESS)
-	//{
-	//	static bool whichFont = true;
-	//	if (whichFont)
-	//	{
-	//		IggyFontSetIndirectUTF8( "Mojangles_7", -1, IGGY_FONTFLAG_all, "Mojangles_TTF",-1 ,IGGY_FONTFLAG_none );
-	//		IggyFontSetIndirectUTF8( "Mojangles_11", -1, IGGY_FONTFLAG_all, "Mojangles_TTF",-1 ,IGGY_FONTFLAG_none );
-	//		whichFont = false;
-	//	}
-	//	else
-	//	{
-	//		IggyFontSetIndirectUTF8( "Mojangles_7", -1, IGGY_FONTFLAG_all, "Mojangles_7",-1 ,IGGY_FONTFLAG_none );
-	//		IggyFontSetIndirectUTF8( "Mojangles_11", -1, IGGY_FONTFLAG_all, "Mojangles_11",-1 ,IGGY_FONTFLAG_none );
-	//		whichFont = true;
-	//	}
-	//}
-	//else
-	if (	pressed &&
-		!repeat &&
-		//!(app.GetGameSettingsDebugMask(ProfileManager.GetPrimaryPad())&(1L<<eDebugSetting_ToggleFont)) &&
-		key == ACTION_MENU_STICK_PRESS)
-	{
-		__int64 totalStatic = 0;
-		__int64 totalDynamic = 0;
-		app.DebugPrintf(app.USER_SR, "********************************\n");
-		app.DebugPrintf(app.USER_SR, "BEGIN TOTAL SWF MEMORY USAGE\n\n");
-		for(unsigned int i = 0; i < eUIGroup_COUNT; ++i)
-		{
-			m_groups[i]->PrintTotalMemoryUsage(totalStatic, totalDynamic);
-		}
-		for(unsigned int i = 0; i < eLibrary_Count; ++i)
-		{
-			__int64 libraryStatic = 0;
-			__int64 libraryDynamic = 0;
-
-			if(m_iggyLibraries[i] != IGGY_INVALID_LIBRARY)
-			{
-
-				IggyMemoryUseInfo memoryInfo;
-				rrbool res;
-				int iteration = 0;
-				while(res = IggyDebugGetMemoryUseInfo ( NULL ,
-					m_iggyLibraries[i] ,
-					"" ,
-					0 ,
-					iteration ,
-					&memoryInfo ))
-				{
-					libraryStatic += memoryInfo.static_allocation_bytes;
-					libraryDynamic += memoryInfo.dynamic_allocation_bytes;
-					totalStatic += memoryInfo.static_allocation_bytes;
-					totalDynamic += memoryInfo.dynamic_allocation_bytes;
-					++iteration;
-				}
-			}
-
-			app.DebugPrintf(app.USER_SR, "Library static: %dB , Library dynamic: %d, ID: %d\n", libraryStatic, libraryDynamic, i);
-		}
-		app.DebugPrintf(app.USER_SR, "Total static: %d , Total dynamic: %d\n", totalStatic, totalDynamic);
-		app.DebugPrintf(app.USER_SR, "\n\nEND TOTAL SWF MEMORY USAGE\n");
-		app.DebugPrintf(app.USER_SR, "********************************\n\n");
-	} 
-	else 
-#endif
 #endif
 #endif
 		//#endif
@@ -1210,21 +860,10 @@ void UIController::setupCustomDrawGameState()
 	m_customRenderingClearRect.top = LONG_MAX;
 	m_customRenderingClearRect.bottom = LONG_MIN;
 
-#if defined _WINDOWS64 || _DURANGO
 	PIXBeginNamedEvent(0,"StartFrame");
 	RenderManager.StartFrame();
 	PIXEndNamedEvent();
 	gdraw_D3D11_setViewport_4J();
-#elif defined __PS3__
-	RenderManager.StartFrame();
-#elif defined __PSVITA__
-	RenderManager.StartFrame();
-#elif defined __ORBIS__
-	RenderManager.StartFrame(false);
-	// Set up a viewport for the render that matches Iggy's own viewport, apart form using an opengl-style z-range (Iggy uses a DX-style range on PS4), so
-	// that the renderer orthographic projection will work
-	gdraw_orbis_setViewport_4J();
-#endif
 	RenderManager.Set_matrixDirty();
 
 	// 4J Stu - We don't need to clear this here as iggy hasn't written anything to the depth buffer.
@@ -1254,15 +893,6 @@ void UIController::setupCustomDrawMatrices(UIScene *scene, CustomDrawData *custo
 	float sceneHeight = (float)scene->getRenderHeight();
 
 	LONG left, right, top, bottom;
-#ifdef __PS3__
-	if(!RenderManager.IsHiDef() && !RenderManager.IsWidescreen())
-	{
-		// 4J Stu - Our SD target on PS3 is double width
-		left = m_tileOriginX + (sceneWidth + customDrawRegion->mat[(0*4)+3]*sceneWidth);
-		right = left + ( (sceneWidth * customDrawRegion->mat[0]) ) * customDrawRegion->x1;
-	}
-	else
-#endif
 	{
 		left = m_tileOriginX + (sceneWidth + customDrawRegion->mat[(0*4)+3]*sceneWidth)/2;
 		right = left + ( (sceneWidth * customDrawRegion->mat[0])/2 ) * customDrawRegion->x1;
@@ -1303,12 +933,7 @@ void UIController::setupCustomDrawGameStateAndMatrices(UIScene *scene, CustomDra
 
 void UIController::endCustomDrawGameState()
 {
-#ifdef __ORBIS__
-	// TO BE IMPLEMENTED
-	RenderManager.Clear(GL_DEPTH_BUFFER_BIT);
-#else
 	RenderManager.Clear(GL_DEPTH_BUFFER_BIT, &m_customRenderingClearRect);
-#endif
 	//glClear(GL_DEPTH_BUFFER_BIT);
 	glDepthMask(false);
 	glDisable(GL_ALPHA_TEST);
@@ -1363,14 +988,9 @@ GDrawTexture * RADLINK UIController::TextureSubstitutionCreateCallback ( void * 
 
 			// 4J Stu - All our flash controls that allow replacing textures use a special 64x64 symbol
 			// Force this size here so that our images don't get scaled wildly
-	#if (defined __ORBIS__ || defined _DURANGO )
-			*width = 96;
-			*height = 96;
-	#else
 			*width = 64;
 			*height = 64;
 
-	#endif
 			*destroy_callback_data = (void *)id;
 
 			app.DebugPrintf("Found substitution texture %ls (%d) - %dx%d\n", (wchar_t *)texture_name, id, image.getWidth(), image.getHeight());
@@ -1589,11 +1209,7 @@ void UIController::NavigateToHomeMenu()
 		// 		{
 		// 			pDLCTexPack->m_pSoundBank->Destroy();
 		// 		}
-#ifdef _XBOX_ONE
-		DWORD result = StorageManager.UnmountInstalledDLC(L"TPACK");
-#else
 		DWORD result = StorageManager.UnmountInstalledDLC("TPACK");
-#endif
 
 		app.DebugPrintf("Unmount result is %d\n",result);
 	}
@@ -1859,11 +1475,6 @@ void UIController::SetMenuDisplayed(int iPad,bool bVal)
 			m_bMenuToBeClosed[iPad]=true;
 			m_iCountDown[iPad]=10;
 
-#ifdef _DURANGO
-			// 4J-JEV: When in-game, allow player to toggle the 'Pause' and 'IngameInfo' menus via Kinnect.
-			if (Minecraft::GetInstance()->running) 
-				InputManager.SetEnabledGtcButtons(_360_GTC_MENU | _360_GTC_PAUSE | _360_GTC_VIEW);
-#endif
 		}
 	}
 }
@@ -1942,16 +1553,9 @@ void UIController::SetTooltips( unsigned int iPad, int iA, int iB, int iX, int i
 	EUIGroup group;
 
 	// 4J-PB - strip out any that are not applicable on the platform
-#ifndef _XBOX
 	if(iX==IDS_TOOLTIPS_SELECTDEVICE) iX=-1;
 	if(iX==IDS_TOOLTIPS_CHANGEDEVICE) iX=-1;
 
-#if defined(__PS3__) || defined(__ORBIS__) || defined(__PSVITA__)
-	if(iY==IDS_TOOLTIPS_VIEW_GAMERCARD) iY=-1;
-	if(iY==IDS_TOOLTIPS_VIEW_GAMERPROFILE) iY=-1;
-
-#endif
-#endif
 
 	if( app.GetGameStarted() )
 	{
@@ -2091,16 +1695,6 @@ void UIController::HandleDLCInstalled(int iPad)
 }
 
 
-#ifdef _XBOX_ONE
-void UIController::HandleDLCLicenseChange()
-{
-	for(unsigned int i = 0; i < eUIGroup_COUNT; ++i)
-	{
-		app.DebugPrintf("UIController::HandleDLCLicenseChange - m_groups[%d]\n",i);
-		m_groups[i]->HandleDLCLicenseChange();
-	}
-}
-#endif
 
 void UIController::HandleTMSDLCFileRetrieved(int iPad)
 {
@@ -2165,7 +1759,6 @@ void UIController::SetTutorialDescription(int iPad, TutorialPopupInfo *info)
 	}
 }
 
-#ifndef _XBOX
 void UIController::RemoveInteractSceneReference(int iPad, UIScene *scene)
 {
 	EUIGroup group;
@@ -2181,7 +1774,6 @@ void UIController::RemoveInteractSceneReference(int iPad, UIScene *scene)
 	}
 	if(m_groups[(int)group]->getTutorialPopup()) m_groups[(int)group]->getTutorialPopup()->RemoveInteractSceneReference(scene);
 }
-#endif
 
 void UIController::SetTutorialVisible(int iPad, bool visible)
 {
@@ -2240,9 +1832,7 @@ void UIController::UpdatePlayerBasePositions()
 			// 4J Stu - This is a legacy thing from our XUI implementation that we don't need
 			// Changing the viewport to fullscreen for users that no longer exist is SLOW
 			// This should probably be on all platforms, but I don't have time to test them all just now!
-#ifndef __ORBIS__
 			m_groups[idx+1]->SetViewportType(C4JRender::VIEWPORT_TYPE_FULLSCREEN);
-#endif
 			DisplayGamertag(idx,false);
 		}
 	}
@@ -2337,11 +1927,9 @@ void UIController::ShowAutosaveCountdownTimer(bool show)
 
 void UIController::UpdateAutosaveCountdownTimer(unsigned int uiSeconds)
 {
-#if !(defined(_XBOX_ONE) || defined(__ORBIS__))
 	WCHAR wcAutosaveCountdown[100]; 
 	swprintf( wcAutosaveCountdown, 100, app.GetString(IDS_AUTOSAVE_COUNTDOWN),uiSeconds);
 	if(m_groups[(int)eUIGroup_Fullscreen]->getPressStartToPlay()) m_groups[(int)eUIGroup_Fullscreen]->getPressStartToPlay()->setTrialTimer(wcAutosaveCountdown);
-#endif
 }
 
 void UIController::ShowSavingMessage(unsigned int iPad, C4JStorage::ESavingMessage eVal)
@@ -2435,13 +2023,8 @@ void UIController::ClearPressStart()
 }
 
 // 4J Stu - For the different StringTable classes. Should really fix the libraries.
-#ifndef __PS3__
 C4JStorage::EMessageResult UIController::RequestMessageBox(UINT uiTitle, UINT uiText, UINT *uiOptionA,UINT uiOptionC, DWORD dwPad,
 														   int( *Func)(LPVOID,int,const C4JStorage::EMessageResult),LPVOID lpParam, C4JStringTable *pStringTable, WCHAR *pwchFormatString,DWORD dwFocusButton, bool bIsError)
-#else
-C4JStorage::EMessageResult UIController::RequestMessageBox(UINT uiTitle, UINT uiText, UINT *uiOptionA,UINT uiOptionC, DWORD dwPad,
-														   int( *Func)(LPVOID,int,const C4JStorage::EMessageResult),LPVOID lpParam, StringTable *pStringTable, WCHAR *pwchFormatString,DWORD dwFocusButton, bool bIsError)
-#endif
 {
 	MessageBoxInfo param;
 	param.uiTitle = uiTitle;
@@ -2500,20 +2083,9 @@ C4JStorage::EMessageResult UIController::RequestUGCMessageBox(UINT title/* = -1 
 	// Default pad to primary player
 	if (iPad == -1) iPad = ProfileManager.GetPrimaryPad();
 
-#ifdef __ORBIS__
-	// Show the vague UGC system message in addition to our message
-	ProfileManager.DisplaySystemMessage( SCE_MSG_DIALOG_SYSMSG_TYPE_TRC_PSN_UGC_RESTRICTION, iPad );
-	return C4JStorage::EMessage_ResultAccept; 
-#elif defined(__PSVITA__)
-	ProfileManager.ShowSystemMessage( SCE_MSG_DIALOG_SYSMSG_TYPE_TRC_PSN_CHAT_RESTRICTION, iPad );
-	UINT uiIDA[1];
-	uiIDA[0]=IDS_CONFIRM_OK;
-	return ui.RequestMessageBox( title, IDS_CHAT_RESTRICTION_UGC, uiIDA, 1, iPad, Func, lpParam, app.GetStringTable(), NULL, 0, false);
-#else
 	UINT uiIDA[1];
 	uiIDA[0]=IDS_CONFIRM_OK;
 	return ui.RequestMessageBox( title, message, uiIDA, 1, iPad, Func, lpParam, app.GetStringTable(), NULL, 0, false);
-#endif
 }
 
 C4JStorage::EMessageResult UIController::RequestContentRestrictedMessageBox(UINT title/* = -1 */, UINT message/* = -1 */, int iPad/* = -1*/, int( *Func)(LPVOID,int,const C4JStorage::EMessageResult)/* = NULL*/, LPVOID lpParam/* = NULL*/)
@@ -2526,29 +2098,16 @@ C4JStorage::EMessageResult UIController::RequestContentRestrictedMessageBox(UINT
 
 	if (message == -1)
 	{
-#if defined(_XBOX_ONE) || defined(_WINDOWS64)
 		// IDS_CONTENT_RESTRICTION doesn't exist on XB1
 		message = IDS_NO_USER_CREATED_CONTENT_PRIVILEGE_CREATE;
-#else
-		message = IDS_CONTENT_RESTRICTION;
-#endif
 	}
 
 	// Default pad to primary player
 	if (iPad == -1) iPad = ProfileManager.GetPrimaryPad();
 
-#ifdef __ORBIS__
-	// Show the vague UGC system message in addition to our message
-	ProfileManager.DisplaySystemMessage( SCE_MSG_DIALOG_SYSMSG_TYPE_TRC_PSN_UGC_RESTRICTION, iPad );
-	return C4JStorage::EMessage_ResultAccept; 
-#elif defined(__PSVITA__)
-	ProfileManager.ShowSystemMessage( SCE_MSG_DIALOG_SYSMSG_TYPE_TRC_PSN_AGE_RESTRICTION, iPad );
-	return C4JStorage::EMessage_ResultAccept;
-#else
 	UINT uiIDA[1];
 	uiIDA[0]=IDS_CONFIRM_OK;
 	return ui.RequestMessageBox( title, message, uiIDA, 1, iPad, Func, lpParam, app.GetStringTable(), NULL, 0, false);
-#endif
 }
 
 void UIController::setFontCachingCalculationBuffer(int length)
@@ -2561,11 +2120,7 @@ void UIController::setFontCachingCalculationBuffer(int length)
 	draw call is not large enough, Iggy will crash or otherwise behave
 	incorrectly.
 	*/
-#if defined __ORBIS__ || defined _DURANGO || defined _WIN64
 	static const int CHAR_SIZE = 24;
-#else
-	static const int CHAR_SIZE = 16;
-#endif
 
 	if (m_tempBuffer != NULL) delete [] m_tempBuffer;
 	if (length<0)
@@ -2588,449 +2143,8 @@ UIScene *UIController::FindScene(EUIScene sceneType)
 	for (int i = 0; i < eUIGroup_COUNT; i++)
 	{
 		pScene = m_groups[i]->FindScene(sceneType);
-#ifdef __PS3__
-		if (pScene != NULL) return pScene;
-#else
 		if (pScene != nullptr) return pScene;
-#endif
 	}
 
 	return pScene;
 }
-
-#ifdef __PSVITA__
-
-void UIController::TouchBoxAdd(UIControl *pControl,UIScene *pUIScene)
-{
-	EUIGroup eUIGroup=pUIScene->GetParentLayerGroup();
-	EUILayer eUILayer=pUIScene->GetParentLayer()->m_iLayer;
-	EUIScene eUIscene=pUIScene->getSceneType();
-
-	TouchBoxAdd(pControl,eUIGroup,eUILayer,eUIscene, pUIScene->GetMainPanel());
-}
-
-void UIController::TouchBoxAdd(UIControl *pControl,EUIGroup eUIGroup,EUILayer eUILayer,EUIScene eUIscene, UIControl *pMainPanelControl)
-{
-	UIELEMENT *puiElement = new UIELEMENT;
-	puiElement->pControl = pControl;
-
-	S32 iControlWidth = pControl->getWidth();
-	S32 iControlHeight = pControl->getHeight();
-	S32 iMainPanelOffsetX = 0;
-	S32 iMainPanelOffsetY= 0;
-
-	// 4J-TomK add main panel offset if controls do not live in the root scene
-	if(pMainPanelControl)
-	{
-		iMainPanelOffsetX = pMainPanelControl->getXPos();
-		iMainPanelOffsetY = pMainPanelControl->getYPos();
-	}
-
-	// 4J-TomK override control width / height where needed
-	if(puiElement->pControl->getControlType() == UIControl::eSlider)
-	{
-		// Sliders are never scaled but masked, so we have to get the real width from AS
-		UIControl_Slider *pSlider = (UIControl_Slider *)puiElement->pControl;
-		iControlWidth = pSlider->GetRealWidth();
-	}
-	else if(puiElement->pControl->getControlType() == UIControl::eTexturePackList)
-	{
-		// The origin of the TexturePackList is NOT in the top left corner but where the slot area starts. therefore we need the height of the slot area itself.
-		UIControl_TexturePackList *pTexturePackList = (UIControl_TexturePackList *)puiElement->pControl;
-		iControlHeight = pTexturePackList->GetRealHeight();
-	}
-	else if(puiElement->pControl->getControlType() == UIControl::eDynamicLabel)
-	{
-		// The height and width of this control changes per how to play page
-		UIControl_DynamicLabel *pDynamicLabel = (UIControl_DynamicLabel *)puiElement->pControl;
-		iControlWidth = pDynamicLabel->GetRealWidth();
-		iControlHeight = pDynamicLabel->GetRealHeight();
-	}
-	else if(puiElement->pControl->getControlType() == UIControl::eHTMLLabel)
-	{
-		// The height and width of this control changes per how to play page
-		UIControl_HTMLLabel *pHtmlLabel = (UIControl_HTMLLabel *)puiElement->pControl;
-		iControlWidth = pHtmlLabel->GetRealWidth();
-		iControlHeight = pHtmlLabel->GetRealHeight();
-	}
-
-	puiElement->x1=(S32)((float)pControl->getXPos() + (float)iMainPanelOffsetX);
-	puiElement->y1=(S32)((float)pControl->getYPos() + (float)iMainPanelOffsetY);
-	puiElement->x2=(S32)(((float)pControl->getXPos() + (float)iControlWidth + (float)iMainPanelOffsetX));
-	puiElement->y2=(S32)(((float)pControl->getYPos() + (float)iControlHeight + (float)iMainPanelOffsetY));
-
-	if(puiElement->pControl->getControlType() == UIControl::eNoControl)
-	{
-		app.DebugPrintf("NO CONTROL!");
-	}
-
-	if(puiElement->x1 == puiElement->x2 || puiElement->y1 == puiElement->y2)
-	{
-		app.DebugPrintf("NOT adding touchbox %d,%d,%d,%d\n",puiElement->x1,puiElement->y1,puiElement->x2,puiElement->y2);
-	}
-	else
-	{
-		app.DebugPrintf("Adding touchbox %d,%d,%d,%d\n",puiElement->x1,puiElement->y1,puiElement->x2,puiElement->y2);
-		m_TouchBoxes[eUIGroup][eUILayer][eUIscene].push_back(puiElement);
-	}
-}
-
-void UIController::TouchBoxRebuild(UIScene *pUIScene)
-{
-	EUIGroup eUIGroup=pUIScene->GetParentLayerGroup();
-	EUILayer eUILayer=pUIScene->GetParentLayer()->m_iLayer;
-	EUIScene eUIscene=pUIScene->getSceneType();
-
-	// if we delete an element, it's possible that the scene has re-arranged all the elements, so we need to rebuild the boxes
-	ui.TouchBoxesClear(pUIScene);
-
-	// rebuild boxes
-	AUTO_VAR(itEnd, pUIScene->GetControls()->end());
-	for (AUTO_VAR(it, pUIScene->GetControls()->begin()); it != itEnd; it++)
-	{
-		UIControl *control=(UIControl *)*it;
-
-		if(control->getControlType() == UIControl::eButton ||
-			control->getControlType() == UIControl::eSlider ||
-			control->getControlType() == UIControl::eCheckBox ||
-			control->getControlType() == UIControl::eTexturePackList ||
-			control->getControlType() == UIControl::eButtonList ||
-			control->getControlType() == UIControl::eTextInput ||
-			control->getControlType() == UIControl::eDynamicLabel ||
-			control->getControlType() == UIControl::eHTMLLabel ||
-			control->getControlType() == UIControl::eLeaderboardList ||
-			control->getControlType() == UIControl::eTouchControl)
-		{
-			// 4J-TomK update the control (it might have been moved by flash / AS)
-			control->UpdateControl();
-
-			ui.TouchBoxAdd(control,eUIGroup,eUILayer,eUIscene, pUIScene->GetMainPanel());
-		}
-	}
-}
-
-void UIController::TouchBoxesClear(UIScene *pUIScene)
-{
-	EUIGroup eUIGroup=pUIScene->GetParentLayerGroup();
-	EUILayer eUILayer=pUIScene->GetParentLayer()->m_iLayer;
-	EUIScene eUIscene=pUIScene->getSceneType();
-
-	AUTO_VAR(itEnd, m_TouchBoxes[eUIGroup][eUILayer][eUIscene].end());
-	for (AUTO_VAR(it, m_TouchBoxes[eUIGroup][eUILayer][eUIscene].begin()); it != itEnd; it++)
-	{
-		UIELEMENT *element=(UIELEMENT *)*it;
-		delete element;		
-	}
-	m_TouchBoxes[eUIGroup][eUILayer][eUIscene].clear();
-}
-
-bool UIController::TouchBoxHit(UIScene *pUIScene,S32 x, S32 y)
-{
-	EUIGroup eUIGroup=pUIScene->GetParentLayerGroup();
-	EUILayer eUILayer=pUIScene->GetParentLayer()->m_iLayer;
-	EUIScene eUIscene=pUIScene->getSceneType();
-
-	// 4J-TomK let's do the transformation from touch resolution to screen resolution here, so our touchbox values always are in screen resolution!
-	x *= (m_fScreenWidth/1920.0f);
-	y *= (m_fScreenHeight/1080.0f);
-
-	if(m_TouchBoxes[eUIGroup][eUILayer][eUIscene].size()>0)
-	{
-		AUTO_VAR(itEnd, m_TouchBoxes[eUIGroup][eUILayer][eUIscene].end());
-		for (AUTO_VAR(it, m_TouchBoxes[eUIGroup][eUILayer][eUIscene].begin()); it != itEnd; it++)
-		{
-			UIELEMENT *element=(UIELEMENT *)*it;
-			if(element->pControl->getHidden() == false && element->pControl->getVisible()) // ignore removed controls
-			{
-				if((x>=element->x1) &&(x<=element->x2) && (y>=element->y1) && (y<=element->y2))
-				{
-					if(!m_bTouchscreenPressed)
-					{
-						app.DebugPrintf("SET m_ActiveUIElement (Layer: %i) at x = %i y = %i\n", (int)eUILayer, (int)x, (int)y);
-						m_ActiveUIElement = element;
-					}
-					// remember the currently highlighted element
-					m_HighlightedUIElement = element;
-
-					return true;
-				}
-			}
-		}			
-	}
-
-	//app.DebugPrintf("MISS at x = %i y = %i\n", (int)x, (int)y);
-	m_HighlightedUIElement = NULL;
-	return false;
-}
-
-//
-// Handle Touch Input
-//
-void UIController::HandleTouchInput(unsigned int iPad, unsigned int key, bool bPressed, bool bRepeat, bool bReleased)
-{
-	// no input? no handling!
-	if(!bPressed && !bRepeat && !bReleased)
-	{
-		// override for instand repeat without delay!
-		if(m_bTouchscreenPressed && m_ActiveUIElement && (
-			m_ActiveUIElement->pControl->getControlType() == UIControl::eSlider ||
-			m_ActiveUIElement->pControl->getControlType() == UIControl::eButtonList ||
-			m_ActiveUIElement->pControl->getControlType() == UIControl::eTexturePackList ||
-			m_ActiveUIElement->pControl->getControlType() == UIControl::eDynamicLabel ||
-			m_ActiveUIElement->pControl->getControlType() == UIControl::eHTMLLabel ||
-			m_ActiveUIElement->pControl->getControlType() == UIControl::eLeaderboardList ||
-			m_ActiveUIElement->pControl->getControlType() == UIControl::eTouchControl))
-			bRepeat = true;	// the above controls need to be controllable without having the finger over them
-		else
-			return;
-	}
-
-	SceTouchData* pTouchData = InputManager.GetTouchPadData(iPad,false);
-	S32 x = pTouchData->report[0].x * (m_fScreenWidth/1920.0f);
-	S32 y = pTouchData->report[0].y * (m_fScreenHeight/1080.0f);
-
-	if(bPressed && !bRepeat && !bReleased)	// PRESSED HANDLING
-	{
-		app.DebugPrintf("touch input pressed\n");
-		switch(m_ActiveUIElement->pControl->getControlType())
-		{
-		case UIControl::eButton:
-			// set focus
-			UIControl_Button *pButton=(UIControl_Button *)m_ActiveUIElement->pControl;
-			pButton->getParentScene()->SetFocusToElement(m_ActiveUIElement->pControl->getId());
-			// override bPressed to false. we only want the button to trigger on touch release!
-			bPressed = false;
-			break;
-		case UIControl::eSlider:
-			// set focus
-			UIControl_Slider *pSlider=(UIControl_Slider *)m_ActiveUIElement->pControl;
-			pSlider->getParentScene()->SetFocusToElement(m_ActiveUIElement->pControl->getId());
-			break;
-		case UIControl::eCheckBox:
-			// set focus
-			UIControl_CheckBox *pCheckbox=(UIControl_CheckBox *)m_ActiveUIElement->pControl;
-			pCheckbox->getParentScene()->SetFocusToElement(m_ActiveUIElement->pControl->getId());
-			// override bPressed. we only want the checkbox to trigger on touch release!
-			bPressed = false;
-			break;
-		case UIControl::eButtonList:
-			// set focus to list
-			UIControl_ButtonList *pButtonList=(UIControl_ButtonList *)m_ActiveUIElement->pControl;
-			//pButtonList->getParentScene()->SetFocusToElement(m_ActiveUIElement->pControl->getId());
-			// tell list where we tapped it so it can set focus to the correct button
-			pButtonList->SetTouchFocus((float)x, (float)y, false);
-			// override bPressed. we only want the ButtonList to trigger on touch release!
-			bPressed = false;
-			break;
-		case UIControl::eTexturePackList:
-			// set focus to list
-			UIControl_TexturePackList *pTexturePackList=(UIControl_TexturePackList *)m_ActiveUIElement->pControl;
-			pTexturePackList->getParentScene()->SetFocusToElement(m_ActiveUIElement->pControl->getId());
-			// tell list where we tapped it so it can set focus to the correct texture pack
-			pTexturePackList->SetTouchFocus((float)x - (float)m_ActiveUIElement->x1, (float)y - (float)m_ActiveUIElement->y1, false);
-			// override bPressed. we only want the TexturePack List to trigger on touch release!
-			bPressed = false;
-			break;
-		case UIControl::eTextInput:
-			// set focus
-			UIControl_TextInput *pTextInput=(UIControl_TextInput *)m_ActiveUIElement->pControl;
-			pTextInput->getParentScene()->SetFocusToElement(m_ActiveUIElement->pControl->getId());
-			// override bPressed to false. we only want the textinput to trigger on touch release!
-			bPressed = false;
-			break;
-		case UIControl::eDynamicLabel:
-			// handle dynamic label scrolling
-			UIControl_DynamicLabel *pDynamicLabel=(UIControl_DynamicLabel *)m_ActiveUIElement->pControl;
-			pDynamicLabel->TouchScroll(y, true);
-			// override bPressed to false
-			bPressed = false;
-			break;
-		case UIControl::eHTMLLabel:
-			// handle dynamic label scrolling
-			UIControl_HTMLLabel *pHtmlLabel=(UIControl_HTMLLabel *)m_ActiveUIElement->pControl;
-			pHtmlLabel->TouchScroll(y, true);
-			// override bPressed to false
-			bPressed = false;
-			break;
-		case UIControl::eLeaderboardList:
-			// set focus to list
-			UIControl_LeaderboardList *pLeaderboardList=(UIControl_LeaderboardList *)m_ActiveUIElement->pControl;
-			// tell list where we tapped it so it can set focus to the correct button
-			pLeaderboardList->SetTouchFocus((float)x, (float)y, false);
-			// override bPressed. we only want the ButtonList to trigger on touch release!
-			bPressed = false;
-			break;
-		case UIControl::eTouchControl:
-			// pass on touch input to relevant parent scene so we can handle it there!
-			m_ActiveUIElement->pControl->getParentScene()->handleTouchInput(iPad, x, y, m_ActiveUIElement->pControl->getId(), bPressed, bRepeat, bReleased);
-			// override bPressed to false
-			bPressed = false;
-			break;
-		default:
-			app.DebugPrintf("PRESSED - UNHANDLED UI ELEMENT\n");
-			break;
-		}
-	}
-	else if(bRepeat)	// REPEAT HANDLING
-	{
-		switch(m_ActiveUIElement->pControl->getControlType())
-		{
-		case UIControl::eButton:
-			/* no action */
-			break;
-		case UIControl::eSlider:
-			// handle slider movement
-			UIControl_Slider *pSlider=(UIControl_Slider *)m_ActiveUIElement->pControl;
-			float fNewSliderPos = ((float)x - (float)m_ActiveUIElement->x1) / (float)pSlider->GetRealWidth();
-			pSlider->SetSliderTouchPos(fNewSliderPos);
-			break;
-		case UIControl::eCheckBox:
-			/* no action */
-			bRepeat = false;
-			bPressed = false;
-			break;
-		case UIControl::eButtonList:
-			// handle button list scrolling
-			UIControl_ButtonList *pButtonList=(UIControl_ButtonList *)m_ActiveUIElement->pControl;
-			pButtonList->SetTouchFocus((float)x, (float)y, true);
-			break;
-		case UIControl::eTexturePackList:
-			// handle texturepack list scrolling
-			UIControl_TexturePackList *pTexturePackList=(UIControl_TexturePackList *)m_ActiveUIElement->pControl;
-			pTexturePackList->SetTouchFocus((float)x - (float)m_ActiveUIElement->x1, (float)y - (float)m_ActiveUIElement->y1, true);
-			break;
-		case UIControl::eTextInput:
-			/* no action */
-			bRepeat = false;
-			bPressed = false;
-			break;
-		case UIControl::eDynamicLabel:
-			// handle dynamic label scrolling
-			UIControl_DynamicLabel *pDynamicLabel=(UIControl_DynamicLabel *)m_ActiveUIElement->pControl;
-			pDynamicLabel->TouchScroll(y, true);
-			// override bPressed & bRepeat to false
-			bPressed = false;
-			bRepeat = false;
-			break;
-		case UIControl::eHTMLLabel:
-			// handle dynamic label scrolling
-			UIControl_HTMLLabel *pHtmlLabel=(UIControl_HTMLLabel *)m_ActiveUIElement->pControl;
-			pHtmlLabel->TouchScroll(y, true);
-			// override bPressed & bRepeat to false
-			bPressed = false;
-			bRepeat = false;
-			break;
-		case UIControl::eLeaderboardList:
-			// handle button list scrolling
-			UIControl_LeaderboardList *pLeaderboardList=(UIControl_LeaderboardList *)m_ActiveUIElement->pControl;
-			pLeaderboardList->SetTouchFocus((float)x, (float)y, true);
-			break;
-		case UIControl::eTouchControl:
-			// override bPressed to false
-			bPressed = false;
-			// pass on touch input to relevant parent scene so we can handle it there!
-			m_ActiveUIElement->pControl->getParentScene()->handleTouchInput(iPad, x, y, m_ActiveUIElement->pControl->getId(), bPressed, bRepeat, bReleased);
-			// override bRepeat to false
-			bRepeat = false;
-			break;
-		default:
-			app.DebugPrintf("REPEAT - UNHANDLED UI ELEMENT\n");
-			break;
-		}
-	}
-	if(bReleased)	// RELEASED HANDLING
-	{
-		app.DebugPrintf("touch input released\n");
-		switch(m_ActiveUIElement->pControl->getControlType())
-		{
-		case UIControl::eButton:
-			// trigger button on release (ONLY if the finger is still on it!)
-			if(m_HighlightedUIElement && m_ActiveUIElement->pControl == m_HighlightedUIElement->pControl)
-				bPressed = true;
-			break;
-		case UIControl::eSlider:
-			/* no action */
-			break;
-		case UIControl::eCheckBox:
-			// trigger checkbox on release (ONLY if the finger is still on it!)
-			if(m_HighlightedUIElement && m_ActiveUIElement->pControl == m_HighlightedUIElement->pControl)
-			{
-				UIControl_CheckBox *pCheckbox=(UIControl_CheckBox *)m_ActiveUIElement->pControl;
-				pCheckbox->TouchSetCheckbox(!pCheckbox->IsChecked());
-			}
-			bReleased = false;
-			break;
-		case UIControl::eButtonList:
-			// trigger buttonlist on release (ONLY if the finger is still on it!)
-			if(m_HighlightedUIElement && m_ActiveUIElement->pControl == m_HighlightedUIElement->pControl)
-			{
-				UIControl_ButtonList *pButtonList=(UIControl_ButtonList *)m_ActiveUIElement->pControl;
-				if(pButtonList->CanTouchTrigger(x,y))
-					bPressed = true;
-			}
-			break;
-		case UIControl::eTexturePackList:
-			// trigger texturepack list on release (ONLY if the finger is still on it!)
-			if(m_HighlightedUIElement && m_ActiveUIElement->pControl == m_HighlightedUIElement->pControl)
-			{
-				UIControl_TexturePackList *pTexturePackList=(UIControl_TexturePackList *)m_ActiveUIElement->pControl;
-				if(pTexturePackList->CanTouchTrigger((float)x - (float)m_ActiveUIElement->x1, (float)y - (float)m_ActiveUIElement->y1))
-					bPressed = true;
-			}
-			break;
-		case UIControl::eTextInput:
-			// trigger TextInput on release (ONLY if the finger is still on it!)
-			if(m_HighlightedUIElement && m_ActiveUIElement->pControl == m_HighlightedUIElement->pControl)
-				bPressed = true;
-			break;
-		case UIControl::eDynamicLabel:
-			// handle dynamic label scrolling
-			UIControl_DynamicLabel *pDynamicLabel=(UIControl_DynamicLabel *)m_ActiveUIElement->pControl;
-			pDynamicLabel->TouchScroll(y, false);
-			break;
-		case UIControl::eHTMLLabel:
-			// handle dynamic label scrolling
-			UIControl_HTMLLabel *pHtmlLabel=(UIControl_HTMLLabel *)m_ActiveUIElement->pControl;
-			pHtmlLabel->TouchScroll(y, false);
-			break;
-		case UIControl::eLeaderboardList:
-			/* no action */
-			break;
-		case UIControl::eTouchControl:
-			// trigger only if touch is released over the same component!
-			if(m_HighlightedUIElement && m_ActiveUIElement->pControl == m_HighlightedUIElement->pControl)
-			{
-				// pass on touch input to relevant parent scene so we can handle it there!
-				m_ActiveUIElement->pControl->getParentScene()->handleTouchInput(iPad, x, y, m_ActiveUIElement->pControl->getId(), bPressed, bRepeat, bReleased);
-			}
-			// override bReleased to false
-			bReleased = false;
-			break;
-		default:
-			app.DebugPrintf("RELEASED - UNHANDLED UI ELEMENT\n");
-			break;
-		}
-	}
-
-	// only proceed if there's input to be handled
-	if(bPressed || bRepeat || bReleased)
-	{
-		SendTouchInput(iPad, key, bPressed, bRepeat, bReleased);
-	}
-}
-
-void UIController::SendTouchInput(unsigned int iPad, unsigned int key, bool bPressed, bool bRepeat, bool bReleased)
-{
-	bool handled = false;
-
-	// Send the key to the fullscreen group first
-	m_groups[(int)eUIGroup_Fullscreen]->handleInput(iPad, key, bRepeat, bPressed, bReleased, handled);
-	if(!handled)
-	{
-		// If it's not been handled yet, then pass the event onto the players specific group
-		m_groups[(iPad+1)]->handleInput(iPad, key, bRepeat, bPressed, bReleased, handled);
-	}
-}
-
-
-#endif

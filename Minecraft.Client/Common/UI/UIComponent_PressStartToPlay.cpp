@@ -21,18 +21,7 @@ UIComponent_PressStartToPlay::UIComponent_PressStartToPlay(int iPad, void *initD
 	m_labelTrialTimer.init(L"");
 	m_labelTrialTimer.setVisible(false);
 
-#ifdef __ORBIS__
-	wstring text = app.GetString(IDS_PRESS_X_TO_JOIN);
-	text = replaceAll(text, L"{*CONTROLLER_VK_A*}",					app.GetVKReplacement(VK_PAD_A) );
-
-	m_labelPressStart.init(text.c_str());
-#elif defined _XBOX_ONE
-	wstring text = app.GetString(IDS_PRESS_START_TO_JOIN);
-	text = replaceAll(text, L"{*CONTROLLER_VK_START*}",			app.GetVKReplacement(VK_PAD_START) );
-	m_labelPressStart.init(text.c_str());
-#else
 	m_labelPressStart.init(app.GetString(IDS_PRESS_START_TO_JOIN));
-#endif
 	m_controlSaveIcon.setVisible(false);
 	m_controlPressStartPanel.setVisible(false);
 	m_playerDisplayName.setVisible(false);
@@ -155,13 +144,5 @@ void UIComponent_PressStartToPlay::showSaveIcon(bool show)
 
 void UIComponent_PressStartToPlay::showPlayerDisplayName(bool show)
 {
-#ifdef _XBOX_ONE
-	if(show)
-	{
-		m_playerDisplayName.setLabel(ProfileManager.GetDisplayName(ProfileManager.GetPrimaryPad()));
-	}
-	m_playerDisplayName.setVisible(show);
-#else
 	m_playerDisplayName.setVisible(false);
-#endif
 }

@@ -364,20 +364,9 @@ HRESULT CScene_MultiGameJoinLoad::GetSaveInfo(  )
 		m_pSavesList->RemoveAllData();
 
 		m_iSaveInfoC=0;
-#ifdef _XBOX
-		C4JStorage::ESGIStatus eSGIStatus=StorageManager.GetSavesInfo(ProfileManager.GetPrimaryPad(),&CScene_MultiGameJoinLoad::GetSavesInfoCallback,this,"savegame.dat");
-
-		if(eSGIStatus==C4JStorage::ESGIStatus_NoSaves)
-		{
-			uiSaveC=0;
-			m_SavesListTimer.SetShow( FALSE );
-			m_SavesList.SetEnable(TRUE);
-		}
-#else
 
 		//C4JStorage::ESaveGameState eStatus=StorageManager.GetSavesInfo(ProfileManager.GetPrimaryPad(),&CScene_MultiGameJoinLoad::GetSavesInfoCallback,this,"savegame.dat");
 
-#endif
 	}
 
 	return S_OK;
@@ -2358,25 +2347,8 @@ int CScene_MultiGameJoinLoad::KeyboardReturned(void *pParam,bool bSet)
 	// if the user has left the name empty, treat this as backing out
 	if((pClass->m_wchNewName[0]!=0) && bSet)
 	{
-#ifdef _XBOX
-		XCONTENT_DATA XContentData;
-		StorageManager.GetSaveCacheFileInfo(pClass->m_iChangingSaveGameInfoIndex-pClass->m_iDefaultButtonsC,XContentData);
-
-		C4JStorage::ELoadGameStatus eLoadStatus=StorageManager.LoadSaveData(&XContentData,CScene_MultiGameJoinLoad::LoadSaveDataForRenameReturned,pClass);
-
-		if(eLoadStatus==C4JStorage::ELoadGame_DeviceRemoved)
-		{
-			// disable saving 
-			StorageManager.SetSaveDisabled(true);
-			StorageManager.SetSaveDeviceSelected(ProfileManager.GetPrimaryPad(),false);
-			UINT uiIDA[1];
-			uiIDA[0]=IDS_OK;
-			StorageManager.RequestMessageBox(IDS_STORAGEDEVICEPROBLEM_TITLE, IDS_FAILED_TO_LOADSAVE_TEXT, uiIDA, 1, ProfileManager.GetPrimaryPad(),&CScene_MultiGameJoinLoad::DeviceRemovedDialogReturned,pClass);
-		}
-#else
 		// rename the save
 		
-#endif
 	}
 	else
 	{		
@@ -2389,38 +2361,6 @@ int CScene_MultiGameJoinLoad::KeyboardReturned(void *pParam,bool bSet)
 int CScene_MultiGameJoinLoad::LoadSaveDataForRenameReturned(void *pParam,bool bContinue)
 {
 	CScene_MultiGameJoinLoad* pClass = (CScene_MultiGameJoinLoad*)pParam;
-#ifdef _XBOX
-	if(bContinue==true)
-	{
-		// set the save icon
-		PBYTE pbImageData=NULL;
-		DWORD dwImageBytes=0;
-		HXUIBRUSH hXuiBrush;
-		XCONTENT_DATA XContentData;
-		StorageManager.GetSaveCacheFileInfo(pClass->m_iChangingSaveGameInfoIndex-pClass->m_iDefaultButtonsC,XContentData);
-		StorageManager.GetSaveCacheFileInfo(pClass->m_iChangingSaveGameInfoIndex-pClass->m_iDefaultButtonsC,&pbImageData,&dwImageBytes);
-
-		// if there is no thumbnail, retrieve the default one from the file. 
-		// Don't delete the image data after creating the xuibrush, since we'll use it in the rename of the save
-		if(pbImageData==NULL)
-		{
-			DWORD dwResult=XContentGetThumbnail(ProfileManager.GetPrimaryPad(),&XContentData,NULL,&dwImageBytes,NULL);
-			if(dwResult==ERROR_SUCCESS)
-			{
-				pbImageData = new BYTE[dwImageBytes];
-				XContentGetThumbnail(ProfileManager.GetPrimaryPad(),&XContentData,pbImageData,&dwImageBytes,NULL);
-				XuiCreateTextureBrushFromMemory(pbImageData,dwImageBytes,&hXuiBrush);
-			}
-		}
-		else
-		{
-			XuiCreateTextureBrushFromMemory(pbImageData,dwImageBytes,&hXuiBrush);
-		}
-		// save the data with this icon
-		StorageManager.CopySaveDataToNewSave( pbImageData,dwImageBytes,pClass->m_wchNewName,&CScene_MultiGameJoinLoad::CopySaveReturned,pClass);
-	}
-	else
-#endif
 	{
 		//pClass->SetShow( TRUE );
 		pClass->m_bIgnoreInput=false;
@@ -2431,17 +2371,6 @@ int CScene_MultiGameJoinLoad::LoadSaveDataForRenameReturned(void *pParam,bool bC
 int CScene_MultiGameJoinLoad::CopySaveReturned(void *pParam,bool bResult)
 {
 	CScene_MultiGameJoinLoad* pClass = (CScene_MultiGameJoinLoad*)pParam;
-#ifdef _XBOX
-	if(bResult)
-	{
-		// and delete the old save
-		XCONTENT_DATA XContentData;
-		StorageManager.GetSaveCacheFileInfo(pClass->m_iChangingSaveGameInfoIndex-pClass->m_iDefaultButtonsC,XContentData);
-		StorageManager.DeleteSaveData(&XContentData,CScene_MultiGameJoinLoad::DeleteSaveDataReturned,pClass);
-		pClass->m_SavesListTimer.SetShow( TRUE );
-	}
-	else
-#endif
 	{
 		//pClass->SetShow( TRUE );
 		pClass->m_bIgnoreInput=false;
@@ -2643,100 +2572,10 @@ void CScene_MultiGameJoinLoad::UpdateTooltips()
 
 
 
-#ifdef _XBOX
-bool CScene_MultiGameJoinLoad::GetSavesInfoCallback(LPVOID pParam,int iTotalSaveInfoC, C4JStorage::CACHEINFOSTRUCT *InfoA, int iPad, HRESULT hResult)
-{
-	CScene_MultiGameJoinLoad *pClass=(CScene_MultiGameJoinLoad *)pParam;
-	CXuiCtrl4JList::LIST_ITEM_INFO ListInfo;
-	PBYTE pbImageData=(PBYTE)InfoA;
-	PBYTE pbCurrentImagePtr;
-	HXUIBRUSH hXuiBrush;
-	HRESULT hr;
-
-	// move the image data pointer to the right place
-	if(iTotalSaveInfoC!=0)
-	{
-		pbImageData+=sizeof(C4JStorage::CACHEINFOSTRUCT)*iTotalSaveInfoC;
-	}
-
-	pClass->m_SavesListTimer.SetShow( FALSE );
-	pClass->m_SavesList.SetEnable(TRUE);
-
-	pClass->AddDefaultButtons();
-
-	for(int i=0;i<iTotalSaveInfoC;i++)
-	{
-		ZeroMemory(&ListInfo,sizeof(CXuiCtrl4JList::LIST_ITEM_INFO));
-		// Add these to the save list
-		if(!(app.DebugSettingsOn() && app.GetLoadSavesFromFolderEnabled()))
-		{
-			// if the save is corrupt, display this instead of the title
-			if(InfoA[i].dwImageBytes==0)
-			{
-				ListInfo.pwszText=app.GetString(IDS_CORRUPT_OR_DAMAGED_SAVE_TITLE);
-				ListInfo.bIsDamaged=true;
-			}
-			else
-			{
-				ListInfo.pwszText=InfoA[i].wchDisplayName;
-				ListInfo.bIsDamaged=false;
-			}
-			ListInfo.fEnabled=TRUE;
-			ListInfo.iData = -1;
-
-			pClass->m_pSavesList->AddData(ListInfo,-1);
-
-			// update the graphic on the list item
-
-			// if there is no thumbnail, this is a corrupt file
-			if(InfoA[i].dwImageBytes!=0)
-			{
-				pbCurrentImagePtr=pbImageData+InfoA[i].dwImageOffset;
-				hr=XuiCreateTextureBrushFromMemory(pbCurrentImagePtr,InfoA[i].dwImageBytes,&hXuiBrush);
-				pClass->m_pSavesList->UpdateGraphic(i+pClass->m_iDefaultButtonsC,hXuiBrush );
-			}	
-			else
-			{
-				// we could put in a damaged save icon here
-				const DWORD LOCATOR_SIZE = 256; // Use this to allocate space to hold a ResourceLocator string 
-				WCHAR szResourceLocator[ LOCATOR_SIZE ];
-				const ULONG_PTR c_ModuleHandle = (ULONG_PTR)GetModuleHandle(NULL);
-
-				swprintf(szResourceLocator, LOCATOR_SIZE, L"section://%X,%ls#%ls",c_ModuleHandle,L"media", L"media/Graphics/MinecraftBrokenIcon.png");
-
-				XuiCreateTextureBrush(szResourceLocator,&hXuiBrush);
-				pClass->m_pSavesList->UpdateGraphic(i+pClass->m_iDefaultButtonsC,hXuiBrush );
-			}
-		}
-	}
-
-	pClass->m_iSaveInfoC=iTotalSaveInfoC;
-
-	// If there are some saves, then set the focus to be on the most recent one, which will be the first one after the create and tutorial
-	if(iTotalSaveInfoC>0)
-	{
-		pClass->m_pSavesList->SetCurSelVisible(pClass->m_iDefaultButtonsC);
-		pClass->m_bReady=true;
-	}
-
-	pClass->m_bRetrievingSaveInfo=false;
-
-	// It's possible that the games list is updated but we haven't displayed it yet as we were still waiting on saves list to load
-	// This is to fix a bug where joining a game before the saves list has loaded causes a crash when this callback is called
-	// as the scene no longer exists
-	pClass->UpdateGamesList();	
-
-	// Fix for #45154 - Frontend: DLC: Content can only be downloaded from the frontend if you have not joined/exited multiplayer
-	XBackgroundDownloadSetMode(XBACKGROUND_DOWNLOAD_MODE_AUTO);
-
-	return false;
-}
-#else
 int CScene_MultiGameJoinLoad::GetSavesInfoCallback(LPVOID lpParam,const bool)
 {
 	return true;
 }
-#endif
 
 void CScene_MultiGameJoinLoad::CancelSaveUploadCallback(LPVOID lpParam)
 {

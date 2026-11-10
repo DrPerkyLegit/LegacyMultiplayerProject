@@ -952,16 +952,7 @@ void Mob::causeFallDamage(float distance)
 
 void Mob::travel(float xa, float ya) 
 {
-#ifdef __PSVITA__
-	// AP - dynamic_pointer_cast is a non-trivial call
-	Player *thisPlayer = NULL;
-	if( (GetType() & eTYPE_PLAYER) == eTYPE_PLAYER )
-	{
-		thisPlayer = (Player*) this;
-	}
-#else
 	shared_ptr<Player> thisPlayer = dynamic_pointer_cast<Player>(shared_from_this());
-#endif
 	if (isInWater() && !(thisPlayer && thisPlayer->abilities.flying) ) 
 	{
 		double yo = y;
