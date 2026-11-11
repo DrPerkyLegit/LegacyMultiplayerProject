@@ -1,9 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="IggyMedia">
-      <UniqueIdentifier>{55c7ab2e-b3e5-4aed-9ffe-3308591d9c34}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Strings">
       <UniqueIdentifier>{eaa0eb72-0b27-4080-ad53-f68e42f37ba8}</UniqueIdentifier>
     </Filter>
@@ -24,53 +21,11 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Media\ChestMenu720.swf">
-      <Filter>IggyMedia</Filter>
-    </None>
-    <None Include="Media\CreateWorldMenu720.swf">
-      <Filter>IggyMedia</Filter>
-    </None>
-    <None Include="Media\CreativeMenu720.swf">
-      <Filter>IggyMedia</Filter>
-    </None>
-    <None Include="Media\DebugMenu720.swf">
-      <Filter>IggyMedia</Filter>
-    </None>
-    <None Include="Media\FullscreenProgress720.swf">
-      <Filter>IggyMedia</Filter>
-    </None>
-    <None Include="Media\HUD720.swf">
-      <Filter>IggyMedia</Filter>
-    </None>
-    <None Include="Media\InventoryMenu720.swf">
-      <Filter>IggyMedia</Filter>
-    </None>
     <None Include="Media\media.arc">
       <Filter>Archive</Filter>
     </None>
     <None Include="Media\languages.loc">
       <Filter>Archive</Filter>
-    </None>
-    <None Include="Media\skin.swf">
-      <Filter>IggyMedia</Filter>
-    </None>
-    <None Include="Media\MainMenu720.swf">
-      <Filter>IggyMedia</Filter>
-    </None>
-    <None Include="Media\Panorama720.swf">
-      <Filter>IggyMedia</Filter>
-    </None>
-    <None Include="Media\LoadOrJoinMenu720.swf">
-      <Filter>IggyMedia</Filter>
-    </None>
-    <None Include="Media\LaunchMoreOptionsMenu720.swf">
-      <Filter>IggyMedia</Filter>
-    </None>
-    <None Include="Media\LoadMenu720.swf">
-      <Filter>IggyMedia</Filter>
-    </None>
-    <None Include="Media\PauseMenu720.swf">
-      <Filter>IggyMedia</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

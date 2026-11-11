@@ -11,22 +11,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Media\ChestMenu720.swf" />
-    <None Include="Media\CreateWorldMenu720.swf" />
-    <None Include="Media\CreativeMenu720.swf" />
-    <None Include="Media\DebugMenu720.swf" />
-    <None Include="Media\FullscreenProgress720.swf" />
-    <None Include="Media\HUD720.swf" />
-    <None Include="Media\InventoryMenu720.swf" />
     <None Include="Media\languages.loc" />
-    <None Include="Media\LaunchMoreOptionsMenu720.swf" />
-    <None Include="Media\LoadMenu720.swf" />
-    <None Include="Media\LoadOrJoinMenu720.swf" />
-    <None Include="Media\MainMenu720.swf" />
     <None Include="Media\media.arc" />
-    <None Include="Media\Panorama720.swf" />
-    <None Include="Media\PauseMenu720.swf" />
-    <None Include="Media\skin.swf" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Media\strings.resx" />
