@@ -17,6 +17,7 @@ bool UIControl_LeaderboardList::setupControl(UIScene *scene, IggyValuePath *pare
 	m_funcResetLeaderboard = registerFastName(L"ResetLeaderboard");
 	m_funcSetupTitles = registerFastName(L"SetupTitles");
 	m_funcSetColumnIcon = registerFastName(L"SetColumnIcon");
+	m_funcSetTouchFocus = registerFastName(L"SetTouchFocus");
 
 	return success;
 }
@@ -30,6 +31,17 @@ void UIControl_LeaderboardList::init(int id)
 	value[0].type = IGGY_DATATYPE_number;
 	value[0].number = id;
 	IggyResult out = IggyPlayerCallMethodRS ( m_parentScene->getMovie() , &result, getIggyValuePath() , m_initFunc , 1 , value );
+
+#if defined(__PSVITA__) || defined(_WINDOWS64)
+	if (m_parentScene->GetParentLayerType() == eUILayer_Error ||
+		m_parentScene->GetParentLayerType() == eUILayer_Alert ||
+		m_parentScene->GetParentLayerType() == eUILayer_Popup ||
+		m_parentScene->GetParentLayerType() == eUILayer_Fullscreen ||
+		m_parentScene->GetParentLayerType() == eUILayer_Scene)
+	{
+		ui.TouchBoxAdd(this, m_parentScene);
+	}
+#endif
 }
 
 void UIControl_LeaderboardList::ReInit()
@@ -91,6 +103,20 @@ void UIControl_LeaderboardList::setColumnIcon(int iColumn, int iType)
 	value[1].number = (iType<=32000)?0:(iType-32000);
 
 	IggyResult out = IggyPlayerCallMethodRS ( m_parentScene->getMovie() , &result, getIggyValuePath(), m_funcSetColumnIcon , 2 , value );
+}
+
+void UIControl_LeaderboardList::SetTouchFocus(S32 x, S32 y, bool repeat)
+{
+	IggyDataValue result;
+	IggyDataValue value[3];
+	value[0].type = IGGY_DATATYPE_number;
+	value[0].number = x;
+	value[1].type = IGGY_DATATYPE_number;
+	value[1].number = y;
+	value[2].type = IGGY_DATATYPE_boolean;
+	value[2].boolval = repeat;
+
+	IggyPlayerCallMethodRS(m_parentScene->getMovie(), &result, getIggyValuePath(), m_funcSetTouchFocus, 3, value);
 }
 
 void UIControl_LeaderboardList::addDataSet(bool bLast, int iId, int iRank, const wstring &gamertag, bool bDisplayMessage, const wstring &col0, const wstring &col1, const wstring &col2, const wstring &col3, const wstring &col4, const wstring &col5, const wstring &col6)

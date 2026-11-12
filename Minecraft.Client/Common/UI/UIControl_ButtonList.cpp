@@ -35,6 +35,19 @@ void UIControl_ButtonList::init(int id)
 	value[0].number = id;
 	IggyResult out = IggyPlayerCallMethodRS ( m_parentScene->getMovie() , &result, getIggyValuePath() , m_initFunc , 1 , value );
 
+#if defined(__PSVITA__) || defined(_WINDOWS64)
+	switch (m_parentScene->GetParentLayerType())
+	{
+	case eUILayer_Error:
+	case eUILayer_Alert:
+	case eUILayer_Popup:
+	case eUILayer_Fullscreen:
+	case eUILayer_Scene:
+	case eUILayer_HUD:
+		ui.TouchBoxAdd(this, m_parentScene);
+		break;
+	}
+#endif
 }
 
 void UIControl_ButtonList::ReInit()
@@ -145,4 +158,33 @@ void UIControl_ButtonList::setButtonLabel(int iButtonId, const wstring &label)
 	value[1].type = IGGY_DATATYPE_string_UTF16;
 	value[1].string16 = stringVal;
 	IggyResult out = IggyPlayerCallMethodRS ( m_parentScene->getMovie(), &result, getIggyValuePath(), m_funcSetButtonLabel, 2 , value );
+}
+
+void UIControl_ButtonList::SetTouchFocus(S32 x, S32 y, bool repeat)
+{
+	IggyDataValue result;
+	IggyDataValue value[3];
+	value[0].type = IGGY_DATATYPE_number;
+	value[0].number = x;
+	value[1].type = IGGY_DATATYPE_number;
+	value[1].number = y;
+	value[2].type = IGGY_DATATYPE_boolean;
+	value[2].boolval = repeat;
+
+	IggyPlayerCallMethodRS(m_parentScene->getMovie(), &result, getIggyValuePath(), m_funcSetTouchFocus, 3, value);
+}
+
+bool UIControl_ButtonList::CanTouchTrigger(S32 x, S32 y)
+{
+	IggyDataValue result;
+	result.type = IGGY_DATATYPE_boolean;
+	result.boolval = false;
+	IggyDataValue value[2];
+	value[0].type = IGGY_DATATYPE_number;
+	value[0].number = x;
+	value[1].type = IGGY_DATATYPE_number;
+	value[1].number = y;
+
+	IggyPlayerCallMethodRS(m_parentScene->getMovie(), &result, getIggyValuePath(), m_funcCanTouchTrigger, 2, value);
+	return result.type == IGGY_DATATYPE_boolean && result.boolval;
 }

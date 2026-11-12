@@ -52,8 +52,20 @@ UIScene::~UIScene()
 	if(m_pItemRenderer != NULL) delete m_pItemRenderer;
 }
 
+EUIGroup UIScene::GetParentLayerGroup() const
+{
+	return m_parentLayer->m_parentGroup->GetGroup();
+}
+
+EUILayer UIScene::GetParentLayerType() const
+{
+	return static_cast<EUILayer>(m_parentLayer->m_parentGroup->GetLayerIndex(m_parentLayer));
+}
+
 void UIScene::destroyMovie()
 {
+	ui.TouchBoxesClear(this);
+
 	/* Destroy the Iggy player. */
 	IggyPlayerDestroy( swf );
 	swf = NULL;
@@ -70,6 +82,7 @@ void UIScene::reloadMovie(bool force)
 	if(!force && (stealsFocus() && (getSceneType() != eUIScene_FullscreenProgress && !bHasFocus))) return;
 
 	m_bIsReloading = true;
+	ui.TouchBoxesClear(this);
 	if(swf)
 	{
 		/* Destroy the Iggy player. */
@@ -477,6 +490,8 @@ IggyName UIScene::registerFastName(const wstring &name)
 
 void UIScene::removeControl( UIControl_Base *control, bool centreScene)
 {
+	control->setHidden(true);
+
 	IggyDataValue result;
 	IggyDataValue value[2];
 
@@ -491,7 +506,16 @@ void UIScene::removeControl( UIControl_Base *control, bool centreScene)
 	value[1].boolval = centreScene;
 	IggyResult out = IggyPlayerCallMethodRS ( getMovie() , &result, IggyPlayerRootPath( getMovie() ), m_funcRemoveObject , 2 , value );
 
+	ui.TouchBoxRebuild(control->getParentScene());
+}
 
+void UIScene::SetFocusToElement(int controlId)
+{
+	IggyDataValue result;
+	IggyDataValue value[1];
+	value[0].type = IGGY_DATATYPE_number;
+	value[0].number = controlId;
+	IggyPlayerCallMethodRS(getMovie(), &result, IggyPlayerRootPath(getMovie()), m_funcSetFocus, 1, value);
 }
 
 void UIScene::slideLeft()

@@ -203,6 +203,19 @@ bool UIGroup::HasFocus(int iPad)
 	return hasFocus;
 }
 
+UIScene* UIGroup::getCurrentScene()
+{
+	UIScene* pScene;
+	for (unsigned int i = 0; i < eUILayer_COUNT; ++i)
+	{
+		pScene = m_layers[i]->getCurrentScene();
+
+		if (pScene != nullptr) return pScene;
+	}
+
+	return nullptr;
+}
+
 
 // INPUT
 void UIGroup::handleInput(int iPad, int key, bool repeat, bool pressed, bool released, bool &handled)

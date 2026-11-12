@@ -90,6 +90,23 @@ S32 UIControl::getHeight()
 	return m_height;
 }
 
+void UIControl::UpdateControl()
+{
+	F64 x = m_x;
+	F64 y = m_y;
+	F64 width = m_width;
+	F64 height = m_height;
+	IggyValueGetF64RS(getIggyValuePath(), m_nameXPos, NULL, &x);
+	IggyValueGetF64RS(getIggyValuePath(), m_nameYPos, NULL, &y);
+	IggyValueGetF64RS(getIggyValuePath(), m_nameWidth, NULL, &width);
+	IggyValueGetF64RS(getIggyValuePath(), m_nameHeight, NULL, &height);
+
+	m_x = static_cast<S32>(x);
+	m_y = static_cast<S32>(y);
+	m_width = static_cast<S32>(Math::round(width));
+	m_height = static_cast<S32>(Math::round(height));
+}
+
 void UIControl::setOpacity(float percent)
 {
 	if(percent != m_lastOpacity)

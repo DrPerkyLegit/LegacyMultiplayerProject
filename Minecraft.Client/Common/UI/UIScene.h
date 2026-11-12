@@ -96,6 +96,10 @@ protected:
 
 public:
 	virtual Iggy *getMovie() { return swf; }
+	UILayer* GetParentLayer() const { return m_parentLayer; }
+	EUIGroup GetParentLayerGroup() const;
+	EUILayer GetParentLayerType() const;
+	const vector<UIControl*>* GetControls() const { return &m_controls; }
 	
 	void destroyMovie();
 	virtual void reloadMovie(bool force = false);
@@ -164,6 +168,7 @@ public:
 	virtual UIControl* GetMainPanel();
 
 	void removeControl( UIControl_Base *control, bool centreScene);
+	void SetFocusToElement(int controlId);
 	void slideLeft();
 	void slideRight();
 

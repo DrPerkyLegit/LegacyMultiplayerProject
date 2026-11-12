@@ -586,6 +586,7 @@ void UILayer::removeComponent(EUIScene scene)
 
 void UILayer::removeScene(UIScene *scene)
 {
+	ui.TouchBoxesClear(scene);
 
 	AUTO_VAR(newEnd, std::remove(m_sceneStack.begin(), m_sceneStack.end(), scene) );
 	m_sceneStack.erase(newEnd, m_sceneStack.end());
@@ -724,6 +725,22 @@ bool UILayer::updateFocusState(bool allowedFocus /* = false */)
 	m_hasFocus = layerFocusSet;
 
 	return m_hasFocus;
+}
+
+UIScene* UILayer::getCurrentScene()
+{
+	// Note: reverse iterator, the last element is the top of the stack
+	for (auto it = m_sceneStack.rbegin(); it != m_sceneStack.rend(); ++it)
+	{
+		UIScene* scene = *it;
+		// 4J-PB - only used on Vita, so iPad 0 is fine
+		if (scene->hasFocus(0) && scene->canHandleInput())
+		{
+			return scene;
+		}
+	}
+
+	return nullptr;
 }
 
 

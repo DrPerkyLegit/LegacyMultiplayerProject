@@ -43,6 +43,8 @@ public:
 	void setId(int iID) { m_id=iID; }
 	int getId() { return m_id; }
 	UIScene * getParentScene() {return m_parentScene;}
+	bool getHidden() const { return m_bHidden; }
+	void setHidden(bool hidden) { m_bHidden = hidden; }
 
 protected:
 	IggyValuePath m_iggyPath;
@@ -74,6 +76,7 @@ public:
 	S32 getYPos();
 	S32 getWidth();
 	S32 getHeight();
+	void UpdateControl();
 
 	void setOpacity(float percent);
 	void setVisible(bool visible);

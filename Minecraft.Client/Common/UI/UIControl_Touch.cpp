@@ -19,9 +19,11 @@ void UIControl_Touch::init(int iId)
 	m_id = iId;
 
 	// 4J-TomK - add this touch control to the vita touch box list
-	switch(m_parentScene->GetParentLayer()->m_iLayer)
+	switch(m_parentScene->GetParentLayerType())
 	{
 	case eUILayer_Error:
+	case eUILayer_Alert:
+	case eUILayer_Popup:
 	case eUILayer_Fullscreen:
 	case eUILayer_Scene:
 	case eUILayer_HUD:

@@ -8,6 +8,7 @@ private:
 	IggyName m_funcInitLeaderboard, m_funcAddDataSet;
 	IggyName m_funcResetLeaderboard;
 	IggyName m_funcSetupTitles, m_funcSetColumnIcon;
+	IggyName m_funcSetTouchFocus;
 public:
 	enum ELeaderboardIcons
 	{
@@ -39,5 +40,6 @@ public:
 	void initLeaderboard(int iFirstFocus, int iTotalEntries, int iNumColumns);
 	void setColumnIcon(int iColumn, int iType);
 	void addDataSet(bool bLast, int iId, int iRank, const wstring &gamertag, bool bDisplayMessage, const wstring &col0, const wstring &col1, const wstring &col2, const wstring &col3, const wstring &col4, const wstring &col5, const wstring &col6);
+	void SetTouchFocus(S32 x, S32 y, bool repeat);
 
 };

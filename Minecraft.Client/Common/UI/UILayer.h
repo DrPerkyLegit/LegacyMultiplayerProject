@@ -59,6 +59,10 @@ public:
 
 	// INPUT
 	void handleInput(int iPad, int key, bool repeat, bool pressed, bool released, bool &handled);
+
+	// Current active scene
+	UIScene* getCurrentScene();
+
 	// FOCUS
 	
 	bool updateFocusState(bool allowedFocus = false);

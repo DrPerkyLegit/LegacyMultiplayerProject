@@ -71,6 +71,8 @@ public:
 	// INPUT
 	void handleInput(int iPad, int key, bool repeat, bool pressed, bool released, bool &handled);
 
+	// Current active scene
+	UIScene* getCurrentScene();
 
 	// FOCUS
 	bool getFocusState();
@@ -83,6 +85,7 @@ public:
 
 	void SetViewportType(C4JRender::eViewportType type);
 	C4JRender::eViewportType GetViewportType();
+	EUIGroup GetGroup() const { return m_group; }
 	
 	virtual void HandleDLCMountingComplete();
 	virtual void HandleDLCInstalled();

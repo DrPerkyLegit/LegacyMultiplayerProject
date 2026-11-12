@@ -41,6 +41,19 @@ void UIControl_TexturePackList::init(const wstring &label, int id)
 	value[1].number = id;
 	IggyResult out = IggyPlayerCallMethodRS ( m_parentScene->getMovie() , &result, getIggyValuePath() , m_initFunc , 2 , value );
 
+#if defined(__PSVITA__) || defined(_WINDOWS64)
+	switch (m_parentScene->GetParentLayerType())
+	{
+	case eUILayer_Error:
+	case eUILayer_Alert:
+	case eUILayer_Popup:
+	case eUILayer_Fullscreen:
+	case eUILayer_Scene:
+	case eUILayer_HUD:
+		ui.TouchBoxAdd(this, m_parentScene);
+		break;
+	}
+#endif
 }
 
 void UIControl_TexturePackList::addPack(int id, const wstring &textureName)

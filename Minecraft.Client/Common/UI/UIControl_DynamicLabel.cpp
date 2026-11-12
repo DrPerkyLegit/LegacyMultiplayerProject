@@ -44,6 +44,19 @@ void UIControl_DynamicLabel::ReInit()
 
 void UIControl_DynamicLabel::SetupTouch()
 {
+#if defined(__PSVITA__) || defined(_WINDOWS64)
+	switch (m_parentScene->GetParentLayerType())
+	{
+	case eUILayer_Error:
+	case eUILayer_Alert:
+	case eUILayer_Popup:
+	case eUILayer_Fullscreen:
+	case eUILayer_Scene:
+	case eUILayer_HUD:
+		ui.TouchBoxAdd(this, m_parentScene);
+		break;
+	}
+#endif
 }
 
 void UIControl_DynamicLabel::TouchScroll(S32 iY, bool bActive)

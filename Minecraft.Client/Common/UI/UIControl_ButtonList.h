@@ -36,5 +36,7 @@ public:
 	void updateChildFocus(int iChild);
 
 	void setButtonLabel(int iButtonId, const wstring &label);
+	void SetTouchFocus(S32 x, S32 y, bool repeat);
+	bool CanTouchTrigger(S32 x, S32 y);
 
 };

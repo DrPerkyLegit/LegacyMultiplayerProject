@@ -43,6 +43,19 @@ void UIControl_CheckBox::init(const wstring &label, int id, bool checked)
 	value[2].boolval = checked;
 	IggyResult out = IggyPlayerCallMethodRS ( m_parentScene->getMovie() , &result, getIggyValuePath() , m_initFunc , 3 , value );
 
+#if defined(__PSVITA__) || defined(_WINDOWS64)
+	switch (m_parentScene->GetParentLayerType())
+	{
+	case eUILayer_Error:
+	case eUILayer_Alert:
+	case eUILayer_Popup:
+	case eUILayer_Fullscreen:
+	case eUILayer_Scene:
+	case eUILayer_HUD:
+		ui.TouchBoxAdd(this, m_parentScene);
+		break;
+	}
+#endif
 }
 
 bool UIControl_CheckBox::IsChecked()

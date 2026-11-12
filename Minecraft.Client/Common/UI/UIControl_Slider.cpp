@@ -52,6 +52,19 @@ void UIControl_Slider::init(const wstring &label, int id, int min, int max, int 
 	value[4].number = (int)current;
 	IggyResult out = IggyPlayerCallMethodRS ( m_parentScene->getMovie() , &result, getIggyValuePath() , m_initFunc , 5 , value );
 
+#if defined(__PSVITA__) || defined(_WINDOWS64)
+	switch (m_parentScene->GetParentLayerType())
+	{
+	case eUILayer_Error:
+	case eUILayer_Alert:
+	case eUILayer_Popup:
+	case eUILayer_Fullscreen:
+	case eUILayer_Scene:
+	case eUILayer_HUD:
+		ui.TouchBoxAdd(this, m_parentScene);
+		break;
+	}
+#endif
 }
 
 void UIControl_Slider::handleSliderMove(int newValue)
