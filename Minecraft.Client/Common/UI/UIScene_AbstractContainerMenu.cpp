@@ -9,6 +9,7 @@
 UIScene_AbstractContainerMenu::UIScene_AbstractContainerMenu(int iPad, UILayer *parentLayer) : UIScene(iPad, parentLayer)
 {
 	m_focusSection = eSectionNone;
+	m_defaultPointerPositionValid = false;
 	// in this scene, we override the press sound with our own for crafting success or fail
 	ui.OverrideSFX(m_iPad,ACTION_MENU_A,true);
 	ui.OverrideSFX(m_iPad,ACTION_MENU_OK,true);
@@ -133,6 +134,8 @@ void UIScene_AbstractContainerMenu::PlatformInitialize(int iPad, int startIndex)
 
 	//m_pointerControl->SetPosition( &vPointerPos );
 	m_pointerPos = vPointerPos;
+	m_defaultPointerPos = vPointerPos;
+	m_defaultPointerPositionValid = true;
 
 	IggyEvent mouseEvent;
 	S32 width, height;
@@ -150,6 +153,17 @@ void UIScene_AbstractContainerMenu::PlatformInitialize(int iPad, int startIndex)
 	m_fPointerAccelX = 0.0f;
 	m_fPointerAccelY = 0.0f;
 #endif
+}
+
+void UIScene_AbstractContainerMenu::ResetPointerToDefault()
+{
+	if (!m_defaultPointerPositionValid) return;
+
+	m_pointerPos = m_defaultPointerPos;
+	m_bMouseCursorActive = true;
+	m_eCurrTapState = eTapStateNoInput;
+	m_iConsectiveInputTicks = 0;
+	onMouseTick();
 }
 
 void UIScene_AbstractContainerMenu::tick()

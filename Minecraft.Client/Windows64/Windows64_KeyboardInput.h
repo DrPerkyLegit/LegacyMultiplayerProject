@@ -20,6 +20,8 @@ public:
 
 	static void SetCapture(bool value);
 	static bool IsCaptured();
+	static void SetCursorLock(bool value);
+	static bool IsCursorLocked();
 	static void SetCursorHidden(bool value);
 	static void SetKBMActive(bool active);
 	static bool IsKBMActive();
@@ -75,6 +77,7 @@ private:
 	static int m_scrollDeltaAccum;
 
 	static bool m_isCaptured;
+	static bool m_isCursorLocked;
 	static bool m_isCursorHidden;
 	static bool m_cursorVisibilityHidden;
 	static bool m_isKBMActive;

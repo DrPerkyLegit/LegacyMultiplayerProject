@@ -162,6 +162,10 @@ UIController::UIController()
 	m_lastMouseHoverX = 0;
 	m_lastMouseHoverY = 0;
 	m_mouseHoverPositionValid = false;
+	m_mouseCursorScreenX = 0.0f;
+	m_mouseCursorScreenY = 0.0f;
+	m_mouseCursorPositionValid = false;
+	m_pMouseCursorScene = nullptr;
 #endif
 
 #ifdef ENABLE_IGGY_ALLOCATOR
@@ -2322,24 +2326,9 @@ bool UIController::HandleMouseTouchInput(unsigned int iPad, unsigned int key)
 	const bool mousePressed = Windows64KeyboardInput::IsMousePressed(0);
 	const bool mouseDown = Windows64KeyboardInput::IsMouseDown(0);
 	const bool rightMousePressed = Windows64KeyboardInput::IsMousePressed(1);
-	if (Windows64KeyboardInput::IsCaptured() && !m_bTouchscreenPressed) return false;
 
 	extern HWND g_hWnd;
 	if (!g_hWnd) return false;
-
-	POINT mousePosition;
-	if (!GetCursorPos(&mousePosition) || !ScreenToClient(g_hWnd, &mousePosition)) return false;
-
-	RECT clientRect;
-	if (!GetClientRect(g_hWnd, &clientRect)) return false;
-	const LONG clientWidth = clientRect.right - clientRect.left;
-	const LONG clientHeight = clientRect.bottom - clientRect.top;
-	if (clientWidth <= 0 || clientHeight <= 0) return false;
-
-	const S32 touchX = static_cast<S32>(mousePosition.x * 1920.0f / clientWidth);
-	const S32 touchY = static_cast<S32>(mousePosition.y * 1080.0f / clientHeight);
-	const S32 screenX = static_cast<S32>(mousePosition.x * m_fScreenWidth / clientWidth);
-	const S32 screenY = static_cast<S32>(mousePosition.y * m_fScreenHeight / clientHeight);
 
 	UIScene* pScene = m_groups[static_cast<int>(eUIGroup_Fullscreen)]->getCurrentScene();
 	UIScene* pToolTips = m_groups[static_cast<int>(eUIGroup_Fullscreen)]->getTooltips();
@@ -2348,6 +2337,151 @@ bool UIController::HandleMouseTouchInput(unsigned int iPad, unsigned int key)
 		pScene = m_groups[static_cast<int>(eUIGroup_Player1)]->getCurrentScene();
 		pToolTips = m_groups[static_cast<int>(eUIGroup_Player1)]->getTooltips();
 	}
+	UIScene_AbstractContainerMenu* pContainer =
+		dynamic_cast<UIScene_AbstractContainerMenu*>(pScene);
+	const bool cursorLockRequested =
+		pContainer != nullptr && !Windows64KeyboardInput::IsCaptured() && GetFocus() == g_hWnd;
+	if (cursorLockRequested)
+	{
+		if (!Windows64KeyboardInput::IsCursorLocked() || pScene != m_pMouseCursorScene)
+		{
+			pContainer->ResetPointerToDefault();
+			m_mouseCursorPositionValid = false;
+		}
+		m_pMouseCursorScene = pScene;
+	}
+	else
+	{
+		m_mouseCursorPositionValid = false;
+		m_pMouseCursorScene = nullptr;
+	}
+	Windows64KeyboardInput::SetCursorLock(cursorLockRequested);
+	const bool cursorLocked = Windows64KeyboardInput::IsCursorLocked();
+	if (Windows64KeyboardInput::IsCaptured() && !cursorLocked && !m_bTouchscreenPressed) return false;
+
+	RECT clientRect;
+	if (!GetClientRect(g_hWnd, &clientRect)) return false;
+	const LONG clientWidth = clientRect.right - clientRect.left;
+	const LONG clientHeight = clientRect.bottom - clientRect.top;
+	if (clientWidth <= 0 || clientHeight <= 0) return false;
+
+	S32 viewportWidth = 0;
+	S32 viewportHeight = 0;
+	S32 viewportX = 0;
+	S32 viewportY = 0;
+	S32 fitWidth = 0;
+	S32 fitHeight = 0;
+	S32 fitOffsetX = 0;
+	S32 fitOffsetY = 0;
+	S32 movieWidth = 0;
+	S32 movieHeight = 0;
+	if (pContainer)
+	{
+		pScene->GetParentLayer()->getRenderDimensions(viewportWidth, viewportHeight);
+		const C4JRender::eViewportType viewport = pScene->GetParentLayer()->getViewport();
+		switch (viewport)
+		{
+		case C4JRender::VIEWPORT_TYPE_SPLIT_TOP:
+			viewportX = static_cast<S32>(m_fScreenWidth / 4.0f);
+			break;
+		case C4JRender::VIEWPORT_TYPE_SPLIT_BOTTOM:
+			viewportX = static_cast<S32>(m_fScreenWidth / 4.0f);
+			viewportY = static_cast<S32>(m_fScreenHeight / 2.0f);
+			break;
+		case C4JRender::VIEWPORT_TYPE_SPLIT_LEFT:
+			viewportY = static_cast<S32>(m_fScreenHeight / 4.0f);
+			break;
+		case C4JRender::VIEWPORT_TYPE_SPLIT_RIGHT:
+			viewportX = static_cast<S32>(m_fScreenWidth / 2.0f);
+			viewportY = static_cast<S32>(m_fScreenHeight / 4.0f);
+			break;
+		case C4JRender::VIEWPORT_TYPE_QUADRANT_TOP_RIGHT:
+			viewportX = static_cast<S32>(m_fScreenWidth / 2.0f);
+			break;
+		case C4JRender::VIEWPORT_TYPE_QUADRANT_BOTTOM_LEFT:
+			viewportY = static_cast<S32>(m_fScreenHeight / 2.0f);
+			break;
+		case C4JRender::VIEWPORT_TYPE_QUADRANT_BOTTOM_RIGHT:
+			viewportX = static_cast<S32>(m_fScreenWidth / 2.0f);
+			viewportY = static_cast<S32>(m_fScreenHeight / 2.0f);
+			break;
+		default:
+			break;
+		}
+
+		fitWidth = viewportWidth;
+		fitHeight = viewportHeight;
+		if (viewportWidth > 0 && viewportHeight > 0)
+		{
+			const float viewportAspect = static_cast<float>(viewportWidth) / viewportHeight;
+			if (viewportAspect > (16.0f / 9.0f))
+			{
+				fitWidth = static_cast<S32>(viewportHeight * (16.0f / 9.0f));
+				fitOffsetX = (viewportWidth - fitWidth) / 2;
+			}
+			else
+			{
+				fitHeight = static_cast<S32>(viewportWidth / (16.0f / 9.0f));
+				fitOffsetY = (viewportHeight - fitHeight) / 2;
+			}
+		}
+
+		movieWidth = pScene->getRenderWidth();
+		movieHeight = pScene->getRenderHeight();
+	}
+
+	POINT mousePosition;
+	if (cursorLocked)
+	{
+		if (!m_mouseCursorPositionValid)
+		{
+			const UIVec2D& pointerPosition = pContainer->GetPointerPosition();
+			if (fitWidth > 0 && fitHeight > 0 && movieWidth > 0 && movieHeight > 0)
+			{
+				m_mouseCursorScreenX = viewportX + fitOffsetX +
+					pointerPosition.x * static_cast<float>(fitWidth) / movieWidth;
+				m_mouseCursorScreenY = viewportY + fitOffsetY +
+					pointerPosition.y * static_cast<float>(fitHeight) / movieHeight;
+			}
+			else
+			{
+				m_mouseCursorScreenX = m_fScreenWidth * 0.5f;
+				m_mouseCursorScreenY = m_fScreenHeight * 0.5f;
+			}
+			m_mouseCursorPositionValid = true;
+			m_mouseHoverPositionValid = false;
+		}
+
+		m_mouseCursorScreenX += Windows64KeyboardInput::GetMouseDeltaX() *
+			(m_fScreenWidth / static_cast<float>(clientWidth));
+		m_mouseCursorScreenY += Windows64KeyboardInput::GetMouseDeltaY() *
+			(m_fScreenHeight / static_cast<float>(clientHeight));
+		if (m_mouseCursorScreenX < 0.0f) m_mouseCursorScreenX = 0.0f;
+		if (m_mouseCursorScreenY < 0.0f) m_mouseCursorScreenY = 0.0f;
+		if (m_mouseCursorScreenX >= m_fScreenWidth) m_mouseCursorScreenX = m_fScreenWidth - 1.0f;
+		if (m_mouseCursorScreenY >= m_fScreenHeight) m_mouseCursorScreenY = m_fScreenHeight - 1.0f;
+
+		mousePosition.x = static_cast<LONG>(
+			m_mouseCursorScreenX * clientWidth / m_fScreenWidth);
+		mousePosition.y = static_cast<LONG>(
+			m_mouseCursorScreenY * clientHeight / m_fScreenHeight);
+	}
+	else
+	{
+		if (m_mouseCursorPositionValid)
+		{
+			m_mouseCursorPositionValid = false;
+			m_mouseHoverPositionValid = false;
+		}
+		if (!GetCursorPos(&mousePosition) || !ScreenToClient(g_hWnd, &mousePosition)) return false;
+	}
+
+	const S32 touchX = static_cast<S32>(mousePosition.x * 1920.0f / clientWidth);
+	const S32 touchY = static_cast<S32>(mousePosition.y * 1080.0f / clientHeight);
+	const S32 screenX = cursorLocked ? static_cast<S32>(m_mouseCursorScreenX) :
+		static_cast<S32>(mousePosition.x * m_fScreenWidth / clientWidth);
+	const S32 screenY = cursorLocked ? static_cast<S32>(m_mouseCursorScreenY) :
+		static_cast<S32>(mousePosition.y * m_fScreenHeight / clientHeight);
 
 	const bool mouseMoved = !m_mouseHoverPositionValid ||
 		mousePosition.x != m_lastMouseHoverX || mousePosition.y != m_lastMouseHoverY;
@@ -2392,59 +2526,26 @@ bool UIController::HandleMouseTouchInput(unsigned int iPad, unsigned int key)
 		}
 	}
 
-	const bool containerScene = pScene &&
-		(pScene->getSceneType() == eUIScene_InventoryMenu ||
-		 pScene->getSceneType() == eUIScene_CreativeMenu);
+	const bool containerScene = pContainer != nullptr;
 #ifdef _WINDOWS64
 	Windows64KeyboardInput::SetCursorHidden(containerScene);
 #endif
-	if (containerScene)
+	if (pContainer)
 	{
-		UIScene_AbstractContainerMenu* pContainer = static_cast<UIScene_AbstractContainerMenu*>(pScene);
 		const bool leftClick = mousePressed && !hit;
 		const bool rightClick = rightMousePressed && !hit;
-		S32 renderWidth = 0;
-		S32 renderHeight = 0;
-		pScene->GetParentLayer()->getRenderDimensions(renderWidth, renderHeight);
-		const C4JRender::eViewportType viewport = pScene->GetParentLayer()->getViewport();
-		S32 viewportX = 0;
-		S32 viewportY = 0;
-		switch (viewport)
+		if (fitWidth > 0 && fitHeight > 0 && movieWidth > 0 && movieHeight > 0)
 		{
-		case C4JRender::VIEWPORT_TYPE_SPLIT_TOP:
-			viewportX = static_cast<S32>(m_fScreenWidth / 4.0f);
-			break;
-		case C4JRender::VIEWPORT_TYPE_SPLIT_BOTTOM:
-			viewportX = static_cast<S32>(m_fScreenWidth / 4.0f);
-			viewportY = static_cast<S32>(m_fScreenHeight / 2.0f);
-			break;
-		case C4JRender::VIEWPORT_TYPE_SPLIT_LEFT:
-			viewportY = static_cast<S32>(m_fScreenHeight / 4.0f);
-			break;
-		case C4JRender::VIEWPORT_TYPE_SPLIT_RIGHT:
-			viewportX = static_cast<S32>(m_fScreenWidth / 2.0f);
-			viewportY = static_cast<S32>(m_fScreenHeight / 4.0f);
-			break;
-		case C4JRender::VIEWPORT_TYPE_QUADRANT_TOP_RIGHT:
-			viewportX = static_cast<S32>(m_fScreenWidth / 2.0f);
-			break;
-		case C4JRender::VIEWPORT_TYPE_QUADRANT_BOTTOM_LEFT:
-			viewportY = static_cast<S32>(m_fScreenHeight / 2.0f);
-			break;
-		case C4JRender::VIEWPORT_TYPE_QUADRANT_BOTTOM_RIGHT:
-			viewportX = static_cast<S32>(m_fScreenWidth / 2.0f);
-			viewportY = static_cast<S32>(m_fScreenHeight / 2.0f);
-			break;
-		default:
-			break;
+			S32 mouseX = static_cast<S32>(
+				(screenX - viewportX - fitOffsetX) * static_cast<float>(movieWidth) / fitWidth);
+			S32 mouseY = static_cast<S32>(
+				(screenY - viewportY - fitOffsetY) * static_cast<float>(movieHeight) / fitHeight);
+			if (mouseX < 0) mouseX = 0;
+			else if (mouseX >= movieWidth) mouseX = movieWidth - 1;
+			if (mouseY < 0) mouseY = 0;
+			else if (mouseY >= movieHeight) mouseY = movieHeight - 1;
+			pContainer->HandleMouseCursorInput(mouseX, mouseY, movieWidth, movieHeight, leftClick, rightClick);
 		}
-		S32 renderX = screenX - viewportX;
-		S32 renderY = screenY - viewportY;
-		if (renderX < 0) renderX = 0;
-		else if (renderX >= renderWidth) renderX = renderWidth - 1;
-		if (renderY < 0) renderY = 0;
-		else if (renderY >= renderHeight) renderY = renderHeight - 1;
-		pContainer->HandleMouseCursorInput(renderX, renderY, renderWidth, renderHeight, leftClick, rightClick);
 		if (leftClick || rightClick) return true;
 	}
 

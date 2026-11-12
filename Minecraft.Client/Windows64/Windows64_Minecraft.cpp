@@ -379,11 +379,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		Windows64KeyboardInput::OnRawMouseWheel(GET_WHEEL_DELTA_WPARAM(wParam));
 		break;
 	case WM_ACTIVATE:
-		if (LOWORD(wParam) == WA_INACTIVE)
+		if (LOWORD(wParam) == WA_INACTIVE) {
 			Windows64KeyboardInput::SetCapture(false);
+			Windows64KeyboardInput::SetCursorLock(false);
+		}
 		break;
 	case WM_KILLFOCUS:
 		Windows64KeyboardInput::SetCapture(false);
+		Windows64KeyboardInput::SetCursorLock(false);
 		Windows64KeyboardInput::ResetStates();
 		break;
 	default:
@@ -1136,7 +1139,7 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 
 		ui.CheckMenuDisplayed();
 
-		// Grab the mouse only during gameplay; Alt can release it until the next focus/menu transition.
+		// Confine the mouse during gameplay and use a relative virtual cursor in menus.
 		{
 			static bool altToggleSuppressCapture = false;
 			const bool shouldCapture = app.GetGameStarted() && !ui.GetMenuDisplayed(0) && pMinecraft->screen == nullptr;

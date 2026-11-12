@@ -164,6 +164,10 @@ private:
 	S32 m_lastMouseHoverX;
 	S32 m_lastMouseHoverY;
 	bool m_mouseHoverPositionValid;
+	float m_mouseCursorScreenX;
+	float m_mouseCursorScreenY;
+	bool m_mouseCursorPositionValid;
+	UIScene* m_pMouseCursorScene;
 #endif
 
 protected:

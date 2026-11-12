@@ -10,6 +10,8 @@ class UIScene_AbstractContainerMenu : public UIScene, public virtual IUIScene_Ab
 private:
 	ESceneSection m_focusSection;
 	bool m_bIgnoreInput;
+	UIVec2D m_defaultPointerPos;
+	bool m_defaultPointerPositionValid;
 
 protected:
 	UIControl m_controlMainPanel;
@@ -38,6 +40,8 @@ public:
 	int getPad() { return m_iPad; }
 	bool getIgnoreInput() { return m_bIgnoreInput; }
 	void setIgnoreInput(bool bVal) { m_bIgnoreInput=bVal; }
+	const UIVec2D& GetPointerPosition() const { return m_pointerPos; }
+	void ResetPointerToDefault();
 
 protected:
 	virtual void PlatformInitialize(int iPad, int startIndex);

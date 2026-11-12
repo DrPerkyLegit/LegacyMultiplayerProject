@@ -26,6 +26,7 @@ int Windows64KeyboardInput::m_scrollDelta = 0;
 int Windows64KeyboardInput::m_scrollDeltaAccum = 0;
 
 bool Windows64KeyboardInput::m_isCaptured = false;
+bool Windows64KeyboardInput::m_isCursorLocked = false;
 bool Windows64KeyboardInput::m_isCursorHidden = false;
 bool Windows64KeyboardInput::m_cursorVisibilityHidden = false;
 bool Windows64KeyboardInput::m_isKBMActive = true;
@@ -110,8 +111,6 @@ void Windows64KeyboardInput::SetCapture(bool value) {
 	if (value == Windows64KeyboardInput::m_isCaptured) return;
 	Windows64KeyboardInput::m_isCaptured = value;
 
-	UpdateCursorVisibility();
-
 	if (m_isCaptured) {
 		ClipCursorToWindow();
 		MoveMouseToCenter();
@@ -121,13 +120,35 @@ void Windows64KeyboardInput::SetCapture(bool value) {
 		m_mouseDeltaYAccum = 0.0f;
 		m_mouseDeltaX = 0.0f;
 		m_mouseDeltaY = 0.0f;
-	} else {
+	} else if (!m_isCursorLocked) {
 		ClipCursor(nullptr);
 	}
+	UpdateCursorVisibility();
 }
 
 bool Windows64KeyboardInput::IsCaptured() {
 	return Windows64KeyboardInput::m_isCaptured;
+}
+
+void Windows64KeyboardInput::SetCursorLock(bool value) {
+	if (value == m_isCursorLocked) return;
+	m_isCursorLocked = value;
+
+	if (m_isCursorLocked) {
+		ClipCursorToWindow();
+		MoveMouseToCenter();
+		m_mouseDeltaXAccum = 0.0f;
+		m_mouseDeltaYAccum = 0.0f;
+		m_mouseDeltaX = 0.0f;
+		m_mouseDeltaY = 0.0f;
+	} else if (!m_isCaptured) {
+		ClipCursor(nullptr);
+	}
+	UpdateCursorVisibility();
+}
+
+bool Windows64KeyboardInput::IsCursorLocked() {
+	return m_isCursorLocked;
 }
 
 void Windows64KeyboardInput::SetCursorHidden(bool value) {
@@ -145,7 +166,7 @@ bool Windows64KeyboardInput::IsKBMActive() {
 }
 
 void Windows64KeyboardInput::UpdateCursorVisibility() {
-	const bool hideCursor = m_isCaptured || m_isCursorHidden;
+	const bool hideCursor = m_isCaptured || m_isCursorLocked || m_isCursorHidden;
 	if (hideCursor != m_cursorVisibilityHidden) {
 		if (hideCursor) {
 			while (ShowCursor(FALSE) >= 0) {}
@@ -167,7 +188,7 @@ void Windows64KeyboardInput::PreTick() {
 	m_scrollDelta += m_scrollDeltaAccum;
 	m_scrollDeltaAccum = 0;
 
-	if (m_isCaptured) {
+	if (m_isCaptured || m_isCursorLocked) {
 		ClipCursorToWindow();
 		MoveMouseToCenter();
 	}
@@ -226,7 +247,7 @@ void Windows64KeyboardInput::OnMouseEvent(int button, bool isDown) {
 
 void Windows64KeyboardInput::OnRawMouseInput(LPARAM lParam) {
 	if (!Windows64KeyboardInput::m_initialized) return;
-	if (!Windows64KeyboardInput::m_isCaptured) return;
+	if (!Windows64KeyboardInput::m_isCaptured && !Windows64KeyboardInput::m_isCursorLocked) return;
 
 	UINT dwSize = 0;
 	GetRawInputData((HRAWINPUT)lParam, RID_INPUT, NULL, &dwSize, sizeof(RAWINPUTHEADER));
