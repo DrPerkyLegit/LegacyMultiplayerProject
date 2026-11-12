@@ -18,6 +18,7 @@ IUIScene_AbstractContainerMenu::IUIScene_AbstractContainerMenu()
 
 	m_pointerPos.x = 0.0f;
 	m_pointerPos.y = 0.0f;
+	m_bMouseCursorActive = false;
 
 }
 
@@ -270,7 +271,7 @@ void IUIScene_AbstractContainerMenu::onMouseTick()
 	// Get stick input.
 	int iPad = getPad();
 
-	bool bStickInput = false;
+	bool bStickInput = m_bMouseCursorActive;
 	float fInputX = InputManager.GetJoypadStick_LX( iPad, false )*((float)app.GetGameSettings(iPad,eGameSetting_Sensitivity_InMenu)/100.0f); // apply the sensitivity
 	float fInputY = InputManager.GetJoypadStick_LY( iPad, false )*((float)app.GetGameSettings(iPad,eGameSetting_Sensitivity_InMenu)/100.0f); // apply the sensitivity
 
@@ -372,11 +373,14 @@ void IUIScene_AbstractContainerMenu::onMouseTick()
 			vPointerPos.x += fInputX;
 			vPointerPos.y -= fInputY;
 #endif
-			// Clamp to pointer extents.
-			if ( vPointerPos.x < m_fPointerMinX )				vPointerPos.x = m_fPointerMinX;
-			else if ( vPointerPos.x > m_fPointerMaxX )		vPointerPos.x = m_fPointerMaxX;
-			if ( vPointerPos.y < m_fPointerMinY )				vPointerPos.y = m_fPointerMinY;
-			else if ( vPointerPos.y > m_fPointerMaxY )		vPointerPos.y = m_fPointerMaxY;
+			if (!m_bMouseCursorActive)
+			{
+				// Keep controller movement inside its menu interaction bounds.
+				if ( vPointerPos.x < m_fPointerMinX )				vPointerPos.x = m_fPointerMinX;
+				else if ( vPointerPos.x > m_fPointerMaxX )		vPointerPos.x = m_fPointerMaxX;
+				if ( vPointerPos.y < m_fPointerMinY )				vPointerPos.y = m_fPointerMinY;
+				else if ( vPointerPos.y > m_fPointerMaxY )		vPointerPos.y = m_fPointerMaxY;
+			}
 
 			bStickInput = true;
 		}
@@ -617,11 +621,14 @@ void IUIScene_AbstractContainerMenu::onMouseTick()
 		}
 	}
 
-	// Clamp to pointer extents.
-	if ( vPointerPos.x < m_fPointerMinX )				vPointerPos.x = m_fPointerMinX;
-	else if ( vPointerPos.x > m_fPointerMaxX )		vPointerPos.x = m_fPointerMaxX;
-	if ( vPointerPos.y < m_fPointerMinY )				vPointerPos.y = m_fPointerMinY;
-	else if ( vPointerPos.y > m_fPointerMaxY )		vPointerPos.y = m_fPointerMaxY;
+	if (!m_bMouseCursorActive)
+	{
+		// Keep controller movement inside its menu interaction bounds.
+		if ( vPointerPos.x < m_fPointerMinX )				vPointerPos.x = m_fPointerMinX;
+		else if ( vPointerPos.x > m_fPointerMaxX )		vPointerPos.x = m_fPointerMaxX;
+		if ( vPointerPos.y < m_fPointerMinY )				vPointerPos.y = m_fPointerMinY;
+		else if ( vPointerPos.y > m_fPointerMaxY )		vPointerPos.y = m_fPointerMaxY;
+	}
 
 	// Check if the pointer is outside of the panel.
 	bool bPointerIsOutsidePanel = false;

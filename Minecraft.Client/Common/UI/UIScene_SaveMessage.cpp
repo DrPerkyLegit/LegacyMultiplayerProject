@@ -20,6 +20,7 @@ UIScene_SaveMessage::UIScene_SaveMessage(int iPad, void *initData, UILayer *pare
 
 	// Russian needs to resize the box
 	IggyResult out = IggyPlayerCallMethodRS ( getMovie() , &result, IggyPlayerRootPath( getMovie() ), m_funcAutoResize , 0 , NULL );
+	ui.TouchBoxRebuild(this);
 
 	// 4J-PB - If we have a signed in user connected, let's get the DLC now
 	for(unsigned int i = 0; i < XUSER_MAX_COUNT; ++i)
@@ -87,6 +88,13 @@ void UIScene_SaveMessage::handleInput(int iPad, int key, bool repeat, bool press
 		// 		break;
 		// #endif
 	}
+}
+
+void UIScene_SaveMessage::handleReload()
+{
+	IggyDataValue result;
+	IggyPlayerCallMethodRS(getMovie(), &result, IggyPlayerRootPath(getMovie()), m_funcAutoResize, 0, NULL);
+	ui.TouchBoxRebuild(this);
 }
 
 void UIScene_SaveMessage::handlePress(F64 controlId, F64 childId)

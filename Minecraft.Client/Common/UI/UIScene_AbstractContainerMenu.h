@@ -54,6 +54,7 @@ protected:
 
 public:
 	virtual void tick();
+	void HandleMouseCursorInput(S32 x, S32 y, S32 clientWidth, S32 clientHeight, bool leftPressed, bool rightPressed);
 	
 	virtual void render(S32 width, S32 height, C4JRender::eViewportType viewpBort);
 	virtual void customDraw(IggyCustomDrawCallbackRegion *region);

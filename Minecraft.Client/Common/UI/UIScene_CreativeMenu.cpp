@@ -9,6 +9,10 @@
 #include "..\..\..\Minecraft.World\net.minecraft.world.inventory.h"
 #include "..\..\..\Minecraft.World\net.minecraft.world.item.h"
 
+#ifdef _WINDOWS64
+#define GAME_CREATIVE_TOUCHUPDATE_TIMER_ID 0
+#define GAME_CREATIVE_TOUCHUPDATE_TIMER_TIME 100
+#endif
 
 UIScene_CreativeMenu::UIScene_CreativeMenu(int iPad, void *_initData, UILayer *parentLayer) : UIScene_AbstractContainerMenu(iPad, parentLayer)
 {
@@ -50,6 +54,15 @@ UIScene_CreativeMenu::UIScene_CreativeMenu(int iPad, void *_initData, UILayer *p
 	m_curTab = eCreativeInventoryTab_COUNT;
 	switchTab(eCreativeInventoryTab_BuildingBlocks);
 
+#ifdef _WINDOWS64
+	for (unsigned int i = 0; i < ETouchInput_Count; ++i)
+	{
+		m_TouchInput[i].setControlType(UIControl::eTouchControl);
+		m_TouchInput[i].setId(i);
+		ui.TouchBoxAdd(&m_TouchInput[i], this);
+	}
+#endif
+
 }
 
 wstring UIScene_CreativeMenu::getMoviePath()
@@ -63,6 +76,47 @@ wstring UIScene_CreativeMenu::getMoviePath()
 		return L"CreativeMenu";
 	}
 }
+
+#ifdef _WINDOWS64
+UIControl* UIScene_CreativeMenu::GetMainPanel()
+{
+	return &m_controlMainPanel;
+}
+
+void UIScene_CreativeMenu::handleTouchInput(unsigned int iPad, S32 x, S32 y, int iId, bool bPressed, bool bRepeat, bool bReleased)
+{
+	if (bReleased && iId >= eCreativeInventoryTab_BuildingBlocks && iId <= eCreativeInventoryTab_Misc)
+	{
+		switchTab(static_cast<ECreativeInventoryTabs>(iId));
+		ui.PlayUISFX(eSFX_Focus);
+	}
+
+	if (bRepeat && iId == ETouchInput_TouchSlider && specs[m_curTab]->getPageCount() > 1)
+	{
+		float fPosition = (static_cast<float>(y) - static_cast<float>(m_TouchInput[ETouchInput_TouchSlider].getYPos()) -
+			static_cast<float>(m_controlMainPanel.getYPos())) / static_cast<float>(m_TouchInput[ETouchInput_TouchSlider].getHeight());
+		if (fPosition > 1.0f) fPosition = 1.0f;
+		else if (fPosition < 0.0f) fPosition = 0.0f;
+		m_tabPage[m_curTab] = Math::round(fPosition * (specs[m_curTab]->getPageCount() - 1));
+		switchTab(m_curTab);
+	}
+}
+
+void UIScene_CreativeMenu::handleTouchBoxRebuild()
+{
+	addTimer(GAME_CREATIVE_TOUCHUPDATE_TIMER_ID, GAME_CREATIVE_TOUCHUPDATE_TIMER_TIME);
+}
+
+void UIScene_CreativeMenu::handleTimerComplete(int id)
+{
+	if (id == GAME_CREATIVE_TOUCHUPDATE_TIMER_ID)
+	{
+		m_controlMainPanel.UpdateControl();
+		ui.TouchBoxRebuild(this);
+		killTimer(GAME_CREATIVE_TOUCHUPDATE_TIMER_ID);
+	}
+}
+#endif
 
 
 void UIScene_CreativeMenu::handleOtherClicked(int iPad, ESceneSection eSection, int buttonNum, bool quickKey)

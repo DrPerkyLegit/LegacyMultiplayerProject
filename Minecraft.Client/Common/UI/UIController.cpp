@@ -2,6 +2,7 @@
 #include "UIController.h"
 #include "UI.h"
 #include "UIScene.h"
+#include "UIScene_AbstractContainerMenu.h"
 #include "..\..\..\Minecraft.World\StringHelpers.h"
 #include "..\..\LocalPlayer.h"
 #include "..\..\DLCTexturePack.h"
@@ -156,6 +157,12 @@ UIController::UIController()
 	m_bTouchscreenPressed = false;
 	m_ActiveUIElement = nullptr;
 	m_HighlightedUIElement = nullptr;
+#ifdef _WINDOWS64
+	m_pMouseHoverScene = nullptr;
+	m_lastMouseHoverX = 0;
+	m_lastMouseHoverY = 0;
+	m_mouseHoverPositionValid = false;
+#endif
 
 #ifdef ENABLE_IGGY_ALLOCATOR
 	InitializeCriticalSection(&m_Allocatorlock);
@@ -2314,7 +2321,7 @@ bool UIController::HandleMouseTouchInput(unsigned int iPad, unsigned int key)
 
 	const bool mousePressed = Windows64KeyboardInput::IsMousePressed(0);
 	const bool mouseDown = Windows64KeyboardInput::IsMouseDown(0);
-	if (!m_bTouchscreenPressed && !mousePressed) return false;
+	const bool rightMousePressed = Windows64KeyboardInput::IsMousePressed(1);
 	if (Windows64KeyboardInput::IsCaptured() && !m_bTouchscreenPressed) return false;
 
 	extern HWND g_hWnd;
@@ -2342,6 +2349,15 @@ bool UIController::HandleMouseTouchInput(unsigned int iPad, unsigned int key)
 		pToolTips = m_groups[static_cast<int>(eUIGroup_Player1)]->getTooltips();
 	}
 
+	const bool mouseMoved = !m_mouseHoverPositionValid ||
+		mousePosition.x != m_lastMouseHoverX || mousePosition.y != m_lastMouseHoverY;
+	if (mouseMoved)
+	{
+		m_lastMouseHoverX = mousePosition.x;
+		m_lastMouseHoverY = mousePosition.y;
+		m_mouseHoverPositionValid = true;
+	}
+
 	m_HighlightedUIElement = nullptr;
 	bool hit = false;
 	if (pScene)
@@ -2349,6 +2365,92 @@ bool UIController::HandleMouseTouchInput(unsigned int iPad, unsigned int key)
 	if (!hit && pToolTips)
 		hit = TouchBoxHit(pToolTips, touchX, touchY);
 
+	UIScene* hoverScene = pScene;
+	int focusControl = -1;
+	if (hit && m_HighlightedUIElement)
+	{
+		UIControl* hoveredControl = m_HighlightedUIElement->pControl;
+		hoverScene = m_HighlightedUIElement->pScene;
+		if (hoveredControl->getControlType() == UIControl::eButton ||
+			hoveredControl->getControlType() == UIControl::eButtonList)
+			focusControl = hoveredControl->getId();
+	}
+	if (mouseMoved || hoverScene != m_pMouseHoverScene)
+	{
+		if (m_pMouseHoverScene && m_pMouseHoverScene != hoverScene &&
+			m_pMouseHoverScene->getControlFocus() != -1)
+			m_pMouseHoverScene->SetFocusToElement(-1);
+		if (hoverScene && hoverScene->getControlFocus() != focusControl)
+			hoverScene->SetFocusToElement(focusControl);
+		m_pMouseHoverScene = hoverScene;
+
+		if (hit && m_HighlightedUIElement &&
+			m_HighlightedUIElement->pControl->getControlType() == UIControl::eButtonList)
+		{
+			static_cast<UIControl_ButtonList*>(m_HighlightedUIElement->pControl)->SetTouchFocus(
+				screenX, screenY, false);
+		}
+	}
+
+	const bool containerScene = pScene &&
+		(pScene->getSceneType() == eUIScene_InventoryMenu ||
+		 pScene->getSceneType() == eUIScene_CreativeMenu);
+#ifdef _WINDOWS64
+	Windows64KeyboardInput::SetCursorHidden(containerScene);
+#endif
+	if (containerScene)
+	{
+		UIScene_AbstractContainerMenu* pContainer = static_cast<UIScene_AbstractContainerMenu*>(pScene);
+		const bool leftClick = mousePressed && !hit;
+		const bool rightClick = rightMousePressed && !hit;
+		S32 renderWidth = 0;
+		S32 renderHeight = 0;
+		pScene->GetParentLayer()->getRenderDimensions(renderWidth, renderHeight);
+		const C4JRender::eViewportType viewport = pScene->GetParentLayer()->getViewport();
+		S32 viewportX = 0;
+		S32 viewportY = 0;
+		switch (viewport)
+		{
+		case C4JRender::VIEWPORT_TYPE_SPLIT_TOP:
+			viewportX = static_cast<S32>(m_fScreenWidth / 4.0f);
+			break;
+		case C4JRender::VIEWPORT_TYPE_SPLIT_BOTTOM:
+			viewportX = static_cast<S32>(m_fScreenWidth / 4.0f);
+			viewportY = static_cast<S32>(m_fScreenHeight / 2.0f);
+			break;
+		case C4JRender::VIEWPORT_TYPE_SPLIT_LEFT:
+			viewportY = static_cast<S32>(m_fScreenHeight / 4.0f);
+			break;
+		case C4JRender::VIEWPORT_TYPE_SPLIT_RIGHT:
+			viewportX = static_cast<S32>(m_fScreenWidth / 2.0f);
+			viewportY = static_cast<S32>(m_fScreenHeight / 4.0f);
+			break;
+		case C4JRender::VIEWPORT_TYPE_QUADRANT_TOP_RIGHT:
+			viewportX = static_cast<S32>(m_fScreenWidth / 2.0f);
+			break;
+		case C4JRender::VIEWPORT_TYPE_QUADRANT_BOTTOM_LEFT:
+			viewportY = static_cast<S32>(m_fScreenHeight / 2.0f);
+			break;
+		case C4JRender::VIEWPORT_TYPE_QUADRANT_BOTTOM_RIGHT:
+			viewportX = static_cast<S32>(m_fScreenWidth / 2.0f);
+			viewportY = static_cast<S32>(m_fScreenHeight / 2.0f);
+			break;
+		default:
+			break;
+		}
+		S32 renderX = screenX - viewportX;
+		S32 renderY = screenY - viewportY;
+		if (renderX < 0) renderX = 0;
+		else if (renderX >= renderWidth) renderX = renderWidth - 1;
+		if (renderY < 0) renderY = 0;
+		else if (renderY >= renderHeight) renderY = renderHeight - 1;
+		pContainer->HandleMouseCursorInput(renderX, renderY, renderWidth, renderHeight, leftClick, rightClick);
+		if (leftClick || rightClick) return true;
+	}
+
+	if (!m_bTouchscreenPressed && !mousePressed) return false;
+
+	const bool mouseReleased = Windows64KeyboardInput::IsMouseReleased(0);
 	bool pressed = false;
 	bool released = false;
 	if (!m_bTouchscreenPressed && mousePressed && hit)
@@ -2356,7 +2458,7 @@ bool UIController::HandleMouseTouchInput(unsigned int iPad, unsigned int key)
 		m_bTouchscreenPressed = true;
 		pressed = true;
 	}
-	else if (m_bTouchscreenPressed && (!mouseDown || Windows64KeyboardInput::IsMouseReleased(0)))
+	else if (m_bTouchscreenPressed && (!mouseDown || mouseReleased))
 	{
 		m_bTouchscreenPressed = false;
 		released = true;
@@ -2383,6 +2485,7 @@ void UIController::TouchBoxAdd(UIControl* pControl, EUIGroup eUIGroup, EUILayer 
 	pControl->UpdateControl();
 	UIELEMENT* puiElement = new UIELEMENT;
 	puiElement->pControl = pControl;
+	puiElement->pScene = pControl->getParentScene();
 
 	S32 iControlWidth = pControl->getWidth();
 	S32 iControlHeight = pControl->getHeight();
@@ -2481,22 +2584,43 @@ void UIController::TouchBoxRebuild(UIScene* pUIScene)
 
 void UIController::TouchBoxesClear(UIScene* pUIScene)
 {
-	EUIGroup eUIGroup = pUIScene->GetParentLayerGroup();
-	EUILayer eUILayer = pUIScene->GetParentLayerType();
-	EUIScene eUIscene = pUIScene->getSceneType();
-
-	for (UIELEMENT* element : m_TouchBoxes[eUIGroup][eUILayer][eUIscene])
+#ifdef _WINDOWS64
+	if (m_pMouseHoverScene == pUIScene)
 	{
-		if (element == m_ActiveUIElement)
-		{
-			m_ActiveUIElement = nullptr;
-			m_bTouchscreenPressed = false;
-		}
-		if (element == m_HighlightedUIElement)
-			m_HighlightedUIElement = nullptr;
-		delete element;
+		m_pMouseHoverScene = nullptr;
+		m_mouseHoverPositionValid = false;
 	}
-	m_TouchBoxes[eUIGroup][eUILayer][eUIscene].clear();
+#endif
+
+	for (int group = 0; group < eUIGroup_COUNT; ++group)
+	{
+		for (int layer = 0; layer < eUILayer_COUNT; ++layer)
+		{
+			for (int scene = 0; scene < eUIScene_COUNT; ++scene)
+			{
+				vector<UIELEMENT*>& touchBoxes = m_TouchBoxes[group][layer][scene];
+				for (auto it = touchBoxes.begin(); it != touchBoxes.end();)
+				{
+					UIELEMENT* element = *it;
+					if (element->pScene != pUIScene)
+					{
+						++it;
+						continue;
+					}
+
+					if (element == m_ActiveUIElement)
+					{
+						m_ActiveUIElement = nullptr;
+						m_bTouchscreenPressed = false;
+					}
+					if (element == m_HighlightedUIElement)
+						m_HighlightedUIElement = nullptr;
+					delete element;
+					it = touchBoxes.erase(it);
+				}
+			}
+		}
+	}
 }
 
 bool UIController::TouchBoxHit(UIScene* pUIScene, S32 x, S32 y)
@@ -2515,7 +2639,9 @@ bool UIController::TouchBoxHit(UIScene* pUIScene, S32 x, S32 y)
 	{
 		for (UIELEMENT* element : m_TouchBoxes[eUIGroup][eUILayer][eUIscene])
 		{
-			if (element->pControl->getHidden() == false && element->pControl->getVisible()) // ignore removed controls
+			if (element->pScene != pUIScene) continue;
+
+			if (element->pControl->getHidden() == false && element->pControl->isVisible()) // ignore removed controls
 			{
 				if ((x >= element->x1) && (x <= element->x2) && (y >= element->y1) && (y <= element->y2))
 				{

@@ -47,6 +47,7 @@ private:
 	typedef struct
 	{
 		UIControl* pControl;
+		UIScene* pScene;
 		S32 x1, y1, x2, y2;
 	}
 	UIELEMENT;
@@ -158,6 +159,12 @@ private:
 #endif
 	UIELEMENT* m_ActiveUIElement;
 	UIELEMENT* m_HighlightedUIElement;
+#ifdef _WINDOWS64
+	UIScene* m_pMouseHoverScene;
+	S32 m_lastMouseHoverX;
+	S32 m_lastMouseHoverY;
+	bool m_mouseHoverPositionValid;
+#endif
 
 protected:
 	UIGroup *m_groups[eUIGroup_COUNT];

@@ -36,6 +36,8 @@ UIScene::UIScene(int iPad, UILayer *parentLayer)
 
 UIScene::~UIScene()
 {
+	ui.TouchBoxesClear(this);
+
 	/* Destroy the Iggy player. */
 	IggyPlayerDestroy( swf );
 

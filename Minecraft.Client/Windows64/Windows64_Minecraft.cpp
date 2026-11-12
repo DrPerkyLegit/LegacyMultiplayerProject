@@ -992,6 +992,22 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 		PIXBeginNamedEvent(0,"Input manager tick");
 		InputManager.Tick();
 		Windows64KeyboardInput::PreTick();
+		if (InputManager.IsPadConnected(0))
+		{
+			const bool controllerUsed = InputManager.ButtonPressed(0) ||
+				InputManager.GetJoypadStick_LX(0, false) != 0.0f ||
+				InputManager.GetJoypadStick_LY(0, false) != 0.0f ||
+				InputManager.GetJoypadStick_RX(0, false) != 0.0f ||
+				InputManager.GetJoypadStick_RY(0, false) != 0.0f;
+			if (controllerUsed)
+				Windows64KeyboardInput::SetKBMActive(false);
+			else if (Windows64KeyboardInput::HasAnyInput())
+				Windows64KeyboardInput::SetKBMActive(true);
+		}
+		else
+		{
+			Windows64KeyboardInput::SetKBMActive(true);
+		}
 		PIXEndNamedEvent();
 		PIXBeginNamedEvent(0,"Profile manager tick");
 		//		ProfileManager.Tick();
@@ -1120,12 +1136,31 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 
 		ui.CheckMenuDisplayed();
 
-		// Update mouse capture: capture when in-game and no menu is open
+		// Grab the mouse only during gameplay; Alt can release it until the next focus/menu transition.
 		{
-			bool shouldCapture = app.GetGameStarted() && !ui.GetMenuDisplayed(0);
-			if (!shouldCapture) {
+			static bool altToggleSuppressCapture = false;
+			const bool shouldCapture = app.GetGameStarted() && !ui.GetMenuDisplayed(0) && pMinecraft->screen == nullptr;
+			if (Windows64KeyboardInput::IsKeyPressed(VK_MENU))
+			{
+				if (Windows64KeyboardInput::IsCaptured())
+				{
+					Windows64KeyboardInput::SetCapture(false);
+					altToggleSuppressCapture = true;
+				}
+				else if (shouldCapture)
+				{
+					Windows64KeyboardInput::SetCapture(true);
+					altToggleSuppressCapture = false;
+				}
+			}
+			else if (!shouldCapture)
+			{
 				if (Windows64KeyboardInput::IsCaptured()) Windows64KeyboardInput::SetCapture(false);
-			} else if (shouldCapture && !Windows64KeyboardInput::IsCaptured() && GetFocus() == g_hWnd) {
+				altToggleSuppressCapture = false;
+			}
+			else if (shouldCapture && !Windows64KeyboardInput::IsCaptured() &&
+				GetFocus() == g_hWnd && !altToggleSuppressCapture)
+			{
 				Windows64KeyboardInput::SetCapture(true);
 			}
 		}

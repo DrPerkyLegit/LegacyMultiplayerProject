@@ -37,6 +37,7 @@ protected:
 public:
 	// INPUT
 	virtual void handleInput(int iPad, int key, bool repeat, bool pressed, bool released, bool &handled);
+	virtual void handleReload();
 	virtual void handleTimerComplete(int id);
 
 protected:

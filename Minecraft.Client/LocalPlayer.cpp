@@ -301,7 +301,9 @@ void LocalPlayer::aiStep()
 	if(abilities.mayfly || isAllowedToFly() ) enoughFoodToSprint = true;
 
 	// Keyboard sprint: Ctrl held while moving forward
-	if (GetXboxPad() == 0 && Windows64KeyboardInput::IsKeyDown(VK_CONTROL) && input->ya > 0.0f && enoughFoodToSprint && !isUsingItem() && !hasEffect(MobEffect::blindness) && onGround) {
+	if (GetXboxPad() == 0 && Windows64KeyboardInput::IsCaptured() && Windows64KeyboardInput::IsKBMActive() &&
+		Windows64KeyboardInput::IsKeyDown(VK_CONTROL) && input->ya > 0.0f && enoughFoodToSprint &&
+		!isUsingItem() && !hasEffect(MobEffect::blindness) && onGround) {
 		if (!isSprinting()) setSprinting(true);
 	}
 

@@ -71,6 +71,13 @@ public:
 
 	virtual void ScrollBar(UIVec2D pointerPos);
 
+#ifdef _WINDOWS64
+	virtual UIControl* GetMainPanel();
+	virtual void handleTouchInput(unsigned int iPad, S32 x, S32 y, int iId, bool bPressed, bool bRepeat, bool bReleased);
+	virtual void handleTouchBoxRebuild();
+	virtual void handleTimerComplete(int id);
+#endif
+
 private:
 	// IUIScene_CreativeMenu
 	void updateTabHighlightAndText(ECreativeInventoryTabs tab);

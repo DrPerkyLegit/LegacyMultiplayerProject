@@ -171,6 +171,27 @@ void UIScene_AbstractContainerMenu::tick()
 	IggyPlayerDispatchEventRS ( getMovie() , &mouseEvent , &result );
 }
 
+void UIScene_AbstractContainerMenu::HandleMouseCursorInput(S32 x, S32 y, S32 clientWidth, S32 clientHeight, bool leftPressed, bool rightPressed)
+{
+	if (clientWidth <= 0 || clientHeight <= 0 || !hasMovie()) return;
+
+	const float mouseX = static_cast<float>(x) * m_movieWidth / clientWidth;
+	const float mouseY = static_cast<float>(y) * m_movieHeight / clientHeight;
+	const bool cursorMoved = mouseX != m_pointerPos.x || mouseY != m_pointerPos.y;
+	if (cursorMoved || leftPressed || rightPressed)
+	{
+		m_pointerPos.x = mouseX;
+		m_pointerPos.y = mouseY;
+		m_bMouseCursorActive = true;
+		m_eCurrTapState = eTapStateNoInput;
+		m_iConsectiveInputTicks = 0;
+		onMouseTick();
+	}
+
+	if (leftPressed) handleKeyDown(getPad(), ACTION_MENU_A, false);
+	if (rightPressed) handleKeyDown(getPad(), ACTION_MENU_X, false);
+}
+
 void UIScene_AbstractContainerMenu::render(S32 width, S32 height, C4JRender::eViewportType viewpBort)
 {
 	m_cacheSlotRenders = true;
@@ -228,6 +249,12 @@ void UIScene_AbstractContainerMenu::customDraw(IggyCustomDrawCallbackRegion *reg
 void UIScene_AbstractContainerMenu::handleInput(int iPad, int key, bool repeat, bool pressed, bool released, bool &handled)
 {
 	if(m_bIgnoreInput) return;
+
+	if (pressed && (key == ACTION_MENU_UP || key == ACTION_MENU_DOWN ||
+		key == ACTION_MENU_LEFT || key == ACTION_MENU_RIGHT))
+	{
+		m_bMouseCursorActive = false;
+	}
 
 	//app.DebugPrintf("UIScene_InventoryMenu handling input for pad %d, key %d, down- %s, pressed- %s, released- %s\n", iPad, key, down?"TRUE":"FALSE", pressed?"TRUE":"FALSE", released?"TRUE":"FALSE");
 	ui.AnimateKeyPress(m_iPad, key, repeat, pressed, released);

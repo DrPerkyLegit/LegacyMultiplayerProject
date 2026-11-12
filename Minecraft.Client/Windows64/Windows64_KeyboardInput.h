@@ -20,6 +20,10 @@ public:
 
 	static void SetCapture(bool value);
 	static bool IsCaptured();
+	static void SetCursorHidden(bool value);
+	static void SetKBMActive(bool active);
+	static bool IsKBMActive();
+	static bool HasAnyInput();
 
 	static void PreTick();
 	static void PostTick();
@@ -41,15 +45,25 @@ public:
 	static float GetMouseDeltaX();
 	static float GetMouseDeltaY();
 	static int GetScrollDelta();
+	static float GetMoveX();
+	static float GetMoveY();
 
 
 private:
 
 	static uint8_t m_keyStates[32];    //256 bits
 	static uint8_t m_keyStatesOld[32]; //256 bits
+	static uint8_t m_keyPressedStates[32];
+	static uint8_t m_keyReleasedStates[32];
+	static uint8_t m_keyPressedAccum[32];
+	static uint8_t m_keyReleasedAccum[32];
 
 	static uint8_t m_mouseStates[4];    // 32 bits
 	static uint8_t m_mouseStatesOld[4]; // 32 bits
+	static uint8_t m_mousePressedStates[4];
+	static uint8_t m_mouseReleasedStates[4];
+	static uint8_t m_mousePressedAccum[4];
+	static uint8_t m_mouseReleasedAccum[4];
 
 	static float m_mouseDeltaX;
 	static float m_mouseDeltaY;
@@ -61,6 +75,12 @@ private:
 	static int m_scrollDeltaAccum;
 
 	static bool m_isCaptured;
+	static bool m_isCursorHidden;
+	static bool m_cursorVisibilityHidden;
+	static bool m_isKBMActive;
 	static HWND m_hWnd;
 	static bool m_initialized;
+
+	static void UpdateCursorVisibility();
+	static void ClipCursorToWindow();
 };

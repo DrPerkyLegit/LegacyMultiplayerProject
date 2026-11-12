@@ -1315,15 +1315,41 @@ void Minecraft::run_middle()
 					if(InputManager.ButtonPressed(i, MINECRAFT_ACTION_RENDER_THIRD_PERSON))		localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_RENDER_THIRD_PERSON;
 					if(InputManager.ButtonPressed(i, MINECRAFT_ACTION_GAME_INFO))				localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_GAME_INFO;
 
-					// Keyboard/mouse button presses for player 0
-					if (i == 0) {
-						if (Windows64KeyboardInput::IsKeyPressed(VK_ESCAPE))  localplayers[i]->ullButtonsPressed |= 1LL << MINECRAFT_ACTION_PAUSEMENU;
-						if (Windows64KeyboardInput::IsKeyPressed('E'))         localplayers[i]->ullButtonsPressed |= 1LL << MINECRAFT_ACTION_INVENTORY;
-						if (Windows64KeyboardInput::IsKeyPressed('Q'))         localplayers[i]->ullButtonsPressed |= 1LL << MINECRAFT_ACTION_DROP;
-						if (Windows64KeyboardInput::IsKeyPressed('C'))         localplayers[i]->ullButtonsPressed |= 1LL << MINECRAFT_ACTION_CRAFTING;
-						if (Windows64KeyboardInput::IsKeyPressed(VK_F5))       localplayers[i]->ullButtonsPressed |= 1LL << MINECRAFT_ACTION_RENDER_THIRD_PERSON;
-						// In flying mode, Shift held = sneak/descend
-						if (localplayers[i]->abilities.flying && Windows64KeyboardInput::IsKeyDown(VK_SHIFT))
+					// Gameplay keyboard and mouse controls for the primary player.
+					if (i == 0 && Windows64KeyboardInput::IsKBMActive() && !ui.GetMenuDisplayed(i))
+					{
+						if (Windows64KeyboardInput::IsKeyPressed(VK_ESCAPE))
+							localplayers[i]->ullButtonsPressed |= 1LL << MINECRAFT_ACTION_PAUSEMENU;
+						if (Windows64KeyboardInput::IsKeyPressed('E'))
+							localplayers[i]->ullButtonsPressed |= 1LL << MINECRAFT_ACTION_INVENTORY;
+						if (Windows64KeyboardInput::IsKeyPressed('Q'))
+							localplayers[i]->ullButtonsPressed |= 1LL << MINECRAFT_ACTION_DROP;
+						if (Windows64KeyboardInput::IsKeyPressed('C'))
+							localplayers[i]->ullButtonsPressed |= 1LL << MINECRAFT_ACTION_CRAFTING;
+						if (Windows64KeyboardInput::IsKeyPressed(VK_F5))
+							localplayers[i]->ullButtonsPressed |= 1LL << MINECRAFT_ACTION_RENDER_THIRD_PERSON;
+						if (Windows64KeyboardInput::IsKeyPressed(VK_F1))
+						{
+							const unsigned char displayHud = app.GetGameSettings(i, eGameSetting_DisplayHUD);
+							app.SetGameSettings(i, eGameSetting_DisplayHUD, displayHud ? 0 : 1);
+							app.SetGameSettings(i, eGameSetting_DisplayHand, displayHud ? 0 : 1);
+						}
+						if (Windows64KeyboardInput::IsKeyPressed(VK_F3) && options != nullptr)
+							options->renderDebug = !options->renderDebug;
+						if (Windows64KeyboardInput::IsKeyPressed(VK_F4))
+							localplayers[i]->ullButtonsPressed |= 1LL << MINECRAFT_ACTION_RENDER_DEBUG;
+
+						if (Windows64KeyboardInput::IsCaptured())
+						{
+							if (Windows64KeyboardInput::IsMousePressed(0))
+								localplayers[i]->ullButtonsPressed |= 1LL << MINECRAFT_ACTION_ACTION;
+							if (Windows64KeyboardInput::IsMousePressed(1))
+								localplayers[i]->ullButtonsPressed |= 1LL << MINECRAFT_ACTION_USE;
+						}
+
+						// In flying mode, Shift held = descend.
+						if (localplayers[i]->abilities.flying && Windows64KeyboardInput::IsCaptured() &&
+							Windows64KeyboardInput::IsKeyDown(VK_SHIFT))
 							localplayers[i]->ullButtonsPressed |= 1LL << MINECRAFT_ACTION_SNEAK_TOGGLE;
 					}
 #ifndef _FINAL_BUILD
@@ -2927,11 +2953,11 @@ void Minecraft::tick(bool bFirst, bool bUpdateTextures)
 		{
 			wheel = -1;
 		}
-		// Mouse scroll wheel for hotbar
-		if (iPad == 0) {
+		// Mouse scroll wheel and number keys for hotbar selection.
+		if (iPad == 0 && Windows64KeyboardInput::IsKBMActive() && !ui.GetMenuDisplayed(iPad)) {
 			int kbWheel = Windows64KeyboardInput::GetScrollDelta();
-			if (kbWheel > 0 && gameMode->isInputAllowed(MINECRAFT_ACTION_LEFT_SCROLL)) wheel += 1;
-			else if (kbWheel < 0 && gameMode->isInputAllowed(MINECRAFT_ACTION_RIGHT_SCROLL)) wheel -= 1;
+			if (kbWheel > 0 && gameMode->isInputAllowed(MINECRAFT_ACTION_LEFT_SCROLL)) wheel += kbWheel;
+			else if (kbWheel < 0 && gameMode->isInputAllowed(MINECRAFT_ACTION_RIGHT_SCROLL)) wheel += kbWheel;
 
 			// 1-9 keys for direct hotbar selection
 			if (gameMode->isInputAllowed(MINECRAFT_ACTION_LEFT_SCROLL)) {
@@ -2982,13 +3008,16 @@ void Minecraft::tick(bool bFirst, bool bUpdateTextures)
 				player->handleMouseClick(0);
 				player->lastClickTick[0] = ticks;
 			}
-			else if (iPad == 0 && Windows64KeyboardInput::IsCaptured() && Windows64KeyboardInput::IsMouseDown(0) && ticks - player->lastClickTick[0] >= timer->ticksPerSecond / 4)
+			else if (iPad == 0 && Windows64KeyboardInput::IsCaptured() && Windows64KeyboardInput::IsKBMActive() &&
+				Windows64KeyboardInput::IsMouseDown(0) && ticks - player->lastClickTick[0] >= timer->ticksPerSecond / 4)
 			{
 				player->handleMouseClick(0);
 				player->lastClickTick[0] = ticks;
 			}
 
-			if (InputManager.ButtonDown(iPad, MINECRAFT_ACTION_ACTION) || (iPad == 0 && Windows64KeyboardInput::IsCaptured() && Windows64KeyboardInput::IsMouseDown(0)))
+			if (InputManager.ButtonDown(iPad, MINECRAFT_ACTION_ACTION) ||
+				(iPad == 0 && Windows64KeyboardInput::IsCaptured() && Windows64KeyboardInput::IsKBMActive() &&
+				 Windows64KeyboardInput::IsMouseDown(0)))
 			{
 				player->handleMouseDown(0, true );
 			}
@@ -3009,13 +3038,19 @@ void Minecraft::tick(bool bFirst, bool bUpdateTextures)
 		*/
 		if( player->isUsingItem() )
 		{
-			if (!InputManager.ButtonDown(iPad, MINECRAFT_ACTION_USE) && !(iPad == 0 && Windows64KeyboardInput::IsCaptured() && Windows64KeyboardInput::IsMouseDown(1))) {
+			const bool mouseUsePressed = (player->ullButtonsPressed & (1LL << MINECRAFT_ACTION_USE)) != 0;
+			if (!InputManager.ButtonDown(iPad, MINECRAFT_ACTION_USE) &&
+				!(iPad == 0 && Windows64KeyboardInput::IsCaptured() && Windows64KeyboardInput::IsKBMActive() &&
+				  (Windows64KeyboardInput::IsMouseDown(1) || mouseUsePressed))) {
 				gameMode->releaseUsingItem(player);
 			}
 		}
 		else if( gameMode->isInputAllowed(MINECRAFT_ACTION_USE) )
 		{
-			bool useButtonDown = InputManager.ButtonDown(iPad, MINECRAFT_ACTION_USE) || (iPad == 0 && Windows64KeyboardInput::IsCaptured() && Windows64KeyboardInput::IsMouseDown(1));
+			bool useButtonDown = InputManager.ButtonDown(iPad, MINECRAFT_ACTION_USE) ||
+				(player->ullButtonsPressed & (1LL << MINECRAFT_ACTION_USE)) != 0 ||
+				(iPad == 0 && Windows64KeyboardInput::IsCaptured() && Windows64KeyboardInput::IsKBMActive() &&
+				 Windows64KeyboardInput::IsMouseDown(1));
 			if( player->abilities.instabuild )
 			{
 				// 4J - attempt to handle click in special creative mode fashion if possible (used for placing blocks at regular intervals)

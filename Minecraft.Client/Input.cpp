@@ -30,38 +30,39 @@ void Input::tick(LocalPlayer *player)
 	Minecraft *pMinecraft=Minecraft::GetInstance();
 	int iPad=player->GetXboxPad();
 
+	float controllerXA = 0.0f;
+	float controllerYA = 0.0f;
+
 	// 4J-PB minecraft movement seems to be the wrong way round, so invert x!
 	if( pMinecraft->localgameModes[iPad]->isInputAllowed(MINECRAFT_ACTION_LEFT) || pMinecraft->localgameModes[iPad]->isInputAllowed(MINECRAFT_ACTION_RIGHT) )
-		xa = -InputManager.GetJoypadStick_LX(iPad);
-	else
-		xa = 0.0f;
+		controllerXA = -InputManager.GetJoypadStick_LX(iPad);
 	
 	if( pMinecraft->localgameModes[iPad]->isInputAllowed(MINECRAFT_ACTION_FORWARD) || pMinecraft->localgameModes[iPad]->isInputAllowed(MINECRAFT_ACTION_BACKWARD) )
-		ya = InputManager.GetJoypadStick_LY(iPad);
+		controllerYA = InputManager.GetJoypadStick_LY(iPad);
+
+	float keyboardXA = 0.0f;
+	float keyboardYA = 0.0f;
+#ifdef _WINDOWS64
+	if (iPad == 0 && Windows64KeyboardInput::IsCaptured() && Windows64KeyboardInput::IsKBMActive())
+	{
+		if (pMinecraft->localgameModes[iPad]->isInputAllowed(MINECRAFT_ACTION_LEFT) ||
+			pMinecraft->localgameModes[iPad]->isInputAllowed(MINECRAFT_ACTION_RIGHT))
+			keyboardXA = Windows64KeyboardInput::GetMoveX();
+		if (pMinecraft->localgameModes[iPad]->isInputAllowed(MINECRAFT_ACTION_FORWARD) ||
+			pMinecraft->localgameModes[iPad]->isInputAllowed(MINECRAFT_ACTION_BACKWARD))
+			keyboardYA = Windows64KeyboardInput::GetMoveY();
+	}
+#endif
+
+	if (keyboardXA != 0.0f || keyboardYA != 0.0f)
+	{
+		xa = keyboardXA;
+		ya = keyboardYA;
+	}
 	else
-		ya = 0.0f;
-
-	if (iPad == 0) {
-		float movementDeltaX = 0.0f;
-		float movementDeltaY = 0.0f;
-
-		if (Windows64KeyboardInput::IsKeyDown('W')) movementDeltaY += 1.0f;
-		if (Windows64KeyboardInput::IsKeyDown('S')) movementDeltaY -= 1.0f;
-		if (Windows64KeyboardInput::IsKeyDown('A')) movementDeltaX += 1.0f;
-		if (Windows64KeyboardInput::IsKeyDown('D')) movementDeltaX -= 1.0f;
-
-		//normalize diagonal movement
-		if (movementDeltaX != 0.0f && movementDeltaY != 0) {
-			movementDeltaX *= 0.707f;
-			movementDeltaY *= 0.707f;
-		}
-
-		if (pMinecraft->localgameModes[iPad]->isInputAllowed(MINECRAFT_ACTION_LEFT) || pMinecraft->localgameModes[iPad]->isInputAllowed(MINECRAFT_ACTION_RIGHT)) {
-			xa = max(min(xa + movementDeltaX, 1.0f), -1.0f);
-		}
-		if (pMinecraft->localgameModes[iPad]->isInputAllowed(MINECRAFT_ACTION_FORWARD) || pMinecraft->localgameModes[iPad]->isInputAllowed(MINECRAFT_ACTION_BACKWARD)) {
-			ya = max(min(ya + movementDeltaY, 1.0f), -1.0f);
-		}
+	{
+		xa = controllerXA;
+		ya = controllerYA;
 	}
 
 #ifndef _CONTENT_PACKAGE
@@ -91,7 +92,8 @@ void Input::tick(LocalPlayer *player)
 	}
 	sneaking = m_gamepadSneaking;
 
-	if (iPad == 0 && Windows64KeyboardInput::IsKeyDown(VK_SHIFT) && !player->abilities.flying) {
+	if (iPad == 0 && Windows64KeyboardInput::IsCaptured() && Windows64KeyboardInput::IsKBMActive() &&
+		Windows64KeyboardInput::IsKeyDown(VK_SHIFT) && !player->abilities.flying) {
 		sneaking = true;
 	}
 
@@ -133,10 +135,11 @@ void Input::tick(LocalPlayer *player)
     //jumping = controller.isButtonPressed(0);
 
 	// Mouse look (added after stick-based turn)
-	if (iPad == 0 && Windows64KeyboardInput::IsCaptured()) {
-		float mouseSensitivity = 1.25f;
-		float mdx = Windows64KeyboardInput::GetMouseDeltaX() * mouseSensitivity;
-		float mdy = -Windows64KeyboardInput::GetMouseDeltaY() * mouseSensitivity;
+	if (iPad == 0 && Windows64KeyboardInput::IsCaptured() && Windows64KeyboardInput::IsKBMActive()) {
+		float mouseSensitivity = static_cast<float>(app.GetGameSettings(iPad, eGameSetting_Sensitivity_InGame)) / 100.0f;
+		float mouseLookScale = 1.0f;
+		float mdx = Windows64KeyboardInput::GetMouseDeltaX() * mouseSensitivity * mouseLookScale;
+		float mdy = -Windows64KeyboardInput::GetMouseDeltaY() * mouseSensitivity * mouseLookScale;
 		if (app.GetGameSettings(iPad, eGameSetting_ControlInvertLook)) mdy = -mdy;
 		player->interpolateTurn(mdx, mdy);
 	}
@@ -147,10 +150,19 @@ void Input::tick(LocalPlayer *player)
 	else
  		jumping = false;
 
-	if (iPad == 0 && Windows64KeyboardInput::IsKeyDown(VK_SPACE) && pMinecraft->localgameModes[iPad]->isInputAllowed(MINECRAFT_ACTION_JUMP)) jumping = true;
+	if (iPad == 0 && Windows64KeyboardInput::IsCaptured() && Windows64KeyboardInput::IsKBMActive() &&
+		Windows64KeyboardInput::IsKeyDown(VK_SPACE) && pMinecraft->localgameModes[iPad]->isInputAllowed(MINECRAFT_ACTION_JUMP)) jumping = true;
 
 #ifndef _CONTENT_PACKAGE
 	if (app.GetFreezePlayers())	jumping = false;
+#endif
+
+#ifdef _WINDOWS64
+	if (iPad == 0 && Windows64KeyboardInput::IsKeyPressed(VK_ESCAPE) &&
+		Windows64KeyboardInput::IsCaptured())
+	{
+		Windows64KeyboardInput::SetCapture(false);
+	}
 #endif
 
 	//OutputDebugString("INPUT: End input tick\n");
