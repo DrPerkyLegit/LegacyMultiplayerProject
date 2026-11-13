@@ -8,11 +8,11 @@ wstring TexturePack::getPath(bool bTitleUpdateTexture /*= false*/)
 	if(bTitleUpdateTexture)
 	{
 		// Make the content package point to to the UPDATE: drive is needed
-		wDrive=L"Common\\res\\TitleUpdate\\";
+		wDrive=L"Common\\Media\\Resources\\TitleUpdate\\";
 	}
 	else
 	{
-		wDrive=L"Common/";
+		wDrive=L"Common\\Media\\Resources\\Base\\";
 	}
 
 	return wDrive;

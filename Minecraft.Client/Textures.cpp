@@ -1186,7 +1186,8 @@ BufferedImage *Textures::readImage(TEXTURE_NAME texId, const wstring& name)	// 4
 		}
 		else 
 		{
-			img = skins->getDefault()->getImageResource(L"1_2_2/" + name, false, isTu, drive); //new BufferedImage(L"/1_2_2" + name,false,isTu,drive);
+			drive = L"Common\\Media\\Resources\\Legacy\\";
+			img = skins->getDefault()->getImageResource(name, false, isTu, drive);
 		}
 	}
 

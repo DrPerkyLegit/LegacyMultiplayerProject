@@ -551,8 +551,8 @@ void Font::loadUnicodePage(int page)
 {
 	wchar_t fileName[25];
 	//String fileName = String.format("/1_2_2/font/glyph_%02X.png", page);
-	swprintf(fileName,25,L"/1_2_2/font/glyph_%02X.png",page);
-	BufferedImage *image = new BufferedImage(fileName);
+	swprintf(fileName,25,L"/font/glyph_%02X.png",page);
+	BufferedImage *image = new BufferedImage(fileName, false, false, L"Common\\Media\\Resources\\Legacy\\");
 	//try
 	//{
 	//	image = ImageIO.read(Textures.class.getResourceAsStream(fileName.toString()));

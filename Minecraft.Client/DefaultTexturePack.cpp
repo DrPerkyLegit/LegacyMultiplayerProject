@@ -47,7 +47,7 @@ InputStream *DefaultTexturePack::getResourceImplementation(const wstring &name)/
 {
 	wstring wDrive = L"";
 	// Make the content package point to to the UPDATE: drive is needed
-	wDrive = L"Common\\res\\TitleUpdate\\res";
+	wDrive = L"Common\\Media\\Resources\\TitleUpdate\\res";
 
 	InputStream *resource = InputStream::getResourceAsStream(wDrive + name);
 	//InputStream *stream = DefaultTexturePack::class->getResourceAsStream(name);

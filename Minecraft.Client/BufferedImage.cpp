@@ -41,13 +41,22 @@ BufferedImage::BufferedImage(const wstring& File, bool filenameHasExtension /*=f
 		if(bTitleUpdateTexture)
 		{
 			// Make the content package point to to the UPDATE: drive is needed
-			wDrive= L"Common\\res\\TitleUpdate\\";
+			wDrive= L"Common\\Media\\Resources\\TitleUpdate\\";
 		}
 		else
 		{
-			wDrive= L"Common/";
+			wDrive= L"Common\\Media\\Resources\\Base\\";
 		}
-
+	}
+	wstring resourcePath = L"res";
+	wstring resourceRoot = wDrive + resourcePath;
+	if (!resourceRoot.empty() && resourceRoot[resourceRoot.length() - 1] != L'\\' && resourceRoot[resourceRoot.length() - 1] != L'/')
+	{
+		resourceRoot.append(L"\\");
+	}
+	while (!filePath.empty() && (filePath[0] == L'\\' || filePath[0] == L'/'))
+	{
+		filePath.erase(0, 1);
 	}
 
 	for( int l = 0 ; l < 10; l++ )
@@ -65,11 +74,11 @@ BufferedImage::BufferedImage(const wstring& File, bool filenameHasExtension /*=f
 		}
 		if( filenameHasExtension )
 		{
-			name = wDrive + L"res" + filePath.substr(0,filePath.length());
+			name = resourceRoot + filePath.substr(0,filePath.length());
 		}
 		else
 		{
-			name = wDrive + L"res" + filePath.substr(0,filePath.length()-4) + mipMapPath + L".png";
+			name = resourceRoot + filePath.substr(0,filePath.length()-4) + mipMapPath + L".png";
 		}
 
 		const char *pchTextureName=wstringtofilename(name);
