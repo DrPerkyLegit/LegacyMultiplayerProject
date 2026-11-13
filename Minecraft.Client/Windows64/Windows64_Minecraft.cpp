@@ -4,6 +4,7 @@
 #include "stdafx.h"
 
 #include <assert.h>
+#include <wchar.h>
 #include "GameConfig\Minecraft.spa.h"
 #include "..\MinecraftServer.h"
 #include "..\LocalPlayer.h"
@@ -656,6 +657,27 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 {
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
+
+	wchar_t executablePath[MAX_PATH] = {};
+	DWORD executablePathLength = GetModuleFileNameW(NULL, executablePath, MAX_PATH);
+	if (executablePathLength == 0 || executablePathLength >= MAX_PATH)
+	{
+		MessageBoxW(NULL, L"Unable to locate the executable directory.", L"Legacy Multiplayer Client", MB_OK | MB_ICONERROR);
+		return FALSE;
+	}
+
+	wchar_t* executableDirectoryEnd = wcsrchr(executablePath, L'\\');
+	if (executableDirectoryEnd == NULL)
+	{
+		MessageBoxW(NULL, L"Unable to locate the executable directory.", L"Legacy Multiplayer Client", MB_OK | MB_ICONERROR);
+		return FALSE;
+	}
+	*(executableDirectoryEnd + 1) = L'\0';
+	if (!SetCurrentDirectoryW(executablePath))
+	{
+		MessageBoxW(NULL, L"Unable to set the working directory to the executable folder.", L"Legacy Multiplayer Client", MB_OK | MB_ICONERROR);
+		return FALSE;
+	}
 
 	if(lpCmdLine)
 	{
