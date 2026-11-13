@@ -1323,15 +1323,15 @@ if not exist "$(TargetDir)\savedata" mkdir "$(TargetDir)\savedata"</Command>
 
 xcopy "$(ProjectDir)Windows64Media" "$(TargetDir)Windows64Media\" /E /I /Y
 
-xcopy "$(ProjectDir)Common\Media\*.swf" "$(TargetDir)Common\Media\" /E /I /Y
+xcopy "$(ProjectDir)Common\Media\IggyScenes" "$(TargetDir)Common\Media\IggyScenes\" /E /I /Y
 xcopy "$(ProjectDir)Common\Media\*.col" "$(TargetDir)Common\Media\" /E /I /Y
 xcopy "$(ProjectDir)Common\Media\splashes.txt" "$(TargetDir)Common\Media\" /E /I /Y
-xcopy "$(ProjectDir)Common\Media\languages.loc" "$(TargetDir)Common\Media\" /E /I /Y
+xcopy "$(ProjectDir)Common\Media\Language" "$(TargetDir)Common\Media\Language\" /E /I /Y
 xcopy "$(ProjectDir)Common\Media\Graphics" "$(TargetDir)Common\Media\Graphics\" /E /I /Y
 
 xcopy "$(ProjectDir)Common\res" "$(TargetDir)Common\res" /E /I /Y
 
-xcopy "$(ProjectDir)music" "$(TargetDir)\music" /E /I /Y</Command>
+xcopy "$(ProjectDir)Common\Media\music" "$(TargetDir)Common\Media\music\" /E /I /Y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Durango'">
@@ -1393,7 +1393,7 @@ xcopy /q /y /i /s /e $(ProjectDir)Common\media\font\*.ttf $(LayoutDir)Image\Loos
 xcopy /q /y  $(ProjectDir)Durango\*.png $(LayoutDir)Image\Loose
 xcopy /q /y $(ProjectDir)Common\media\MediaDurango.arc $(LayoutDir)Image\Loose\Common\media
 xcopy /q /y /i /s /e $(ProjectDir)Durango\Sound $(LayoutDir)Image\Loose\Sound
-xcopy /q /y /i /s /e $(ProjectDir)music $(LayoutDir)Image\Loose\music
+xcopy /q /y /i /s /e $(ProjectDir)Common\Media\music $(LayoutDir)Image\Loose\Common\Media\music
 xcopy /q /y /i /s /e $(ProjectDir)DurangoMedia\DLC $(LayoutDir)Image\Loose\DLC
 copy /B /Y $(ProjectDir)Durango\DurangoExtras\xcompress.dll $(LayoutDir)Image\Loose\
 xcopy /q /y  $(ProjectDir)Durango\DLCImages\*.png $(LayoutDir)Image\Loose\DLCImages\
@@ -1466,15 +1466,15 @@ xcopy /q /y /i /s /e $(ProjectDir)Durango\CU  $(LayoutDir)Image\Loose\CU</Comman
 
 xcopy "$(ProjectDir)Windows64Media" "$(TargetDir)Windows64Media\" /E /I /Y
 
-xcopy "$(ProjectDir)Common\Media\*.swf" "$(TargetDir)Common\Media\" /E /I /Y
+xcopy "$(ProjectDir)Common\Media\IggyScenes" "$(TargetDir)Common\Media\IggyScenes\" /E /I /Y
 xcopy "$(ProjectDir)Common\Media\*.col" "$(TargetDir)Common\Media\" /E /I /Y
 xcopy "$(ProjectDir)Common\Media\splashes.txt" "$(TargetDir)Common\Media\" /E /I /Y
-xcopy "$(ProjectDir)Common\Media\languages.loc" "$(TargetDir)Common\Media\" /E /I /Y
+xcopy "$(ProjectDir)Common\Media\Language" "$(TargetDir)Common\Media\Language\" /E /I /Y
 xcopy "$(ProjectDir)Common\Media\Graphics" "$(TargetDir)Common\Media\Graphics\" /E /I /Y
 
 xcopy "$(ProjectDir)Common\res" "$(TargetDir)Common\res" /E /I /Y
 
-xcopy "$(ProjectDir)music" "$(TargetDir)\music" /E /I /Y</Command>
+xcopy "$(ProjectDir)Common\Media\music" "$(TargetDir)Common\Media\music\" /E /I /Y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ContentPackage_Vita|x64'">
@@ -1578,7 +1578,7 @@ xcopy /q /y /i /s /e $(ProjectDir)Common\media\font\*.ttf $(LayoutDir)Image\Loos
 xcopy /q /y  $(ProjectDir)Durango\*.png $(LayoutDir)Image\Loose
 xcopy /q /y $(ProjectDir)Common\media\MediaDurango.arc $(LayoutDir)Image\Loose\Common\media
 xcopy /q /y /i /s /e $(ProjectDir)Durango\Sound $(LayoutDir)Image\Loose\Sound
-xcopy /q /y /i /s /e $(ProjectDir)music $(LayoutDir)Image\Loose\music
+xcopy /q /y /i /s /e $(ProjectDir)Common\Media\music $(LayoutDir)Image\Loose\Common\Media\music
 xcopy /q /y /i /s /e $(ProjectDir)DurangoMedia\DLC $(LayoutDir)Image\Loose\DLC
 copy /B /Y $(ProjectDir)Durango\DurangoExtras\xcompress.dll $(LayoutDir)Image\Loose\
 xcopy /q /y  $(ProjectDir)Durango\DLCImages\*.png $(LayoutDir)Image\Loose\DLCImages\
@@ -1656,7 +1656,7 @@ xcopy /q /y /i /s /e $(ProjectDir)Common\media\font\*.ttf $(LayoutDir)Image\Loos
 xcopy /q /y  $(ProjectDir)Durango\*.png $(LayoutDir)Image\Loose
 xcopy /q /y $(ProjectDir)Common\media\MediaDurango.arc $(LayoutDir)Image\Loose\Common\media
 xcopy /q /y /i /s /e $(ProjectDir)Durango\Sound $(LayoutDir)Image\Loose\Sound
-xcopy /q /y /i /s /e $(ProjectDir)music $(LayoutDir)Image\Loose\music
+xcopy /q /y /i /s /e $(ProjectDir)Common\Media\music $(LayoutDir)Image\Loose\Common\Media\music
 copy /B /Y $(ProjectDir)Durango\DurangoExtras\xcompress.dll $(LayoutDir)Image\Loose\</Command>
     </PostBuildEvent>
     <PostBuildEvent>
@@ -2449,7 +2449,7 @@ xcopy /q /y /i /s /e $(ProjectDir)Common\media\font\*.ttf $(LayoutDir)Image\Loos
 xcopy /q /y  $(ProjectDir)Durango\*.png $(LayoutDir)Image\Loose
 xcopy /q /y $(ProjectDir)Common\media\MediaDurango.arc $(LayoutDir)Image\Loose\Common\media
 xcopy /q /y /i /s /e $(ProjectDir)Durango\Sound $(LayoutDir)Image\Loose\Sound
-xcopy /q /y /i /s /e $(ProjectDir)music $(LayoutDir)Image\Loose\music
+xcopy /q /y /i /s /e $(ProjectDir)Common\Media\music $(LayoutDir)Image\Loose\Common\Media\music
 copy /B /Y $(ProjectDir)Durango\DurangoExtras\xcompress.dll $(LayoutDir)Image\Loose\
 xcopy /q /y  $(ProjectDir)Durango\DLCImages\*.png $(LayoutDir)Image\Loose\DLCImages\
 xcopy /q /y  $(ProjectDir)Durango\DLCXbox1.cmp  $(LayoutDir)Image\Loose
@@ -2563,7 +2563,7 @@ xcopy /q /y /i /s /e $(ProjectDir)Common\media\font\*.ttf $(LayoutDir)Image\Loos
 xcopy /q /y  $(ProjectDir)Durango\*.png $(LayoutDir)Image\Loose
 xcopy /q /y $(ProjectDir)Common\media\MediaDurango.arc $(LayoutDir)Image\Loose\Common\media
 xcopy /q /y /i /s /e $(ProjectDir)Durango\Sound $(LayoutDir)Image\Loose\Sound
-xcopy /q /y /i /s /e $(ProjectDir)music $(LayoutDir)Image\Loose\music
+xcopy /q /y /i /s /e $(ProjectDir)Common\Media\music $(LayoutDir)Image\Loose\Common\Media\music
 xcopy /q /y /i /s /e $(ProjectDir)DurangoMedia\DLC $(LayoutDir)Image\Loose\DLC
 copy /B /Y $(ProjectDir)Durango\DurangoExtras\xcompress.dll $(LayoutDir)Image\Loose\
 xcopy /q /y  $(ProjectDir)Durango\DLCImages\*.png $(LayoutDir)Image\Loose\DLCImages\

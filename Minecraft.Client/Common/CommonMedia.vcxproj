@@ -11,25 +11,25 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Media\ChestMenu720.swf" />
-    <None Include="Media\CreateWorldMenu720.swf" />
-    <None Include="Media\CreativeMenu720.swf" />
-    <None Include="Media\DebugMenu720.swf" />
-    <None Include="Media\FullscreenProgress720.swf" />
-    <None Include="Media\HUD720.swf" />
-    <None Include="Media\InventoryMenu720.swf" />
-    <None Include="Media\languages.loc" />
-    <None Include="Media\LaunchMoreOptionsMenu720.swf" />
-    <None Include="Media\LoadMenu720.swf" />
-    <None Include="Media\LoadOrJoinMenu720.swf" />
-    <None Include="Media\MainMenu720.swf" />
+    <None Include="Media\IggyScenes\ChestMenu720.swf" />
+    <None Include="Media\IggyScenes\CreateWorldMenu720.swf" />
+    <None Include="Media\IggyScenes\CreativeMenu720.swf" />
+    <None Include="Media\IggyScenes\DebugMenu720.swf" />
+    <None Include="Media\IggyScenes\FullscreenProgress720.swf" />
+    <None Include="Media\IggyScenes\HUD720.swf" />
+    <None Include="Media\IggyScenes\InventoryMenu720.swf" />
+    <None Include="Media\Language\languages.loc" />
+    <None Include="Media\IggyScenes\LaunchMoreOptionsMenu720.swf" />
+    <None Include="Media\IggyScenes\LoadMenu720.swf" />
+    <None Include="Media\IggyScenes\LoadOrJoinMenu720.swf" />
+    <None Include="Media\IggyScenes\MainMenu720.swf" />
     <None Include="Media\media.arc" />
-    <None Include="Media\Panorama720.swf" />
-    <None Include="Media\PauseMenu720.swf" />
-    <None Include="Media\skin.swf" />
+    <None Include="Media\IggyScenes\Panorama720.swf" />
+    <None Include="Media\IggyScenes\PauseMenu720.swf" />
+    <None Include="Media\IggyScenes\skin.swf" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Media\strings.resx" />
+    <EmbeddedResource Include="Media\Language\strings.resx" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Media\media.txt" />
@@ -84,10 +84,10 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <NMakePreprocessorDefinitions>WIN32;_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
     <NMakeBuildCommandLine>echo Creating languages.loc
-copy .\Media\strings.resx .\Media\en-EN.lang
-copy .\Media\fr-FR\strings.resx .\Media\fr-FR\fr-FR.lang
-copy .\Media\ja-JP\strings.resx .\Media\ja-JP\ja-JP.lang
-..\..\..\Tools\NewLocalisationPacker.exe --static .\Media .\Media\languages.loc
+copy .\Media\Language\strings.resx .\Media\Language\en-EN.lang
+copy .\Media\Language\fr-FR\strings.resx .\Media\Language\fr-FR\fr-FR.lang
+copy .\Media\Language\ja-JP\strings.resx .\Media\Language\ja-JP\ja-JP.lang
+..\..\..\Tools\NewLocalisationPacker.exe --static .\Media\Language .\Media\Language\languages.loc
 
 echo Making archive
 ..\..\..\Tools\ArchiveFilePacker.exe -cd $(ProjectDir)\Media media.arc media.txt

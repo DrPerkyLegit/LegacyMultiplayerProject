@@ -447,10 +447,12 @@ void UIController::loadSkins()
 IggyLibrary UIController::loadSkin(const wstring &skinPath, const wstring &skinName)
 {
 	IggyLibrary lib = IGGY_INVALID_LIBRARY;
+	wstring iggyPath = L"IggyScenes\\";
+	iggyPath.append(skinPath);
 	// 4J Stu - We need to load the platformskin before the normal skin, as the normal skin requires some elements from the platform skin
-	if(!skinPath.empty() && app.hasArchiveFile(skinPath))
+	if(!skinPath.empty() && app.hasArchiveFile(iggyPath))
 	{
-		byteArray baFile = app.getArchiveFile(skinPath);
+		byteArray baFile = app.getArchiveFile(iggyPath);
 		lib = IggyLibraryCreateFromMemoryUTF16( (IggyUTF16 *)skinName.c_str() , (void *)baFile.data, baFile.length, NULL );
 
 		delete[] baFile.data;

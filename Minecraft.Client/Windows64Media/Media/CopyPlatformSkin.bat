@@ -1,2 +1,2 @@
-copy skinWin.swf ..\..\Common\Media\platformskin.swf
-copy skinHDWin.swf ..\..\Common\Media\platformskinHD.swf
+copy skinWin.swf ..\..\Common\Media\IggyScenes\platformskin.swf
+copy skinHDWin.swf ..\..\Common\Media\IggyScenes\platformskinHD.swf

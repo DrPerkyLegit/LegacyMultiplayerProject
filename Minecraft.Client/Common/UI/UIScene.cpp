@@ -263,7 +263,8 @@ extern CRITICAL_SECTION s_loadSkinCS;
 void UIScene::loadMovie()
 {
 	EnterCriticalSection(&UIController::ms_reloadSkinCS);		// MGH - added to prevent crash loading Iggy movies while the skins were being reloaded
-	wstring moviePath = getMoviePath();
+	wstring moviePath = L"IggyScenes\\";
+	moviePath.append(getMoviePath());
 
 	if(ui.getScreenHeight() == 720)
 	{
@@ -290,7 +291,8 @@ void UIScene::loadMovie()
 	{
 		app.DebugPrintf("WARNING: Could not find iggy movie %ls, falling back on 720\n", moviePath.c_str());
 
-		moviePath = getMoviePath();
+		moviePath = L"IggyScenes\\";
+		moviePath.append(getMoviePath());
 		moviePath.append(L"720.swf");
 		m_loadedResolution = eSceneResolution_720;
 

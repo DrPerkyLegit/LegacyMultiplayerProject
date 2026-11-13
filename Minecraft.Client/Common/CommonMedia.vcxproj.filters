@@ -24,57 +24,57 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Media\ChestMenu720.swf">
+    <None Include="Media\IggyScenes\ChestMenu720.swf">
       <Filter>IggyMedia</Filter>
     </None>
-    <None Include="Media\CreateWorldMenu720.swf">
+    <None Include="Media\IggyScenes\CreateWorldMenu720.swf">
       <Filter>IggyMedia</Filter>
     </None>
-    <None Include="Media\CreativeMenu720.swf">
+    <None Include="Media\IggyScenes\CreativeMenu720.swf">
       <Filter>IggyMedia</Filter>
     </None>
-    <None Include="Media\DebugMenu720.swf">
+    <None Include="Media\IggyScenes\DebugMenu720.swf">
       <Filter>IggyMedia</Filter>
     </None>
-    <None Include="Media\FullscreenProgress720.swf">
+    <None Include="Media\IggyScenes\FullscreenProgress720.swf">
       <Filter>IggyMedia</Filter>
     </None>
-    <None Include="Media\HUD720.swf">
+    <None Include="Media\IggyScenes\HUD720.swf">
       <Filter>IggyMedia</Filter>
     </None>
-    <None Include="Media\InventoryMenu720.swf">
+    <None Include="Media\IggyScenes\InventoryMenu720.swf">
       <Filter>IggyMedia</Filter>
     </None>
     <None Include="Media\media.arc">
       <Filter>Archive</Filter>
     </None>
-    <None Include="Media\languages.loc">
+    <None Include="Media\Language\languages.loc">
       <Filter>Archive</Filter>
     </None>
-    <None Include="Media\skin.swf">
+    <None Include="Media\IggyScenes\skin.swf">
       <Filter>IggyMedia</Filter>
     </None>
-    <None Include="Media\MainMenu720.swf">
+    <None Include="Media\IggyScenes\MainMenu720.swf">
       <Filter>IggyMedia</Filter>
     </None>
-    <None Include="Media\Panorama720.swf">
+    <None Include="Media\IggyScenes\Panorama720.swf">
       <Filter>IggyMedia</Filter>
     </None>
-    <None Include="Media\LoadOrJoinMenu720.swf">
+    <None Include="Media\IggyScenes\LoadOrJoinMenu720.swf">
       <Filter>IggyMedia</Filter>
     </None>
-    <None Include="Media\LaunchMoreOptionsMenu720.swf">
+    <None Include="Media\IggyScenes\LaunchMoreOptionsMenu720.swf">
       <Filter>IggyMedia</Filter>
     </None>
-    <None Include="Media\LoadMenu720.swf">
+    <None Include="Media\IggyScenes\LoadMenu720.swf">
       <Filter>IggyMedia</Filter>
     </None>
-    <None Include="Media\PauseMenu720.swf">
+    <None Include="Media\IggyScenes\PauseMenu720.swf">
       <Filter>IggyMedia</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Media\strings.resx">
+    <EmbeddedResource Include="Media\Language\strings.resx">
       <Filter>Strings</Filter>
     </EmbeddedResource>
   </ItemGroup>

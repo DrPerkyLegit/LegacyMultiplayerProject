@@ -3418,7 +3418,7 @@ void CMinecraftApp::loadStringTable()
 		// we need to unload the current string table, this is a reload
 		delete m_stringTable;
 	}
-	wstring localisationFile = L"languages.loc";
+	wstring localisationFile = L"Language\\languages.loc";
 	if (m_mediaArchive->hasFile(localisationFile))
 	{
 		byteArray locFile = m_mediaArchive->getFile(localisationFile);

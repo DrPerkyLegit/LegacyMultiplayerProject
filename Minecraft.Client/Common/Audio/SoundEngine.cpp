@@ -28,7 +28,7 @@
 // take out Orbis until they are done
 
 char SoundEngine::m_szSoundPath[] = { "Windows64Media\\Sound\\" };
-char SoundEngine::m_szMusicPath[] = { "music\\" };
+char SoundEngine::m_szMusicPath[] = { "Common\\Media\\music\\" };
 char SoundEngine::m_szRedistName[] = { "redist64" };
 
 const char* SoundEngine::m_szStreamFileA[eStream_Max] =
