@@ -69,9 +69,10 @@ void ThrownPotion::onHit(HitResult *res)
 {
 	if (!level->isClientSide)
 	{
-		vector<MobEffectInstance *> *mobEffects = Item::potion->getMobEffects(potionValue);
+		vector<MobEffectInstance> mobEffects;
+		Item::potion->getMobEffects(potionValue, mobEffects);
 
-		if (mobEffects != NULL && !mobEffects->empty())
+		if (!mobEffects.empty())
 		{
 			AABB *aoe = bb->grow(SPLASH_RANGE, SPLASH_RANGE / 2, SPLASH_RANGE);
 			vector<shared_ptr<Entity> > *entitiesOfClass = level->getEntitiesOfClass(typeid(Mob), aoe);
@@ -93,20 +94,20 @@ void ThrownPotion::onHit(HitResult *res)
 						}
 
 						//for (MobEffectInstance effect : mobEffects)
-						for(AUTO_VAR(itMEI, mobEffects->begin()); itMEI != mobEffects->end(); ++itMEI)
+						for(AUTO_VAR(itMEI, mobEffects.begin()); itMEI != mobEffects.end(); ++itMEI)
 						{
-							MobEffectInstance *effect = *itMEI;
-							int id = effect->getId();
+							MobEffectInstance &effect = *itMEI;
+							int id = effect.getId();
 							if (MobEffect::effects[id]->isInstantenous())
 							{
-								MobEffect::effects[id]->applyInstantenousEffect(this->owner, e, effect->getAmplifier(), scale);
+								MobEffect::effects[id]->applyInstantenousEffect(this->owner, e, effect.getAmplifier(), scale);
 							}
 							else
 							{
-								int duration = (int) (scale * (double) effect->getDuration() + .5);
+								int duration = (int) (scale * (double) effect.getDuration() + .5);
 								if (duration > SharedConstants::TICKS_PER_SECOND)
 								{
-									e->addEffect(new MobEffectInstance(id, duration, effect->getAmplifier()));
+									e->addEffect(new MobEffectInstance(id, duration, effect.getAmplifier()));
 								}
 							}
 						}

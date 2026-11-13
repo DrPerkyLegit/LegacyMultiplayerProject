@@ -1,6 +1,6 @@
 #pragma once
 using namespace std;
-class MobEffectInstance;
+#include "MobEffectInstance.h"
 
 class PotionBrewing
 {
@@ -54,7 +54,7 @@ private:
 
 public:
 	static int getAppearanceValue(int brew);
-	static int getColorValue(vector<MobEffectInstance *> *effects);
+	static int getColorValue(vector<MobEffectInstance> &effects);
 
 private:
 	static unordered_map<int, int> cachedColors;
@@ -80,7 +80,7 @@ private:
 	static int parseEffectFormulaValue(const wstring &definition, int start, int end, int brew);
 
 public:
-	static vector<MobEffectInstance *> *getEffects(int brew, bool includeDisabledEffects);
+	static void getEffects(int brew, bool includeDisabledEffects, vector<MobEffectInstance> &effects);
 
 #if !(_SIMPLIFIED_BREWING)
 	static int boil(int brew);

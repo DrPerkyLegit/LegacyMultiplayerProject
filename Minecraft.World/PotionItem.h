@@ -1,8 +1,7 @@
 #pragma once
 using namespace std;
 #include "Item.h"
-
-class MobEffectInstance;
+#include "MobEffectInstance.h"
 
 class PotionItem : public Item
 {
@@ -15,8 +14,6 @@ public:
 	static const wstring CONTENTS_ICON;
 
 private:
-	unordered_map<int, vector<MobEffectInstance *> *> cachedMobEffects;
-
 	Icon *iconThrowable;
 	Icon *iconDrinkable;
 	Icon *iconOverlay;
@@ -24,8 +21,8 @@ private:
 public:
 	PotionItem(int id);
 
-	virtual vector<MobEffectInstance *> *getMobEffects(shared_ptr<ItemInstance> potion);
-	virtual vector<MobEffectInstance *> *getMobEffects(int auxValue);
+	virtual void getMobEffects(shared_ptr<ItemInstance> potion, vector<MobEffectInstance> &effects);
+	virtual void getMobEffects(int auxValue, vector<MobEffectInstance> &effects);
 	virtual shared_ptr<ItemInstance> useTimeDepleted(shared_ptr<ItemInstance> instance, Level *level, shared_ptr<Player> player);
 	virtual int getUseDuration(shared_ptr<ItemInstance> itemInstance);
 	virtual UseAnim getUseAnimation(shared_ptr<ItemInstance> itemInstance);

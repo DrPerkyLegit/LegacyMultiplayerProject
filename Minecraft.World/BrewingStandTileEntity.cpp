@@ -88,6 +88,8 @@ bool BrewingStandTileEntity::isBrewable()
         }
 
         bool oneResult = false;
+        vector<MobEffectInstance> currentEffects;
+        vector<MobEffectInstance> newEffects;
         for (int dest = 0; dest < 3; dest++)
 		{
             if (items[dest] != NULL && items[dest]->id == Item::potion_Id)
@@ -101,26 +103,18 @@ bool BrewingStandTileEntity::isBrewable()
                     break;
                 }
 
-                vector<MobEffectInstance *> *currentEffects = Item::potion->getMobEffects(currentBrew);
-                vector<MobEffectInstance *> *newEffects = Item::potion->getMobEffects(newBrew);
+                Item::potion->getMobEffects(currentBrew, currentEffects);
+                Item::potion->getMobEffects(newBrew, newEffects);
 
 				// 4J - this code replaces an expression "currentEffects.equals(newEffects)" in the java.
-				// TODO - find out whether actually checking pointers to MobEffectInstance classes for equality
-				// is of any use
-				bool equals = false;
-				if( ( currentEffects != NULL ) && ( newEffects != NULL ) )
+				bool equals = currentEffects.size() == newEffects.size();
+				for (size_t i = 0; equals && i < currentEffects.size(); ++i)
 				{
-					if( currentEffects->size() == newEffects->size() )
-					{
-						if( std::equal(currentEffects->begin(), currentEffects->end(), newEffects->begin() ) )
-						{
-							equals = true;
-						}
-					}
+					equals = currentEffects[i].equals(&newEffects[i]);
 				}
 
-                if ((currentBrew > 0 && currentEffects == newEffects) ||
-					(currentEffects != NULL && (equals || newEffects == NULL)))
+                if ((currentBrew > 0 && currentBrew == newBrew) ||
+					(!currentEffects.empty() && (equals || newEffects.empty())))
 				{
                 }
 				else if (currentBrew != newBrew)
@@ -176,6 +170,8 @@ void BrewingStandTileEntity::doBrew()
 
     if (PotionBrewing::SIMPLIFIED_BREWING)
 	{
+        vector<MobEffectInstance> currentEffects;
+        vector<MobEffectInstance> newEffects;
         for (int dest = 0; dest < 3; dest++)
 		{
             if (items[dest] != NULL && items[dest]->id == Item::potion_Id)
@@ -183,26 +179,18 @@ void BrewingStandTileEntity::doBrew()
                 int currentBrew = items[dest]->getAuxValue();
                 int newBrew = NORMALISE_POTION_AUXVAL( applyIngredient(currentBrew, ingredient) );
 
-                vector<MobEffectInstance *> *currentEffects = Item::potion->getMobEffects(currentBrew);
-                vector<MobEffectInstance *> *newEffects = Item::potion->getMobEffects(newBrew);
+                Item::potion->getMobEffects(currentBrew, currentEffects);
+                Item::potion->getMobEffects(newBrew, newEffects);
 
 				// 4J - this code replaces an expression "currentEffects.equals(newEffects)" in the java.
-				// TODO - find out whether actually checking pointers to MobEffectInstance classes for equality
-				// is of any use
-				bool equals = false;
-				if( ( currentEffects != NULL ) && ( newEffects != NULL ) )
+				bool equals = currentEffects.size() == newEffects.size();
+				for (size_t i = 0; equals && i < currentEffects.size(); ++i)
 				{
-					if( currentEffects->size() == newEffects->size() )
-					{
-						if( std::equal(currentEffects->begin(), currentEffects->end(), newEffects->begin() ) )
-						{
-							equals = true;
-						}
-					}
+					equals = currentEffects[i].equals(&newEffects[i]);
 				}
 
-                if ((currentBrew > 0 && currentEffects == newEffects) ||
-					(currentEffects != NULL && (equals || newEffects == NULL)))
+                if ((currentBrew > 0 && currentBrew == newBrew) ||
+					(!currentEffects.empty() && (equals || newEffects.empty())))
 				{
                     if (!PotionItem::isThrowable(currentBrew) && PotionItem::isThrowable(newBrew))
 					{

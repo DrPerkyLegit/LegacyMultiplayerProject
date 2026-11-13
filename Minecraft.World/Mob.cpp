@@ -1675,13 +1675,12 @@ void Mob::tickEffects()
 			}
 			else
 			{
-				vector<MobEffectInstance *> values;
+				vector<MobEffectInstance> values;
 				for(AUTO_VAR(it, activeEffects.begin()); it != activeEffects.end();++it)
 				{
-					values.push_back(it->second);
+					values.push_back(MobEffectInstance(it->second));
 				}
-				int colorValue = PotionBrewing::getColorValue(&values);
-				values.clear();
+				int colorValue = PotionBrewing::getColorValue(values);
 				entityData->set(DATA_EFFECT_COLOR_ID, colorValue);
 				setInvisible(hasEffect(MobEffect::invisibility->id));
 				setWeakened(hasEffect(MobEffect::weakness->id));

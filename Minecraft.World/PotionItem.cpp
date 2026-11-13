@@ -30,22 +30,14 @@ PotionItem::PotionItem(int id) : Item(id)
 	iconOverlay = NULL;
 }
 
-vector<MobEffectInstance *> *PotionItem::getMobEffects(shared_ptr<ItemInstance> potion)
+void PotionItem::getMobEffects(shared_ptr<ItemInstance> potion, vector<MobEffectInstance> &effects)
 {
-	return getMobEffects(potion->getAuxValue());
+	getMobEffects(potion->getAuxValue(), effects);
 }
 
-vector<MobEffectInstance *> *PotionItem::getMobEffects(int auxValue)
+void PotionItem::getMobEffects(int auxValue, vector<MobEffectInstance> &effects)
 {
-	vector<MobEffectInstance *> *effects = NULL;
-	AUTO_VAR(it, cachedMobEffects.find(auxValue));
-	if(it != cachedMobEffects.end()) effects = it->second;
-	if (effects == NULL)
-	{
-		effects = PotionBrewing::getEffects(auxValue, false);
-		if(effects != NULL) cachedMobEffects.insert( std::pair<int, vector<MobEffectInstance *> *>(auxValue, effects) );
-	}
-	return effects;
+	PotionBrewing::getEffects(auxValue, false, effects);
 }
 
 shared_ptr<ItemInstance> PotionItem::useTimeDepleted(shared_ptr<ItemInstance> instance, Level *level, shared_ptr<Player> player)
@@ -54,13 +46,14 @@ shared_ptr<ItemInstance> PotionItem::useTimeDepleted(shared_ptr<ItemInstance> in
 
 	if (!level->isClientSide)
 	{
-		vector<MobEffectInstance *> *effects = getMobEffects(instance);
-		if (effects != NULL)
+		vector<MobEffectInstance> effects;
+		getMobEffects(instance, effects);
+		if (!effects.empty())
 		{
 			//for (MobEffectInstance effect : effects)
-			for(AUTO_VAR(it, effects->begin()); it != effects->end(); ++it)
+			for(AUTO_VAR(it, effects.begin()); it != effects.end(); ++it)
 			{
-				player->addEffect(new MobEffectInstance(*it));
+				player->addEffect(new MobEffectInstance(&*it));
 			}
 		}
 	}
@@ -156,16 +149,17 @@ bool PotionItem::hasMultipleSpriteLayers()
 
 bool PotionItem::hasInstantenousEffects(int itemAuxValue)
 {
-	vector<MobEffectInstance *> *mobEffects = getMobEffects(itemAuxValue);
-	if (mobEffects == NULL || mobEffects->empty())
+	vector<MobEffectInstance> mobEffects;
+	getMobEffects(itemAuxValue, mobEffects);
+	if (mobEffects.empty())
 	{
 		return false;
 	}
 	//for (MobEffectInstance effect : mobEffects) {
-	for(AUTO_VAR(it, mobEffects->begin()); it != mobEffects->end(); ++it)
+	for(AUTO_VAR(it, mobEffects.begin()); it != mobEffects.end(); ++it)
 	{
-		MobEffectInstance *effect = *it;
-		if (MobEffect::effects[effect->getId()]->isInstantenous())
+		MobEffectInstance &effect = *it;
+		if (MobEffect::effects[effect.getId()]->isInstantenous())
 		{
 			return true;
 		}
@@ -191,15 +185,16 @@ wstring PotionItem::getHoverName(shared_ptr<ItemInstance> itemInstance)
 		elementName = replaceAll(elementName,L"{*splash*}",L"");
 	}
 
-	vector<MobEffectInstance *> *effects = ((PotionItem *) Item::potion)->getMobEffects(itemInstance);
-	if (effects != NULL && !effects->empty())
+	vector<MobEffectInstance> effects;
+	((PotionItem *) Item::potion)->getMobEffects(itemInstance, effects);
+	if (!effects.empty())
 	{
 		//String postfixString = effects.get(0).getDescriptionId();
 		//postfixString += ".postfix";
 		//return elementName + " " + I18n.get(postfixString).trim();
 		
 		elementName = replaceAll(elementName,L"{*prefix*}",L"");
-		elementName = replaceAll(elementName,L"{*postfix*}",app.GetString(effects->at(0)->getPostfixDescriptionId()));
+		elementName = replaceAll(elementName,L"{*postfix*}",app.GetString(effects.at(0).getPostfixDescriptionId()));
 	}
 	else
 	{
@@ -218,18 +213,19 @@ void PotionItem::appendHoverText(shared_ptr<ItemInstance> itemInstance, shared_p
 	{
 		return;
 	}
-	vector<MobEffectInstance *> *effects = ((PotionItem *) Item::potion)->getMobEffects(itemInstance);
-	if (effects != NULL && !effects->empty())
+	vector<MobEffectInstance> effects;
+	((PotionItem *) Item::potion)->getMobEffects(itemInstance, effects);
+	if (!effects.empty())
 	{
 		//for (MobEffectInstance effect : effects)
-		for(AUTO_VAR(it, effects->begin()); it != effects->end(); ++it)
+		for(AUTO_VAR(it, effects.begin()); it != effects.end(); ++it)
 		{
-			MobEffectInstance *effect = *it;
-			wstring effectString = app.GetString( effect->getDescriptionId() );//I18n.get(effect.getDescriptionId()).trim();
-			if (effect->getAmplifier() > 0)
+			MobEffectInstance &effect = *it;
+			wstring effectString = app.GetString( effect.getDescriptionId() );//I18n.get(effect.getDescriptionId()).trim();
+			if (effect.getAmplifier() > 0)
 			{
 				wstring potencyString = L"";
-				switch(effect->getAmplifier())
+				switch(effect.getAmplifier())
 				{
 				case 1:
 					potencyString = L" ";
@@ -249,15 +245,15 @@ void PotionItem::appendHoverText(shared_ptr<ItemInstance> itemInstance, shared_p
 				}
 				effectString += potencyString;// + I18n.get("potion.potency." + effect.getAmplifier()).trim();
 			}
-			if (effect->getDuration() > SharedConstants::TICKS_PER_SECOND)
+			if (effect.getDuration() > SharedConstants::TICKS_PER_SECOND)
 			{
-				effectString += L" (" + MobEffect::formatDuration(effect) + L")";
+				effectString += L" (" + MobEffect::formatDuration(&effect) + L")";
 			}
 			unformattedStrings.push_back(effectString);
 			wchar_t formatted[256];
 			ZeroMemory(formatted, 256 * sizeof(wchar_t));
 			eMinecraftColour colour = eMinecraftColour_NOT_SET;
-			if (MobEffect::effects[effect->getId()]->isHarmful())
+			if (MobEffect::effects[effect.getId()]->isHarmful())
 			{
 				colour = eHTMLColor_c;
 				//lines->push_back(L"§c + effectString); //"§c" 
@@ -283,8 +279,9 @@ void PotionItem::appendHoverText(shared_ptr<ItemInstance> itemInstance, shared_p
 
 bool PotionItem::isFoil(shared_ptr<ItemInstance> itemInstance)
 {
-	vector<MobEffectInstance *> *mobEffects = getMobEffects(itemInstance);
-	return mobEffects != NULL && !mobEffects->empty();
+	vector<MobEffectInstance> mobEffects;
+	getMobEffects(itemInstance, mobEffects);
+	return !mobEffects.empty();
 }
 
 unsigned int PotionItem::getUseDescriptionId(shared_ptr<ItemInstance> instance)
@@ -331,41 +328,36 @@ vector<pair<int, int> > *PotionItem::getUniquePotionValues()
 {
 	if (s_uniquePotionValues.empty())
 	{
+		vector<MobEffectInstance> effects;
 		for (int brew = 0; brew <= PotionBrewing::BREW_MASK; ++brew)
 		{
-			vector<MobEffectInstance *> *effects = PotionBrewing::getEffects(brew, false);
+			PotionBrewing::getEffects(brew, false, effects);
 
-			if (effects != NULL)
+			if (!effects.empty())
 			{
-				if(!effects->empty())
+				// 4J Stu - Based on implementation of Java List.hashCode() at http://docs.oracle.com/javase/6/docs/api/java/util/List.html#hashCode()
+				int effectsHashCode = 1;
+				for(AUTO_VAR(it, effects.begin()); it != effects.end(); ++it)
 				{
-					// 4J Stu - Based on implementation of Java List.hashCode() at http://docs.oracle.com/javase/6/docs/api/java/util/List.html#hashCode()
-					// and adding deleting to clear up as we go
-					int effectsHashCode = 1;
-					for(AUTO_VAR(it, effects->begin()); it != effects->end(); ++it)
-					{
-						MobEffectInstance *mei = *it;
-						effectsHashCode = 31*effectsHashCode + (mei==NULL ? 0 : mei->hashCode());
-						delete (*it);
-					}
+					effectsHashCode = 31*effectsHashCode + it->hashCode();
+				}
 
-					bool toAdd = true;
-					for(AUTO_VAR(it, s_uniquePotionValues.begin()); it != s_uniquePotionValues.end(); ++it)
+				bool toAdd = true;
+				for(AUTO_VAR(it, s_uniquePotionValues.begin()); it != s_uniquePotionValues.end(); ++it)
+				{
+					// Some potions hash the same (identical effects) but are throwable so account for that
+					if(it->first == effectsHashCode && !(!isThrowable(it->second) && isThrowable(brew)) )
 					{
-						// Some potions hash the same (identical effects) but are throwable so account for that
-						if(it->first == effectsHashCode && !(!isThrowable(it->second) && isThrowable(brew)) )
-						{
-							toAdd = false;
-							break;
-						}
-					}
-					if( toAdd )
-					{
-						s_uniquePotionValues.push_back(pair<int,int>(effectsHashCode, brew) );
+						toAdd = false;
+						break;
 					}
 				}
-				delete effects;
+				if( toAdd )
+				{
+					s_uniquePotionValues.push_back(pair<int,int>(effectsHashCode, brew) );
+				}
 			}
+
 		}
 	}
 	return &s_uniquePotionValues;
