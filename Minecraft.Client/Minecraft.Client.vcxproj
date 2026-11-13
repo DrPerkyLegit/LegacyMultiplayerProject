@@ -1323,15 +1323,16 @@ if not exist "$(TargetDir)\savedata" mkdir "$(TargetDir)\savedata"</Command>
 
 xcopy "$(ProjectDir)Windows64Media" "$(TargetDir)Windows64Media\" /E /I /Y
 
-xcopy "$(ProjectDir)Common\Media\IggyScenes" "$(TargetDir)Common\Media\IggyScenes\" /E /I /Y
-xcopy "$(ProjectDir)Common\Media\*.col" "$(TargetDir)Common\Media\" /E /I /Y
-xcopy "$(ProjectDir)Common\Media\splashes.txt" "$(TargetDir)Common\Media\" /E /I /Y
-xcopy "$(ProjectDir)Common\Media\Language" "$(TargetDir)Common\Media\Language\" /E /I /Y
-xcopy "$(ProjectDir)Common\Media\Graphics" "$(TargetDir)Common\Media\Graphics\" /E /I /Y
+xcopy "$(ProjectDir)Common\Media\IggyScenes" "$(TargetDir)Media\IggyScenes\" /E /I /Y
+xcopy "$(ProjectDir)Common\Media\*.col" "$(TargetDir)Media\" /E /I /Y
+xcopy "$(ProjectDir)Common\Media\splashes.txt" "$(TargetDir)Media\" /E /I /Y
+xcopy "$(ProjectDir)Common\Media\Language" "$(TargetDir)Media\Language\" /E /I /Y
+xcopy "$(ProjectDir)Common\Media\Graphics" "$(TargetDir)Media\Graphics\" /E /I /Y
+xcopy "$(ProjectDir)Common\Media\font" "$(TargetDir)Media\font\" /E /I /Y
 
-xcopy "$(ProjectDir)Common\Media\Resources" "$(TargetDir)Common\Media\Resources" /E /I /Y
+xcopy "$(ProjectDir)Common\Media\Resources" "$(TargetDir)Media\Resources" /E /I /Y
 
-xcopy "$(ProjectDir)Common\Media\music" "$(TargetDir)Common\Media\music\" /E /I /Y</Command>
+xcopy "$(ProjectDir)Common\Media\music" "$(TargetDir)Media\music\" /E /I /Y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Durango'">
@@ -1466,15 +1467,16 @@ xcopy /q /y /i /s /e $(ProjectDir)Durango\CU  $(LayoutDir)Image\Loose\CU</Comman
 
 xcopy "$(ProjectDir)Windows64Media" "$(TargetDir)Windows64Media\" /E /I /Y
 
-xcopy "$(ProjectDir)Common\Media\IggyScenes" "$(TargetDir)Common\Media\IggyScenes\" /E /I /Y
-xcopy "$(ProjectDir)Common\Media\*.col" "$(TargetDir)Common\Media\" /E /I /Y
-xcopy "$(ProjectDir)Common\Media\splashes.txt" "$(TargetDir)Common\Media\" /E /I /Y
-xcopy "$(ProjectDir)Common\Media\Language" "$(TargetDir)Common\Media\Language\" /E /I /Y
-xcopy "$(ProjectDir)Common\Media\Graphics" "$(TargetDir)Common\Media\Graphics\" /E /I /Y
+xcopy "$(ProjectDir)Common\Media\IggyScenes" "$(TargetDir)Media\IggyScenes\" /E /I /Y
+xcopy "$(ProjectDir)Common\Media\*.col" "$(TargetDir)Media\" /E /I /Y
+xcopy "$(ProjectDir)Common\Media\splashes.txt" "$(TargetDir)Media\" /E /I /Y
+xcopy "$(ProjectDir)Common\Media\Language" "$(TargetDir)Media\Language\" /E /I /Y
+xcopy "$(ProjectDir)Common\Media\Graphics" "$(TargetDir)Media\Graphics\" /E /I /Y
+xcopy "$(ProjectDir)Common\Media\font" "$(TargetDir)Media\font\" /E /I /Y
 
-xcopy "$(ProjectDir)Common\Media\Resources" "$(TargetDir)Common\Media\Resources" /E /I /Y
+xcopy "$(ProjectDir)Common\Media\Resources" "$(TargetDir)Media\Resources" /E /I /Y
 
-xcopy "$(ProjectDir)Common\Media\music" "$(TargetDir)Common\Media\music\" /E /I /Y</Command>
+xcopy "$(ProjectDir)Common\Media\music" "$(TargetDir)Media\music\" /E /I /Y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ContentPackage_Vita|x64'">

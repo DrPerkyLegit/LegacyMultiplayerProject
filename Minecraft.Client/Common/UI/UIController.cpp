@@ -303,17 +303,23 @@ void UIController::SetupFont()
 		delete m_mcTTFFont;
 	}
 
+#ifdef _WINDOWS64
+	const string mediaFontPath = "Media/font/";
+#else
+	const string mediaFontPath = "Common/Media/font/";
+#endif
+
 	switch(XGetLanguage())
 	{
 	case XC_LANGUAGE_JAPANESE:
-		m_mcTTFFont = new UITTFFont("Common/Media/font/JPN/DFGMaruGothic-Md.ttf", 0x2022); // JPN
+		m_mcTTFFont = new UITTFFont(mediaFontPath + "JPN/DFGMaruGothic-Md.ttf", 0x2022); // JPN
 		break;
 	case XC_LANGUAGE_SCHINESE: //TODO
 	case XC_LANGUAGE_TCHINESE:
-		m_mcTTFFont = new UITTFFont("Common/Media/font/CHT/DFHeiMedium-B5.ttf", 0x2022); // CHT
+		m_mcTTFFont = new UITTFFont(mediaFontPath + "CHT/DFHeiMedium-B5.ttf", 0x2022); // CHT
 		break;
 	case XC_LANGUAGE_KOREAN:
-		m_mcTTFFont = new UITTFFont("Common/Media/font/KOR/BOKMSD.ttf", 0x2022); // KOR
+		m_mcTTFFont = new UITTFFont(mediaFontPath + "KOR/BOKMSD.ttf", 0x2022); // KOR
 		break;
 	default:
 		bBitmapFont=true;

@@ -3402,7 +3402,11 @@ void CMinecraftApp::loadMediaArchive()
 {
 	wstring mediapath = L"";
 
+#ifdef _WINDOWS64
+	mediapath = L"Media";
+#else
 	mediapath = L"Common\\Media";
+#endif
 
 	if (!mediapath.empty()) 
 	{

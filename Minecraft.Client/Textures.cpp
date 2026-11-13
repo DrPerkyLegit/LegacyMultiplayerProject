@@ -1186,7 +1186,11 @@ BufferedImage *Textures::readImage(TEXTURE_NAME texId, const wstring& name)	// 4
 		}
 		else 
 		{
+#ifdef _WINDOWS64
+			drive = L"Media\\Resources\\Legacy\\";
+#else
 			drive = L"Common\\Media\\Resources\\Legacy\\";
+#endif
 			img = skins->getDefault()->getImageResource(name, false, isTu, drive);
 		}
 	}
