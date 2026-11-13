@@ -307,11 +307,18 @@ void UIScene::loadMovie()
 	}
 
 	byteArray baFile = ui.getMovieData(moviePath.c_str());
+	if(!baFile.data || baFile.length == 0)
+	{
+		app.DebugPrintf("ERROR: Failed to read iggy scene data for %ls!\n", moviePath.c_str());
+#ifndef _CONTENT_PACKAGE
+		__debugbreak();
+#endif
+		app.FatalLoadError();
+	}
+
 	__int64 beforeLoad = ui.iggyAllocCount;
 	swf = IggyPlayerCreateFromMemory ( baFile.data , baFile.length, NULL);
 	__int64 afterLoad = ui.iggyAllocCount;
-	IggyPlayerInitializeAndTickRS ( swf ); 
-	__int64 afterTick = ui.iggyAllocCount;
 
 	if(!swf)
 	{
@@ -322,7 +329,15 @@ void UIScene::loadMovie()
 		app.FatalLoadError();
 	}
 	app.DebugPrintf( app.USER_SR, "Loaded iggy movie %ls\n", moviePath.c_str() );
-	IggyProperties *properties = IggyPlayerProperties ( swf ); 
+	IggyProperties *properties = IggyPlayerProperties ( swf );
+	if(!properties)
+	{
+		app.DebugPrintf("ERROR: Failed to read iggy scene properties for %ls!\n", moviePath.c_str());
+#ifndef _CONTENT_PACKAGE
+		__debugbreak();
+#endif
+		app.FatalLoadError();
+	}
 	m_movieHeight = properties->movie_height_in_pixels;
 	m_movieWidth = properties->movie_width_in_pixels;
 
@@ -332,6 +347,8 @@ void UIScene::loadMovie()
 	S32 width, height;
 	m_parentLayer->getRenderDimensions(width, height);	
 	IggyPlayerSetDisplaySize( swf, width, height );
+	IggyPlayerInitializeAndTickRS ( swf );
+	__int64 afterTick = ui.iggyAllocCount;
 
 	IggyPlayerSetUserdata(swf,this);
 
