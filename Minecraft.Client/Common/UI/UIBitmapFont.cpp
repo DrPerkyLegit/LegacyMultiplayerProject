@@ -96,7 +96,7 @@ UIBitmapFont::UIBitmapFont(	SFontData &sfontdata )
 {
 	m_numGlyphs = sfontdata.m_uiGlyphCount;
 
-	BufferedImage bimg(sfontdata.m_wstrFilename);
+	BufferedImage bimg(sfontdata.m_wstrFilename, false, true);
 	int *bimgData = bimg.getData();
 	
 	m_cFontData = new CFontData(sfontdata, bimgData);
