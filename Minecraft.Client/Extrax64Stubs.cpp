@@ -372,8 +372,17 @@ bool				C_4JProfile::GetProfileAvatar(int iPad,int( *Func)(LPVOID lpParam,PBYTE 
 void				C_4JProfile::CancelProfileAvatarRequest() {}
 int					C_4JProfile::GetPrimaryPad() { return 0; }
 void				C_4JProfile::SetPrimaryPad(int iPad) {}
-char*				C_4JProfile::GetGamertag(int iPad){ return "PlayerName"; }
-wstring				C_4JProfile::GetDisplayName(int iPad){ return L"PlayerName"; }
+char* C_4JProfile::GetGamertag(int iPad)
+{
+	extern char g_Win64Username[17];
+	return g_Win64Username;
+}
+
+wstring C_4JProfile::GetDisplayName(int iPad)
+{
+	extern wchar_t g_Win64UsernameW[17];
+	return g_Win64UsernameW;
+}
 bool				C_4JProfile::IsFullVersion() { return s_bProfileIsFullVersion; }
 void				C_4JProfile::SetSignInChangeCallback(void ( *Func)(LPVOID, bool, unsigned int),LPVOID lpParam) {}
 void				C_4JProfile::SetNotificationsCallback(void ( *Func)(LPVOID, DWORD, unsigned int),LPVOID lpParam) {}

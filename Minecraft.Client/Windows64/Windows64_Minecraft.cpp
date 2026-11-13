@@ -67,6 +67,41 @@ BOOL g_bWidescreen = TRUE;
 
 int g_iScreenWidth = 1920;
 int g_iScreenHeight = 1080;
+char g_Win64Username[17] = {};
+wchar_t g_Win64UsernameW[17] = {};
+
+static void LoadWin64Username()
+{
+	FILE *usernameFile = nullptr;
+	if (fopen_s(&usernameFile, "username.txt", "r") == 0 && usernameFile != nullptr)
+	{
+		char username[128] = {};
+		if (fgets(username, sizeof(username), usernameFile) != nullptr)
+		{
+			size_t length = strlen(username);
+			while (length > 0 &&
+				(username[length - 1] == '\n' || username[length - 1] == '\r' ||
+					username[length - 1] == ' ' || username[length - 1] == '\t'))
+			{
+				username[--length] = '\0';
+			}
+			if (length > 0)
+				strncpy_s(g_Win64Username, sizeof(g_Win64Username), username, _TRUNCATE);
+		}
+		fclose(usernameFile);
+	}
+
+	if (g_Win64Username[0] == '\0')
+		strncpy_s(g_Win64Username, sizeof(g_Win64Username), "Player", _TRUNCATE);
+
+	if (MultiByteToWideChar(CP_ACP, 0, g_Win64Username, -1, g_Win64UsernameW,
+		static_cast<int>(_countof(g_Win64UsernameW))) == 0)
+	{
+		strncpy_s(g_Win64Username, sizeof(g_Win64Username), "Player", _TRUNCATE);
+		MultiByteToWideChar(CP_ACP, 0, g_Win64Username, -1, g_Win64UsernameW,
+			static_cast<int>(_countof(g_Win64UsernameW)));
+	}
+}
 
 void DefineActions(void)
 {
@@ -668,6 +703,7 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 		MessageBoxW(NULL, L"Unable to set the working directory to the executable folder.", L"Legacy Multiplayer Client", MB_OK | MB_ICONERROR);
 		return FALSE;
 	}
+	LoadWin64Username();
 
 	if(lpCmdLine)
 	{
