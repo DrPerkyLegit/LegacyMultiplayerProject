@@ -37,7 +37,7 @@ public:
 	static const int CHUNK_SIZE = 16;
 #endif
 	static const int CHUNK_Y_COUNT = Level::maxBuildHeight / CHUNK_SIZE;
-	static const int MAX_COMMANDBUFFER_ALLOCATIONS = 55 * 1024 * 1024;		// 4J - added
+	static const int MAX_COMMANDBUFFER_ALLOCATIONS = 512 * 1024 * 1024;		// 4J - added //DrPerky - updated to match xbox one
 public:
 	LevelRenderer(Minecraft *mc, Textures *textures);
 private:
