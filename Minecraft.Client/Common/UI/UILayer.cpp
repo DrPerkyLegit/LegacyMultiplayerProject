@@ -359,6 +359,9 @@ bool UILayer::NavigateToScene(int iPad, EUIScene scene, void *initData)
 	case eUIScene_CreateWorldMenu:
 		newScene = new UIScene_CreateWorldMenu(iPad, initData, this);
 		break;
+	case eUIScene_AddExternalServerMenu:
+		newScene = new UIScene_AddExternalServerMenu(iPad, initData, this);
+		break;
 	case eUIScene_LaunchMoreOptionsMenu:
 		newScene = new UIScene_LaunchMoreOptionsMenu(iPad, initData, this);
 		break;

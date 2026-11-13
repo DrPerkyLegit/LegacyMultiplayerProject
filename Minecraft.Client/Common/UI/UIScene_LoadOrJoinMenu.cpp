@@ -180,7 +180,10 @@ void UIScene_LoadOrJoinMenu::updateTooltips()
     int iX=-1;
     if (DoesGamesListHaveFocus() && m_buttonListGames.getItemCount() > 0)
     {
-        iY = IDS_TOOLTIPS_VIEW_GAMERCARD;
+        if (m_currentSessions == NULL || m_iGameListIndex < static_cast<int>(m_currentSessions->size()))
+        {
+            iY = IDS_TOOLTIPS_VIEW_GAMERCARD;
+        }
     }
     else if (DoesSavesListHaveFocus())
     {
@@ -936,6 +939,12 @@ void UIScene_LoadOrJoinMenu::handlePress(F64 controlId, F64 childId)
 			{
 				int nIndex = (int)childId;
 				m_iGameListIndex = nIndex;
+				if (m_currentSessions != NULL && nIndex == static_cast<int>(m_currentSessions->size()))
+				{
+					m_bIgnoreInput = false;
+					ui.NavigateToScene(m_iPad, eUIScene_AddExternalServerMenu, NULL);
+					break;
+				}
 				CheckAndJoinGame(nIndex);
 			}
 
@@ -1077,10 +1086,18 @@ void UIScene_LoadOrJoinMenu::UpdateGamesList()
 
 
     FriendSessionInfo *pSelectedSession = NULL;
+    bool addServerWasSelected = false;
     if(DoesGamesListHaveFocus() && m_buttonListGames.getItemCount() > 0)
     {
         unsigned int nIndex = m_buttonListGames.getCurrentSelection();
-        pSelectedSession = m_currentSessions->at( nIndex );
+        if (m_currentSessions != NULL)
+        {
+            addServerWasSelected = nIndex == m_currentSessions->size();
+            if (nIndex < m_currentSessions->size())
+            {
+                pSelectedSession = m_currentSessions->at(nIndex);
+            }
+        }
     }
 
     SessionID selectedSessionId;
@@ -1205,6 +1222,15 @@ void UIScene_LoadOrJoinMenu::UpdateGamesList()
             }
             ++sessionIndex;
         }
+    }
+
+    m_labelNoGames.setVisible(false);
+    m_buttonListGames.addItem(L"Add External Server");
+    if (filteredListSize == 0 || addServerWasSelected)
+    {
+        int selectedIndex = addServerWasSelected ? static_cast<int>(filteredListSize) : 0;
+        m_buttonListGames.setCurrentSelection(selectedIndex);
+        m_iGameListIndex = selectedIndex;
     }
 
 	updateTooltips();
@@ -1423,7 +1449,7 @@ int UIScene_LoadOrJoinMenu::SaveOptionsDialogReturned(void *pParam,int iPad,C4JS
             ZeroMemory(wSaveName, 128 * sizeof(wchar_t) );
             mbstowcs(wSaveName, pClass->m_saveDetails[pClass->m_iSaveListIndex - pClass->m_iDefaultButtonsC].UTF8SaveName, strlen(pClass->m_saveDetails->UTF8SaveName)+1); // plus null
             LPWSTR ptr = wSaveName;
-            InputManager.RequestKeyboard(app.GetString(IDS_RENAME_WORLD_TITLE),wSaveName,(DWORD)0,25,&UIScene_LoadOrJoinMenu::KeyboardCompleteWorldNameCallback,pClass,C_4JInput::EKeyboardMode_Default);
+            RequestUIKeyboard(app.GetString(IDS_RENAME_WORLD_TITLE),wSaveName,(DWORD)0,25,&UIScene_LoadOrJoinMenu::KeyboardCompleteWorldNameCallback,pClass,C_4JInput::EKeyboardMode_Default);
         }
         break;
 

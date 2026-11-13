@@ -38,11 +38,7 @@
 #include "..\..\Minecraft.World\compression.h"
 #include "..\..\Minecraft.World\OldChunkStorage.h"
 
-#include "Xbox/resource.h"
-
-HINSTANCE hMyInst;
-LRESULT CALLBACK DlgProc(HWND hWndDlg, UINT Msg, WPARAM wParam, LPARAM lParam);
-char chGlobalText[256];
+WCHAR chGlobalText[256];
 uint16_t ui16GlobalText[256];
 
 #define THEME_NAME		"584111F70AAAAAAA"
@@ -334,7 +330,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 
 	// Keyboard/Mouse input handling
+	case WM_CHAR:
+		if (Windows64KeyboardInput::HandleTextInputChar(static_cast<wchar_t>(wParam)))
+			return 0;
+		return DefWindowProc(hWnd, message, wParam, lParam);
 	case WM_KEYDOWN:
+		if (Windows64KeyboardInput::HandleTextInputKeyDown(wParam))
+			return 0;
 		if (!(lParam & 0x40000000)) // ignore auto-repeat
 			Windows64KeyboardInput::OnKeyEvent(wParam, true);
 		break;
@@ -342,6 +344,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		Windows64KeyboardInput::OnKeyEvent(wParam, false);
 		break;
 	case WM_SYSKEYDOWN:
+		if (wParam == VK_F4 && (GetKeyState(VK_MENU) & 0x8000) != 0)
+		{
+			Windows64KeyboardInput::CancelTextInput();
+			return DefWindowProc(hWnd, message, wParam, lParam);
+		}
+		if (Windows64KeyboardInput::HandleTextInputKeyDown(wParam))
+			return 0;
 		// Alt key
 		if (wParam == VK_MENU) {
 			if (!(lParam & 0x40000000))
@@ -386,6 +395,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 		break;
 	case WM_KILLFOCUS:
+		Windows64KeyboardInput::CancelTextInput();
 		Windows64KeyboardInput::SetCapture(false);
 		Windows64KeyboardInput::SetCursorLock(false);
 		Windows64KeyboardInput::ResetStates();
@@ -462,52 +472,32 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	return TRUE;
 }
 
-// 4J Stu - These functions are referenced from the Windows Input library
+void SetKeyboardTextResult(LPCWSTR text)
+{
+	ZeroMemory(chGlobalText, sizeof(chGlobalText));
+	ZeroMemory(ui16GlobalText, sizeof(ui16GlobalText));
+	if (text != NULL)
+	{
+		wcsncpy_s(chGlobalText, ARRAYSIZE(chGlobalText), text, _TRUNCATE);
+	}
+	memcpy(ui16GlobalText, chGlobalText, sizeof(ui16GlobalText));
+}
+
+// These functions are referenced from the Windows Input library.
 void ClearGlobalText()
 {
-	// clear the global text
-	memset(chGlobalText,0,256);
-	memset(ui16GlobalText,0,512);
+	SetKeyboardTextResult(L"");
 }
 
 uint16_t *GetGlobalText()
 {
-	//copy the ch text to ui16
-	char * pchBuffer=(char *)ui16GlobalText;
-		for(int i=0;i<256;i++)
-		{
-			pchBuffer[i*2]=chGlobalText[i];
-		}
+	memcpy(ui16GlobalText, chGlobalText, sizeof(ui16GlobalText));
 	return ui16GlobalText;
 }
+
 void SeedEditBox()
 {
-	DialogBox(hMyInst, MAKEINTRESOURCE(IDD_SEED),
-		g_hWnd, reinterpret_cast<DLGPROC>(DlgProc));
-}
-
-
-//---------------------------------------------------------------------------
-LRESULT CALLBACK DlgProc(HWND hWndDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
-{
-	switch(Msg)
-	{
-	case WM_INITDIALOG:
-		return TRUE;
-
-	case WM_COMMAND:
-		switch(wParam)
-		{
-		case IDOK:
-			// Set the text
-			GetDlgItemText(hWndDlg,IDC_EDIT,chGlobalText,256);
-			EndDialog(hWndDlg, 0);
-			return TRUE;
-		}
-		break;
-	}
-
-	return FALSE;
+	app.DebugPrintf("A legacy popup keyboard request was ignored; use the direct UI text input path.\n");
 }
 
 //--------------------------------------------------------------------------------------
@@ -712,8 +702,6 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 	{
 		return FALSE;
 	}
-
-	hMyInst=hInstance;
 
 	if( FAILED( InitDevice() ) )
 	{

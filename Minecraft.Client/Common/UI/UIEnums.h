@@ -66,6 +66,7 @@ enum EUIScene
 	eUIScene_DeathMenu,
 	eUIComponent_TutorialPopup,
 	eUIScene_CreateWorldMenu,
+	eUIScene_AddExternalServerMenu,
 	eUIScene_LoadOrJoinMenu,
 	eUIScene_JoinMenu,
 	eUIScene_SignEntryMenu,

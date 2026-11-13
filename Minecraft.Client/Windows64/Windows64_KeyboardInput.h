@@ -32,6 +32,12 @@ public:
 
 	static void OnKeyEvent(WPARAM vk, bool isDown);
 	static void OnMouseEvent(int button, bool isDown);
+	static bool RequestTextInput(LPCWSTR text, UINT maxChars, int (*completeCallback)(LPVOID, const bool), LPVOID callbackParam,
+		void (*previewCallback)(LPVOID, LPCWSTR), LPVOID previewParam);
+	static bool IsTextInputActive();
+	static bool HandleTextInputKeyDown(WPARAM vk);
+	static bool HandleTextInputChar(wchar_t character);
+	static void CancelTextInput();
 
 	static void OnRawMouseInput(LPARAM lParam);
 	static void OnRawMouseWheel(int delta);
@@ -87,3 +93,5 @@ private:
 	static void UpdateCursorVisibility();
 	static void ClipCursorToWindow();
 };
+
+void SetKeyboardTextResult(LPCWSTR text);

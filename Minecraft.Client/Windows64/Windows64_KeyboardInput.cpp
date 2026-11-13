@@ -2,6 +2,118 @@
 
 #include "Windows64_KeyboardInput.h"
 
+#include <algorithm>
+#include <string>
+
+namespace
+{
+	struct TextInputState
+	{
+		bool active = false;
+		bool selectAll = false;
+		std::wstring text;
+		std::wstring originalText;
+		size_t cursor = 0;
+		UINT maxChars = 0;
+		int (*completeCallback)(LPVOID, const bool) = nullptr;
+		LPVOID callbackParam = nullptr;
+		void (*previewCallback)(LPVOID, LPCWSTR) = nullptr;
+		LPVOID previewParam = nullptr;
+	};
+
+	TextInputState g_textInput;
+	bool g_consumeReturnCharacter = false;
+
+	void UpdateTextInputPreview()
+	{
+		SetKeyboardTextResult(g_textInput.text.c_str());
+		if (g_textInput.previewCallback != nullptr)
+		{
+			g_textInput.previewCallback(g_textInput.previewParam, g_textInput.text.c_str());
+		}
+	}
+
+	void FinishTextInput(bool accepted)
+	{
+		if (!g_textInput.active) return;
+
+		std::wstring result = accepted ? g_textInput.text : L"";
+		std::wstring preview = accepted ? g_textInput.text : g_textInput.originalText;
+		int (*completeCallback)(LPVOID, const bool) = g_textInput.completeCallback;
+		LPVOID callbackParam = g_textInput.callbackParam;
+		void (*previewCallback)(LPVOID, LPCWSTR) = g_textInput.previewCallback;
+		LPVOID previewParam = g_textInput.previewParam;
+
+		g_textInput.active = false;
+		g_textInput.selectAll = false;
+		g_textInput.text.clear();
+		g_textInput.originalText.clear();
+		g_textInput.cursor = 0;
+		g_textInput.maxChars = 0;
+		g_textInput.completeCallback = nullptr;
+		g_textInput.callbackParam = nullptr;
+		g_textInput.previewCallback = nullptr;
+		g_textInput.previewParam = nullptr;
+
+		SetKeyboardTextResult(result.c_str());
+		if (previewCallback != nullptr)
+		{
+			previewCallback(previewParam, preview.c_str());
+		}
+		if (completeCallback != nullptr)
+		{
+			completeCallback(callbackParam, accepted);
+		}
+	}
+
+	void DeleteSelectedText()
+	{
+		g_textInput.text.clear();
+		g_textInput.cursor = 0;
+		g_textInput.selectAll = false;
+	}
+
+	void DeleteCharacterBeforeCursor()
+	{
+		if (g_textInput.selectAll)
+		{
+			DeleteSelectedText();
+			return;
+		}
+		if (g_textInput.cursor == 0) return;
+
+		size_t start = g_textInput.cursor - 1;
+		if (g_textInput.text[start] >= 0xDC00 && g_textInput.text[start] <= 0xDFFF &&
+			start > 0 && g_textInput.text[start - 1] >= 0xD800 && g_textInput.text[start - 1] <= 0xDBFF)
+		{
+			--start;
+		}
+		g_textInput.text.erase(start, g_textInput.cursor - start);
+		g_textInput.cursor = start;
+		g_textInput.selectAll = false;
+	}
+
+	void DeleteCharacterAtCursor()
+	{
+		if (g_textInput.selectAll)
+		{
+			DeleteSelectedText();
+			return;
+		}
+		if (g_textInput.cursor >= g_textInput.text.size()) return;
+
+		size_t count = 1;
+		if (g_textInput.text[g_textInput.cursor] >= 0xD800 && g_textInput.text[g_textInput.cursor] <= 0xDBFF &&
+			g_textInput.cursor + 1 < g_textInput.text.size() &&
+			g_textInput.text[g_textInput.cursor + 1] >= 0xDC00 && g_textInput.text[g_textInput.cursor + 1] <= 0xDFFF)
+		{
+			count = 2;
+		}
+		g_textInput.text.erase(g_textInput.cursor, count);
+		g_textInput.selectAll = false;
+	}
+}
+
 uint8_t Windows64KeyboardInput::m_keyStates[32];    //256 bits
 uint8_t Windows64KeyboardInput::m_keyStatesOld[32]; //256 bits
 uint8_t Windows64KeyboardInput::m_keyPressedStates[32];
@@ -229,6 +341,7 @@ void Windows64KeyboardInput::OnKeyEvent(WPARAM vk, bool isDown) {
 
 
 void Windows64KeyboardInput::OnMouseEvent(int button, bool isDown) {
+	if (g_textInput.active) return;
 	if (!Windows64KeyboardInput::m_initialized) return;
 	if (button < 0 || button >= 3) return;
 
@@ -246,6 +359,7 @@ void Windows64KeyboardInput::OnMouseEvent(int button, bool isDown) {
 }
 
 void Windows64KeyboardInput::OnRawMouseInput(LPARAM lParam) {
+	if (g_textInput.active) return;
 	if (!Windows64KeyboardInput::m_initialized) return;
 	if (!Windows64KeyboardInput::m_isCaptured && !Windows64KeyboardInput::m_isCursorLocked) return;
 
@@ -267,8 +381,154 @@ void Windows64KeyboardInput::OnRawMouseInput(LPARAM lParam) {
 }
 
 void Windows64KeyboardInput::OnRawMouseWheel(int delta) {
+	if (g_textInput.active) return;
 	if (!Windows64KeyboardInput::m_initialized) return;
 	Windows64KeyboardInput::m_scrollDeltaAccum += delta / WHEEL_DELTA;
+}
+
+bool Windows64KeyboardInput::RequestTextInput(LPCWSTR text, UINT maxChars,
+	int (*completeCallback)(LPVOID, const bool), LPVOID callbackParam,
+	void (*previewCallback)(LPVOID, LPCWSTR), LPVOID previewParam)
+{
+	if (g_textInput.active)
+	{
+		app.DebugPrintf("Ignoring overlapping text input request.\n");
+		SetKeyboardTextResult(L"");
+		if (completeCallback != nullptr)
+		{
+			completeCallback(callbackParam, false);
+		}
+		return false;
+	}
+
+	g_consumeReturnCharacter = false;
+	g_textInput.active = true;
+	g_textInput.maxChars = std::min<UINT>(maxChars, 127);
+	g_textInput.text = text != nullptr ? text : L"";
+	if (g_textInput.text.size() > g_textInput.maxChars)
+	{
+		g_textInput.text.resize(g_textInput.maxChars);
+	}
+	g_textInput.originalText = g_textInput.text;
+	g_textInput.selectAll = !g_textInput.text.empty();
+	g_textInput.cursor = g_textInput.text.size();
+	g_textInput.completeCallback = completeCallback;
+	g_textInput.callbackParam = callbackParam;
+	g_textInput.previewCallback = previewCallback;
+	g_textInput.previewParam = previewParam;
+	SetKBMActive(true);
+	SetKeyboardTextResult(g_textInput.text.c_str());
+	return true;
+}
+
+bool Windows64KeyboardInput::HandleTextInputKeyDown(WPARAM vk)
+{
+	if (!g_textInput.active) return false;
+
+	if ((GetKeyState(VK_CONTROL) & 0x8000) != 0 && vk == 'A')
+	{
+		g_textInput.selectAll = true;
+		return true;
+	}
+
+	switch (vk)
+	{
+	case VK_RETURN:
+		FinishTextInput(true);
+		g_consumeReturnCharacter = true;
+		return true;
+	case VK_ESCAPE:
+		FinishTextInput(false);
+		return true;
+	case VK_LEFT:
+		if (g_textInput.selectAll)
+		{
+			g_textInput.cursor = 0;
+			g_textInput.selectAll = false;
+		}
+		else if (g_textInput.cursor > 0)
+		{
+			--g_textInput.cursor;
+		}
+		return true;
+	case VK_RIGHT:
+		if (g_textInput.selectAll)
+		{
+			g_textInput.cursor = g_textInput.text.size();
+			g_textInput.selectAll = false;
+		}
+		else if (g_textInput.cursor < g_textInput.text.size())
+		{
+			++g_textInput.cursor;
+		}
+		return true;
+	case VK_HOME:
+		g_textInput.cursor = 0;
+		g_textInput.selectAll = false;
+		return true;
+	case VK_END:
+		g_textInput.cursor = g_textInput.text.size();
+		g_textInput.selectAll = false;
+		return true;
+	case VK_DELETE:
+		DeleteCharacterAtCursor();
+		UpdateTextInputPreview();
+		return true;
+	default:
+		return true;
+	}
+}
+
+bool Windows64KeyboardInput::IsTextInputActive()
+{
+	return g_textInput.active;
+}
+
+bool Windows64KeyboardInput::HandleTextInputChar(wchar_t character)
+{
+	if (!g_textInput.active)
+	{
+		if (g_consumeReturnCharacter && character == L'\r')
+		{
+			g_consumeReturnCharacter = false;
+			return true;
+		}
+		return false;
+	}
+
+	if (character == L'\r' || character == L'\n')
+	{
+		FinishTextInput(true);
+		g_consumeReturnCharacter = character == L'\r';
+		return true;
+	}
+	if (character == L'\b')
+	{
+		DeleteCharacterBeforeCursor();
+		UpdateTextInputPreview();
+		return true;
+	}
+	if (character < L' ')
+	{
+		return true;
+	}
+
+	if (g_textInput.selectAll)
+	{
+		DeleteSelectedText();
+	}
+	if (g_textInput.text.size() < g_textInput.maxChars)
+	{
+		g_textInput.text.insert(g_textInput.cursor, 1, character);
+		++g_textInput.cursor;
+		UpdateTextInputPreview();
+	}
+	return true;
+}
+
+void Windows64KeyboardInput::CancelTextInput()
+{
+	FinishTextInput(false);
 }
 
 bool Windows64KeyboardInput::IsKeyDown(int vk) {

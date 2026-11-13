@@ -9,6 +9,9 @@ using namespace std;
 
 class ItemRenderer;
 class UILayer;
+class UIControl_TextInput;
+
+int RequestUIKeyboard(LPCWSTR title, LPCWSTR text, DWORD pad, UINT maxChars, int (*completeCallback)(LPVOID, const bool), LPVOID callbackParam, int mode, UIControl_TextInput *previewControl = NULL);
 
 // 4J Stu - Setup some defines for quickly mapping elements in the scene
 

@@ -113,7 +113,20 @@ void UIScene_DebugCreateSchematic::handlePress(F64 controlId, F64 childId)
 	case eControl_EndY:
 	case eControl_EndZ:
 		m_keyboardCallbackControl = (eControls)((int)controlId);	
-		InputManager.RequestKeyboard(L"Enter something",L"",(DWORD)0,25,&UIScene_DebugCreateSchematic::KeyboardCompleteCallback,this,C_4JInput::EKeyboardMode_Default);
+		UIControl_TextInput *previewControl = NULL;
+		switch (m_keyboardCallbackControl)
+		{
+		case eControl_Name: previewControl = &m_textInputName; break;
+		case eControl_StartX: previewControl = &m_textInputStartX; break;
+		case eControl_StartY: previewControl = &m_textInputStartY; break;
+		case eControl_StartZ: previewControl = &m_textInputStartZ; break;
+		case eControl_EndX: previewControl = &m_textInputEndX; break;
+		case eControl_EndY: previewControl = &m_textInputEndY; break;
+		case eControl_EndZ: previewControl = &m_textInputEndZ; break;
+		default: break;
+		}
+		RequestUIKeyboard(L"Enter something", previewControl->getLabel(), (DWORD)0, 25,
+			&UIScene_DebugCreateSchematic::KeyboardCompleteCallback, this, C_4JInput::EKeyboardMode_Default, previewControl);
 		break;
 	};
 }

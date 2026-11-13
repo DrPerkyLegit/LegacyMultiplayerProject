@@ -351,13 +351,13 @@ void UIScene_CreateWorldMenu::handlePress(F64 controlId, F64 childId)
 	case eControl_EditWorldName:
 		{
 			m_bIgnoreInput=true;
-			InputManager.RequestKeyboard(app.GetString(IDS_CREATE_NEW_WORLD),m_editWorldName.getLabel(),(DWORD)0,25,&UIScene_CreateWorldMenu::KeyboardCompleteWorldNameCallback,this,C_4JInput::EKeyboardMode_Default);
+			RequestUIKeyboard(app.GetString(IDS_CREATE_NEW_WORLD),m_editWorldName.getLabel(),(DWORD)0,25,&UIScene_CreateWorldMenu::KeyboardCompleteWorldNameCallback,this,C_4JInput::EKeyboardMode_Default,&m_editWorldName);
 		}
 		break;
 	case eControl_EditSeed:
 		{
 			m_bIgnoreInput=true;
-			InputManager.RequestKeyboard(app.GetString(IDS_CREATE_NEW_WORLD_SEED),m_editSeed.getLabel(),(DWORD)0,60,&UIScene_CreateWorldMenu::KeyboardCompleteSeedCallback,this,C_4JInput::EKeyboardMode_Default);
+			RequestUIKeyboard(app.GetString(IDS_CREATE_NEW_WORLD_SEED),m_editSeed.getLabel(),(DWORD)0,60,&UIScene_CreateWorldMenu::KeyboardCompleteSeedCallback,this,C_4JInput::EKeyboardMode_Default,&m_editSeed);
 		}
 		break;
 	case eControl_GameModeToggle:

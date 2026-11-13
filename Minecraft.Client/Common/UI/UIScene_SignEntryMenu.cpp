@@ -168,7 +168,7 @@ void UIScene_SignEntryMenu::handlePress(F64 controlId, F64 childId)
 		{
 			m_iEditingLine = (int)controlId;
 			m_bIgnoreInput = true;
-			InputManager.RequestKeyboard(app.GetString(IDS_SIGN_TITLE),m_textInputLines[m_iEditingLine].getLabel(),(DWORD)m_iPad,15,&UIScene_SignEntryMenu::KeyboardCompleteCallback,this,C_4JInput::EKeyboardMode_Alphabet);
+			RequestUIKeyboard(app.GetString(IDS_SIGN_TITLE),m_textInputLines[m_iEditingLine].getLabel(),(DWORD)m_iPad,15,&UIScene_SignEntryMenu::KeyboardCompleteCallback,this,C_4JInput::EKeyboardMode_Alphabet,&m_textInputLines[m_iEditingLine]);
 		}
 		break;
 	}

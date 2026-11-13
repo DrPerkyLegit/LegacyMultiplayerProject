@@ -7,6 +7,53 @@
 #include "..\..\ItemRenderer.h"
 #include "..\..\..\Minecraft.World\net.minecraft.world.item.h"
 
+#ifdef _WINDOWS64
+#include "..\..\Windows64\Windows64_KeyboardInput.h"
+
+namespace {
+	struct UIKeyboardRequest {
+		int (*completeCallback)(LPVOID, const bool);
+		LPVOID callbackParam;
+		UIControl_TextInput *previewControl;
+	};
+
+	void UpdateKeyboardPreview(LPVOID param, LPCWSTR text) {
+		static_cast<UIControl_TextInput *>(param)->setLabel(text);
+	}
+
+	int CompleteUIKeyboardRequest(LPVOID param, const bool accepted) {
+		UIKeyboardRequest *request = static_cast<UIKeyboardRequest *>(param);
+		if (request->previewControl != NULL) request->previewControl->setFocus(false);
+
+		int result = 0;
+		if (request->completeCallback != nullptr) {
+			result = request->completeCallback(request->callbackParam, accepted);
+		}
+
+		delete request;
+		return result;
+	}
+}
+#endif
+
+int RequestUIKeyboard(LPCWSTR title, LPCWSTR text, DWORD pad, UINT maxChars, int (*completeCallback)(LPVOID, const bool), LPVOID callbackParam, int mode, UIControl_TextInput *previewControl) {
+#ifdef _WINDOWS64
+	UIKeyboardRequest *request = new UIKeyboardRequest{ completeCallback, callbackParam, previewControl };
+	if (!Windows64KeyboardInput::RequestTextInput(text, maxChars, &CompleteUIKeyboardRequest, request, previewControl != NULL ? &UpdateKeyboardPreview : NULL, previewControl)) {
+		return EKeyboard_ResultDecline;
+	}
+
+	if (previewControl != NULL) {
+		UIScene *scene = previewControl->getParentScene();
+		if (scene != NULL) scene->SetFocusToElement(previewControl->getId());
+		previewControl->setFocus(true);
+	}
+	return EKeyboard_Pending;
+#else
+	return InputManager.RequestKeyboard(title, text, pad, maxChars, completeCallback, callbackParam, static_cast<C_4JInput::EKeyboardMode>(mode));
+#endif
+}
+
 UIScene::UIScene(int iPad, UILayer *parentLayer)
 {
 	m_parentLayer = parentLayer;
