@@ -2514,16 +2514,24 @@ bool UIController::HandleMouseTouchInput(unsigned int iPad, unsigned int key)
 		UIControl* hoveredControl = m_HighlightedUIElement->pControl;
 		hoverScene = m_HighlightedUIElement->pScene;
 		if (hoveredControl->getControlType() == UIControl::eButton ||
-			hoveredControl->getControlType() == UIControl::eButtonList)
+			hoveredControl->getControlType() == UIControl::eButtonList ||
+			hoveredControl->getControlType() == UIControl::eTextInput)
 			focusControl = hoveredControl->getId();
 	}
 	if (mouseMoved || hoverScene != m_pMouseHoverScene)
 	{
-		if (m_pMouseHoverScene && m_pMouseHoverScene != hoverScene &&
-			m_pMouseHoverScene->getControlFocus() != -1)
-			m_pMouseHoverScene->SetFocusToElement(-1);
-		if (hoverScene && hoverScene->getControlFocus() != focusControl)
-			hoverScene->SetFocusToElement(focusControl);
+		bool textInputActive = false;
+#ifdef _WINDOWS64
+		textInputActive = Windows64KeyboardInput::IsTextInputActive();
+#endif
+		if (!textInputActive)
+		{
+			if (m_pMouseHoverScene && m_pMouseHoverScene != hoverScene &&
+				m_pMouseHoverScene->getControlFocus() != -1)
+				m_pMouseHoverScene->SetFocusToElement(-1);
+			if (hoverScene && hoverScene->getControlFocus() != focusControl)
+				hoverScene->SetFocusToElement(focusControl);
+		}
 		m_pMouseHoverScene = hoverScene;
 
 		if (hit && m_HighlightedUIElement &&
