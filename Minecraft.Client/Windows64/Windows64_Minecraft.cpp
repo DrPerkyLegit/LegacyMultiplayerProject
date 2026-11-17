@@ -2,6 +2,7 @@
 //
 
 #include "stdafx.h"
+#include "Windows64_Xuid.h"
 
 #include <assert.h>
 #include <wchar.h>
@@ -703,6 +704,7 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 		MessageBoxW(NULL, L"Unable to set the working directory to the executable folder.", L"Legacy Multiplayer Client", MB_OK | MB_ICONERROR);
 		return FALSE;
 	}
+	Win64Xuid::ResolvePersistentXuid();
 	LoadWin64Username();
 
 	if(lpCmdLine)

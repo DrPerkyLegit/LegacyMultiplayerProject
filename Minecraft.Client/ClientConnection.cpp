@@ -2054,8 +2054,11 @@ void ClientConnection::handleTextureAndGeometryChange(shared_ptr<TextureAndGeome
 
 void ClientConnection::handleRespawn(shared_ptr<RespawnPacket> packet)
 {
+	bool dimensionChanged = packet->dimension != minecraft->localplayers[m_userIndex]->dimension
+		|| packet->mapSeed != minecraft->localplayers[m_userIndex]->level->getSeed();
+
     //if (packet->dimension != minecraft->player->dimension)
-	if( packet->dimension != minecraft->localplayers[m_userIndex]->dimension || packet->mapSeed != minecraft->localplayers[m_userIndex]->level->getSeed() )
+	if(dimensionChanged)
 	{
 		int oldDimension = minecraft->localplayers[m_userIndex]->dimension;
         started = false;
@@ -2157,9 +2160,14 @@ void ClientConnection::handleRespawn(shared_ptr<RespawnPacket> packet)
 	// in there assume that we are set up for the player that the respawn is coming in for
 	int oldIndex = minecraft->getLocalPlayerIdx();
 	minecraft->setLocalPlayerIdx(m_userIndex);
-    minecraft->respawnPlayer(minecraft->localplayers[m_userIndex]->GetXboxPad(),packet->dimension,packet->m_newEntityId);
+    minecraft->respawnPlayer(m_userIndex,packet->dimension,packet->m_newEntityId);
 	((MultiPlayerGameMode *) minecraft->localgameModes[m_userIndex])->setLocalMode(packet->playerGameType);
 	minecraft->setLocalPlayerIdx(oldIndex);
+
+    if(!dimensionChanged)
+    {
+        app.SetAction(m_userIndex,eAppAction_WaitForRespawnComplete);
+    }
 }
 
 void ClientConnection::handleExplosion(shared_ptr<ExplodePacket> packet)

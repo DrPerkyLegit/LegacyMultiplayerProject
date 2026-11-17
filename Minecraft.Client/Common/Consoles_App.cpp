@@ -2650,7 +2650,8 @@ void CMinecraftApp::HandleXuiActions(void)
 					}
 					else
 					{
-						ui.CloseUIScenes(i);
+						ui.CloseUIScenes(i,true);
+						ui.NavigateBack(i,false,eUIScene_ConnectingProgress,eUILayer_Fullscreen);
 					}
 
 					// clear the progress messages
@@ -2668,7 +2669,8 @@ void CMinecraftApp::HandleXuiActions(void)
 				if(player != NULL && player->connection && player->connection->isStarted())
 				{
 					SetAction(i,eAppAction_Idle);
-					ui.CloseUIScenes(i);
+					ui.CloseUIScenes(i,true);
+					ui.NavigateBack(i,false,eUIScene_ConnectingProgress,eUILayer_Fullscreen);
 				}
 				else if(!g_NetworkManager.IsInGameplay())
 				{

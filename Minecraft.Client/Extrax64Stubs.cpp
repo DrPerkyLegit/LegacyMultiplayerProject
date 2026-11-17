@@ -1,6 +1,7 @@
 #include "stdafx.h"
 //#include <compressapi.h>
 
+#include "Windows64\Windows64_Xuid.h"
 #include "Windows64\Sentient\SentientManager.h"
 #include "StatsCounter.h"
 #include "Windows64\Social\SocialManager.h"
@@ -351,7 +352,7 @@ void				C_4JProfile::SetTrialTextStringTable(CXuiStringTable *pStringTable,int i
 void				C_4JProfile::SetTrialAwardText(eAwardType AwardType,int iTitle,int iText) {}
 int					C_4JProfile::GetLockedProfile() { return 0; }
 void				C_4JProfile::SetLockedProfile(int iProf) {}
-bool				C_4JProfile::IsSignedIn(int iQuadrant) { return ( iQuadrant == 0); }
+bool				C_4JProfile::IsSignedIn(int iQuadrant) { return iQuadrant == 0 || (iQuadrant > 0 && iQuadrant < XUSER_MAX_COUNT && InputManager.IsPadConnected(iQuadrant)); }
 bool				C_4JProfile::IsSignedInLive(int iProf) { return true; }
 bool				C_4JProfile::IsGuest(int iQuadrant) { return false; }
 UINT				C_4JProfile::RequestSignInUI(bool bFromInvite,bool bLocalGame,bool bNoGuestsAllowed,bool bMultiplayerSignIn,bool bAddUser, int( *Func)(LPVOID,const bool, const int iPad),LPVOID lpParam,int iQuadrant) { return 0; }
@@ -359,8 +360,16 @@ UINT				C_4JProfile::DisplayOfflineProfile(int( *Func)(LPVOID,const bool, const 
 UINT				C_4JProfile::RequestConvertOfflineToGuestUI(int( *Func)(LPVOID,const bool, const int iPad),LPVOID lpParam,int iQuadrant) { return 0; }
 void				C_4JProfile::SetPrimaryPlayerChanged(bool bVal) {}
 bool				C_4JProfile::QuerySigninStatus(void) { return true; }
-void				C_4JProfile::GetXUID(int iPad, PlayerUID *pXuid,bool bOnlineXuid) {*pXuid = 0xe000d45248242f2e; }
-BOOL				C_4JProfile::AreXUIDSEqual(PlayerUID xuid1,PlayerUID xuid2) { return false; }
+void				C_4JProfile::GetXUID(int iPad, PlayerUID *pXuid,bool bOnlineXuid)
+{
+	if(pXuid == NULL) return;
+#ifdef _WINDOWS64
+	*pXuid = Win64Xuid::XuidForPad(Win64Xuid::ResolvePersistentXuid(), iPad);
+#else
+	*pXuid = 0xe000d45248242f2e + iPad;
+#endif
+}
+BOOL				C_4JProfile::AreXUIDSEqual(PlayerUID xuid1,PlayerUID xuid2) { return xuid1 == xuid2; }
 BOOL				C_4JProfile::XUIDIsGuest(PlayerUID xuid) { return false; }
 bool				C_4JProfile::AllowedToPlayMultiplayer(int iProf) { return true; }
 

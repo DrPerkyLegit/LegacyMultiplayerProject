@@ -65,6 +65,7 @@
 #include "Common\UI\IUIScene_CreativeMenu.h"
 #include "Common\UI\UIFontData.h"
 #include "DLCTexturePack.h"
+#include "Windows64\Windows64_Xuid.h"
 
 
 // 4J Turning this on will change the graph at the bottom of the debug overlay to show the number of packets of each type added per fram
@@ -997,6 +998,10 @@ shared_ptr<MultiplayerLocalPlayer> Minecraft::createExtraLocalPlayer(int idx, co
 		PlayerUID playerXUIDOnline = INVALID_XUID;
 		ProfileManager.GetXUID(idx,&playerXUIDOffline,false);
 		ProfileManager.GetXUID(idx,&playerXUIDOnline,true);
+#ifdef _WINDOWS64
+		INetworkPlayer *localNetworkPlayer = g_NetworkManager.GetLocalPlayerByUserIndex(idx);
+		playerXUIDOffline = Win64Xuid::ResolveXuidForPad(idx, localNetworkPlayer != NULL && localNetworkPlayer->IsHost());
+#endif
 		localplayers[idx]->setXuid(playerXUIDOffline);
 		localplayers[idx]->setOnlineXuid(playerXUIDOnline);
 		localplayers[idx]->setIsGuest(ProfileManager.IsGuest(idx));
@@ -3703,6 +3708,10 @@ void Minecraft::setLevel(MultiPlayerLevel *level, int message /*=-1*/, shared_pt
 			PlayerUID playerXUIDOnline = INVALID_XUID;
 			ProfileManager.GetXUID(iPrimaryPlayer,&playerXUIDOffline,false);
 			ProfileManager.GetXUID(iPrimaryPlayer,&playerXUIDOnline,true);
+#ifdef _WINDOWS64
+			INetworkPlayer *localNetworkPlayer = g_NetworkManager.GetLocalPlayerByUserIndex(iPrimaryPlayer);
+			playerXUIDOffline = Win64Xuid::ResolveXuidForPad(iPrimaryPlayer, localNetworkPlayer != NULL && localNetworkPlayer->IsHost());
+#endif
 			player->setXuid(playerXUIDOffline);
 			player->setOnlineXuid(playerXUIDOnline);
 
@@ -3916,6 +3925,10 @@ void Minecraft::respawnPlayer(int iPad, int dimension, int newEntityId)
 	PlayerUID playerXUIDOnline = INVALID_XUID;
 	ProfileManager.GetXUID(iTempPad,&playerXUIDOffline,false);
 	ProfileManager.GetXUID(iTempPad,&playerXUIDOnline,true);
+#ifdef _WINDOWS64
+	INetworkPlayer *localNetworkPlayer = g_NetworkManager.GetLocalPlayerByUserIndex(iTempPad);
+	playerXUIDOffline = Win64Xuid::ResolveXuidForPad(iTempPad, localNetworkPlayer != NULL && localNetworkPlayer->IsHost());
+#endif
 	player->setXuid(playerXUIDOffline);
 	player->setOnlineXuid(playerXUIDOnline);
 	player->setIsGuest( ProfileManager.IsGuest(iTempPad) );
