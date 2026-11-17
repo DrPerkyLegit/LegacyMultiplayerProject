@@ -2271,6 +2271,18 @@
     <ClInclude Include="Windows64\Windows64_KeyboardInput.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Common\UI\UIScene_AddExternalServerMenu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows64\Network\PlatformNetworkManagerWindows.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows64\Network\extra.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows64\Network\NetworkPlayerWindows.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -3933,6 +3945,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Windows64\Windows64_KeyboardInput.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\UI\UIScene_AddExternalServerMenu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows64\Network\PlatformNetworkManagerWindows.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows64\Network\NetworkPlayerWindows.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

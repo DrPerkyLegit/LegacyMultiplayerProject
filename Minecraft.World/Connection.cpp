@@ -32,7 +32,11 @@ void Connection::_init()
 	noInputTicks = 0;
 	estimatedRemaining = 0;
 	fakeLag = 0;
+#ifdef _WINDOWS64
+	slowWriteDelay = 0;
+#else
 	slowWriteDelay = 50;
+#endif
 
 	saqThreadID = 0;
 	closeThreadID = 0;

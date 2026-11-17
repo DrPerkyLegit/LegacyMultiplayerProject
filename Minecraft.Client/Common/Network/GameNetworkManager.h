@@ -19,6 +19,11 @@ class Minecraft;
 class CGameNetworkManager
 {
 	friend class CPlatformNetworkManagerStub;
+#ifdef _WINDOWS64
+	friend class CPlatformNetworkManagerWindows;
+#else
+	static_assert(true, "Missing PlatformNetworkManager Friend for GameNetworkManager.h")
+#endif
 public:
 	CGameNetworkManager();
 	// Misc high level flow

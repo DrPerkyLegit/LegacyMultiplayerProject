@@ -1512,6 +1512,10 @@ bool MinecraftServer::canSendOnSlowQueue(INetworkPlayer *player)
 	if( player == NULL ) return false;
 
 	int time = GetTickCount();
+#ifdef _WINDOWS64
+	return !player->IsLocal();
+#else
+
 	if( player->GetSessionIndex() == s_slowQueuePlayerIndex && (time - s_slowQueueLastTime) > MINECRAFT_SERVER_SLOW_QUEUE_DELAY )
 	{
 //		app.DebugPrintf("Slow queue OK for player #%d\n", player->GetSessionIndex());
@@ -1519,6 +1523,7 @@ bool MinecraftServer::canSendOnSlowQueue(INetworkPlayer *player)
 	}
 
 	return false;
+#endif
 }
 
 void MinecraftServer::cycleSlowQueueIndex()

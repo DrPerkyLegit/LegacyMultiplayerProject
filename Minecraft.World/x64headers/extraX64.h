@@ -6,6 +6,9 @@
 
 #include "..\..\Minecraft.Client\SkinBox.h"
 
+#ifdef _WINDOWS64
+#include "..\..\Minecraft.Client\Windows64\Network\extra.h"
+#endif
 
 #include <vector>
 
@@ -17,7 +20,6 @@ const int XUSER_INDEX_ANY = 255;
 const int XUSER_INDEX_FOCUS = 254;
 
 const int XUSER_MAX_COUNT = 4;
-const int MINECRAFT_NET_MAX_PLAYERS = 8;
 
 
 

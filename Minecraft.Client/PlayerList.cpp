@@ -597,11 +597,10 @@ shared_ptr<ServerPlayer> PlayerList::respawn(shared_ptr<ServerPlayer> serverPlay
 	player->connection->send( shared_ptr<RespawnPacket>( new RespawnPacket((char) player->dimension, player->level->getSeed(), player->level->getMaxBuildHeight(),
 																				player->gameMode->getGameModeForPlayer(), level->difficulty, level->getLevelData()->getGenerator(),
 																				player->level->useNewSeaLevel(), player->entityId, level->getLevelData()->getXZSize(), level->getLevelData()->getHellScale()) ) );
-    player->connection->teleport(player->x, player->y, player->z, player->yRot, player->xRot);
 
 	if(keepAllPlayerData)
 	{
-		vector<MobEffectInstance *> *activeEffects = player->getActiveEffects();
+		vector<MobEffectInstance *> *activeEffects = serverPlayer->getActiveEffects();
 		for(AUTO_VAR(it, activeEffects->begin()); it != activeEffects->end(); ++it)
 		{
 			MobEffectInstance *effect = *it;
@@ -617,6 +616,8 @@ shared_ptr<ServerPlayer> PlayerList::respawn(shared_ptr<ServerPlayer> serverPlay
     level->getChunkMap()->add(player);
     level->addEntity(player);
     players.push_back(player);
+	player->doTick(true, true, true);
+	player->connection->teleport(player->x, player->y, player->z, player->yRot, player->xRot);
 
     player->initMenu();
 

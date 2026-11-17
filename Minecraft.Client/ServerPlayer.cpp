@@ -355,7 +355,7 @@ void ServerPlayer::doChunkSendingTick(bool dontDelayChunks)
 				if( dontDelayChunks || 
 					(canSendOnSlowQueue &&
 					(connection->countDelayedPackets() < 4 )&&
-					(g_NetworkManager.GetHostPlayer()->GetSendQueueSizeMessages( NULL, true ) < 4 )&&
+					(g_NetworkManager.GetHostPlayer()->GetSendQueueSizeMessages( connection->getNetworkPlayer(), true ) < 4 )&&
 					//(tickCount - lastBrupSendTickCount) > (connection->getNetworkPlayer()->GetCurrentRtt()>>4) &&
 					!connection->done) )
 				{
@@ -392,7 +392,7 @@ void ServerPlayer::doChunkSendingTick(bool dontDelayChunks)
 					// (2) Sending a chunk that we've already sent as the player moves around. The original version of the game resends these, since it maintains
 					//     a region of active chunks round each player in the "infinite" world, but in our finite world, we don't ever request that chunks be
 					//     unloaded on the client and so just gradually build up more and more of the finite set of chunks as the player moves
-					if( !g_NetworkManager.SystemFlagGet(connection->getNetworkPlayer(),flagIndex) )
+					if( dontDelayChunks || !g_NetworkManager.SystemFlagGet(connection->getNetworkPlayer(),flagIndex) )
 					{
 //						app.DebugPrintf("Creating BRUP for %d %d\n",nearest.x, nearest.z);
 						PIXBeginNamedEvent(0,"Creation BRUP for sending\n");

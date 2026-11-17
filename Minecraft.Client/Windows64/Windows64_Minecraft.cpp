@@ -1081,7 +1081,7 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 		PIXEndNamedEvent();
 
 		PIXBeginNamedEvent(0,"Network manager do work #1");
-		//		g_NetworkManager.DoWork();
+		g_NetworkManager.DoWork();
 		PIXEndNamedEvent();
 
 		//		LeaderboardManager::Instance()->Tick();

@@ -30,8 +30,12 @@
 
 #include "Common\UI\UI.h"
 #include "Common\UI\UIScene_PauseMenu.h"
-#include "..\..\Xbox\Network\NetworkPlayerXbox.h"
 
+#ifdef _WINDOWS64
+#include "..\..\Windows64\Network\PlatformNetworkManagerWindows.h"
+#else
+static_assert(true, "Missing PlatformNetworkManager Implementation for GameNetworkManager.cpp");
+#endif
 
 // Global instance
 CGameNetworkManager g_NetworkManager;
@@ -54,7 +58,11 @@ void CGameNetworkManager::Initialise()
 	ServerStoppedCreate( false );
 	ServerReadyCreate( false );
 	int flagIndexSize = LevelRenderer::getGlobalChunkCount() / (Level::maxBuildHeight / 16);		// dividing here by number of renderer chunks in one column
+#ifdef _WINDOWS64
+	s_pPlatformNetworkManager = new CPlatformNetworkManagerWindows();
+#else
 	s_pPlatformNetworkManager = new CPlatformNetworkManagerStub();
+#endif
 	s_pPlatformNetworkManager->Initialise( this, flagIndexSize );		
 	m_bNetworkThreadRunning = false;
 	m_bInitialised = true;
@@ -1065,7 +1073,13 @@ void CGameNetworkManager::CreateSocket( INetworkPlayer *pNetworkPlayer, bool loc
 	Minecraft *pMinecraft = Minecraft::GetInstance();
 
 	Socket *socket = NULL;
-	shared_ptr<MultiplayerLocalPlayer> mpPlayer = pMinecraft->localplayers[pNetworkPlayer->GetUserIndex()];
+
+	shared_ptr<MultiplayerLocalPlayer> mpPlayer = nullptr;
+	int userIndex = pNetworkPlayer->GetUserIndex();
+	if (localPlayer && userIndex >= 0 && userIndex < XUSER_MAX_COUNT) {
+		mpPlayer = pMinecraft->localplayers[userIndex];
+	}
+
 	if( localPlayer && mpPlayer != NULL && mpPlayer->connection != NULL)
 	{
 		// If we already have a MultiplayerLocalPlayer here then we are doing a session type change

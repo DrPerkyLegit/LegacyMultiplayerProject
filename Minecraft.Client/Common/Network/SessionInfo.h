@@ -42,6 +42,6 @@ public:
 	~FriendSessionInfo()
 	{
 		if(displayLabel!=NULL)
-			delete displayLabel;
+			delete[] displayLabel;
 	}
 };
