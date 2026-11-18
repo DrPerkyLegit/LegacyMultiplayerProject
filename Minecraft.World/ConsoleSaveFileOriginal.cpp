@@ -252,11 +252,29 @@ void ConsoleSaveFileOriginal::setFilePointer(FileEntry *file,LONG lDistanceToMov
 }
 
 // If this file needs to grow, move the data after along
-void ConsoleSaveFileOriginal::PrepareForWrite( FileEntry *file, DWORD nNumberOfBytesToWrite )
+bool ConsoleSaveFileOriginal::PrepareForWrite( FileEntry *file, DWORD nNumberOfBytesToWrite )
 {
-	int bytesToGrowBy = ( (file->currentFilePointer - file->data.startOffset) + nNumberOfBytesToWrite) - file->getFileSize();
-	if( bytesToGrowBy <= 0 )
-		return;
+	if (file == NULL || pvSaveMem == NULL)
+		return false;
+
+	const uint64_t maxSaveSize = static_cast<uint64_t>(MAX_PAGE_COUNT) * CSF_PAGE_SIZE;
+	const uint64_t fileStart = file->data.startOffset;
+	const uint64_t writeStart = file->currentFilePointer;
+	const uint64_t writeEnd = writeStart + nNumberOfBytesToWrite;
+	const uint64_t fileEnd = fileStart + file->getFileSize();
+	const uint64_t currentSaveSize = header.GetFileSize();
+	const uint64_t committedSize = static_cast<uint64_t>(pagesCommitted) * CSF_PAGE_SIZE;
+	if (writeStart < fileStart || writeEnd > maxSaveSize || fileEnd > maxSaveSize ||
+		currentSaveSize > maxSaveSize || currentSaveSize > committedSize)
+		return false;
+
+	if (writeEnd <= fileEnd)
+		return true;
+
+	const uint64_t bytesToGrowBy = writeEnd - fileEnd;
+	const uint64_t desiredSize = static_cast<uint64_t>(header.GetFileSize()) + bytesToGrowBy;
+	if (bytesToGrowBy > MAXDWORD || desiredSize > maxSaveSize)
+		return false;
 
 	// 4J Stu - Not forcing a minimum size, it is up to the caller to write data in sensible amounts
 	// This lets us keep some of the smaller files small
@@ -264,15 +282,17 @@ void ConsoleSaveFileOriginal::PrepareForWrite( FileEntry *file, DWORD nNumberOfB
 	//	bytesToGrowBy = 1024;
 
 	// Move all the data beyond us
-	MoveDataBeyond(file, bytesToGrowBy);
+	if (!MoveDataBeyond(file, static_cast<DWORD>(bytesToGrowBy)))
+		return false;
 
 	// Update our length
 	if( file->data.length < 0 )
 		file->data.length = 0;
-	file->data.length += bytesToGrowBy;
+	file->data.length += static_cast<DWORD>(bytesToGrowBy);
 
 	// Write the header with the updated data
 	finalizeWrite();
+	return true;
 }
 
 BOOL ConsoleSaveFileOriginal::writeFile(FileEntry *file,LPCVOID lpBuffer, DWORD nNumberOfBytesToWrite, LPDWORD lpNumberOfBytesWritten)
@@ -285,7 +305,11 @@ BOOL ConsoleSaveFileOriginal::writeFile(FileEntry *file,LPCVOID lpBuffer, DWORD 
 
 	LockSaveAccess();
 
-	PrepareForWrite( file, nNumberOfBytesToWrite );
+	if (!PrepareForWrite(file, nNumberOfBytesToWrite))
+	{
+		ReleaseSaveAccess();
+		return 0;
+	}
 
 	char *writeStartOffset = (char *)pvSaveMem + file->currentFilePointer;
 	//printf("Write: pvSaveMem = %0xd, currentFilePointer = %d, writeStartOffset = %0xd\n", pvSaveMem, file->currentFilePointer, writeStartOffset);
@@ -317,7 +341,11 @@ BOOL ConsoleSaveFileOriginal::zeroFile(FileEntry *file, DWORD nNumberOfBytesToWr
 
 	LockSaveAccess();
 
-	PrepareForWrite( file, nNumberOfBytesToWrite );
+	if (!PrepareForWrite(file, nNumberOfBytesToWrite))
+	{
+		ReleaseSaveAccess();
+		return 0;
+	}
 
 	char *writeStartOffset = (char *)pvSaveMem + file->currentFilePointer;
 	//printf("Write: pvSaveMem = %0xd, currentFilePointer = %d, writeStartOffset = %0xd\n", pvSaveMem, file->currentFilePointer, writeStartOffset);
@@ -390,7 +418,7 @@ void ConsoleSaveFileOriginal::finalizeWrite()
 	ReleaseSaveAccess();
 }
 
-void ConsoleSaveFileOriginal::MoveDataBeyond(FileEntry *file, DWORD nNumberOfBytesToWrite)
+bool ConsoleSaveFileOriginal::MoveDataBeyond(FileEntry *file, DWORD nNumberOfBytesToWrite)
 {
 	DWORD numberOfBytesRead = 0;
 	DWORD numberOfBytesWritten = 0;
@@ -404,18 +432,19 @@ void ConsoleSaveFileOriginal::MoveDataBeyond(FileEntry *file, DWORD nNumberOfByt
 	DWORD buffer2Size = 0;
 
 	// Only ReAlloc if we need to (we might already have enough) and align to 512 byte boundaries
-	DWORD currentHeapSize = pagesCommitted * CSF_PAGE_SIZE;
-
-	DWORD desiredSize = header.GetFileSize() + nNumberOfBytesToWrite;
+	const uint64_t currentHeapSize = static_cast<uint64_t>(pagesCommitted) * CSF_PAGE_SIZE;
+	const uint64_t desiredSize = static_cast<uint64_t>(header.GetFileSize()) + nNumberOfBytesToWrite;
+	const uint64_t maxSaveSize = static_cast<uint64_t>(MAX_PAGE_COUNT) * CSF_PAGE_SIZE;
+	if (pvHeap == NULL || pvSaveMem == NULL || desiredSize > maxSaveSize)
+		return false;
 
 	if( desiredSize > currentHeapSize )
 	{
-		unsigned int pagesRequired = ( desiredSize + (CSF_PAGE_SIZE - 1 ) ) / CSF_PAGE_SIZE;
+		const unsigned int pagesRequired = static_cast<unsigned int>((desiredSize + CSF_PAGE_SIZE - 1) / CSF_PAGE_SIZE);
 		void *pvRet = VirtualAlloc(pvHeap, pagesRequired * CSF_PAGE_SIZE, COMMIT_ALLOCATION, PAGE_READWRITE);
 		if( pvRet == NULL )
 		{
-			// Out of physical memory
-			__debugbreak();
+			return false;
 		}
 		pagesCommitted = pagesRequired;
 	}
@@ -530,6 +559,7 @@ void ConsoleSaveFileOriginal::MoveDataBeyond(FileEntry *file, DWORD nNumberOfByt
 	}
 
 	header.AdjustStartOffsets( file, nNumberOfBytesToWrite );
+	return true;
 }
 
 bool ConsoleSaveFileOriginal::doesFileExist(ConsoleSavePath file)

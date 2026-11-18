@@ -25,8 +25,8 @@ private:
 
 	CRITICAL_SECTION m_lock;
 
-	void PrepareForWrite( FileEntry *file, DWORD nNumberOfBytesToWrite );
-	void MoveDataBeyond(FileEntry *file, DWORD nNumberOfBytesToWrite);
+	bool PrepareForWrite( FileEntry *file, DWORD nNumberOfBytesToWrite );
+	bool MoveDataBeyond(FileEntry *file, DWORD nNumberOfBytesToWrite);
 
 public:
 	static int SaveSaveDataCallback(LPVOID lpParam,bool bRes);
