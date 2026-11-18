@@ -139,7 +139,7 @@ public:
 	int getMusicID(const wstring& name);
 	void SetStreamingSounds(int iOverworldMin, int iOverWorldMax, int iNetherMin, int iNetherMax, int iEndMin, int iEndMax, int iCreativeMin, int iCreativeMax, int iMenuMin, int iMenuMax, int iCD1);
 	void updateMiniAudio();
-	inline void getGameModeMusicID(Minecraft* pMinecraft, unsigned int i);
+	inline void getGameModeMusicID(Minecraft* pMinecraft);
 	void playMusicUpdate();
 
 private:

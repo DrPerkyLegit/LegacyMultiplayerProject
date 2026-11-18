@@ -258,9 +258,20 @@ void SoundEngine::updateMiniAudio()
 //	getGameModeMusicID
 //
 /////////////////////////////////////////////
-inline void SoundEngine::getGameModeMusicID(Minecraft* pMinecraft, unsigned int i)
+inline void SoundEngine::getGameModeMusicID(Minecraft* pMinecraft)
 {
-	if (pMinecraft->localplayers[i] != nullptr && pMinecraft->localplayers[i]->abilities.instabuild && pMinecraft->localplayers[i]->abilities.mayfly)
+	bool creativePlayerPresent = false;
+	if (pMinecraft != nullptr) {
+		for (unsigned int i = 0; i < MAX_LOCAL_PLAYERS; ++i) {
+			const auto& player = pMinecraft->localplayers[i];
+			if (player != nullptr && player->abilities.instabuild && player->abilities.mayfly) {
+				creativePlayerPresent = true;
+				break;
+			}
+		}
+	}
+
+	if (creativePlayerPresent)
 		m_musicID = getMusicID(eMusicType_Creative);
 	// TODO(3UR): this is a part of minigames also in the future other minigame ids will need to be handled for now TU30 only checks for BATTLE
 	//else if (pMinecraft->GetCustomGameMode() && CustomGameModeInst::GetId() == EMiniGameId::BATTLE) // @3UR: thanks https://github.com/GRAnimated/MinecraftLCE/blob/6947670d152582457bfe02bd909ee30a7ab7eb55/src/Minecraft.World/net/minecraft/world/level/gamemode/minigames/EMiniGameId.h#L3
@@ -663,7 +674,7 @@ void SoundEngine::playStreaming(const wstring& name, float x, float y, float z, 
 		else if (playerInNether)
 			m_musicID = getMusicID(eMusicType_Nether);
 		else
-			getGameModeMusicID(pMinecraft, i);
+			getGameModeMusicID(pMinecraft);
 	}
 	else
 	{
@@ -1216,7 +1227,7 @@ void SoundEngine::playMusicUpdate()
 				}
 			}
 			else if (!playerInEnd && !playerInNether)
-				getGameModeMusicID(pMinecraft, i);
+				getGameModeMusicID(pMinecraft);
 
 			// volume change required?
 			if (m_musicStreamActive)
