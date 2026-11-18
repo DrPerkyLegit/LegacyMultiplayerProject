@@ -159,6 +159,7 @@ UIController::UIController()
 	m_HighlightedUIElement = nullptr;
 #ifdef _WINDOWS64
 	m_pMouseHoverScene = nullptr;
+	m_lastMouseHoverControl = -1;
 	m_lastMouseHoverX = 0;
 	m_lastMouseHoverY = 0;
 	m_mouseHoverPositionValid = false;
@@ -2518,20 +2519,18 @@ bool UIController::HandleMouseTouchInput(unsigned int iPad, unsigned int key)
 			hoveredControl->getControlType() == UIControl::eTextInput)
 			focusControl = hoveredControl->getId();
 	}
-	if (mouseMoved || hoverScene != m_pMouseHoverScene)
-	{
-		bool textInputActive = false;
+	bool textInputActive = false;
 #ifdef _WINDOWS64
-		textInputActive = Windows64KeyboardInput::IsTextInputActive();
+	textInputActive = Windows64KeyboardInput::IsTextInputActive();
 #endif
-		if (!textInputActive)
-		{
-			if (m_pMouseHoverScene && m_pMouseHoverScene != hoverScene &&
-				m_pMouseHoverScene->getControlFocus() != -1)
-				m_pMouseHoverScene->SetFocusToElement(-1);
-			if (hoverScene && hoverScene->getControlFocus() != focusControl)
-				hoverScene->SetFocusToElement(focusControl);
-		}
+	const bool hoverSceneChanged = hoverScene != m_pMouseHoverScene;
+	const bool hoverControlChanged = hoverSceneChanged || focusControl != m_lastMouseHoverControl;
+	if (!textInputActive && hoverScene && focusControl != -1 &&
+		(hoverControlChanged || hoverScene->getControlFocus() != focusControl))
+		hoverScene->SetFocusToElement(focusControl);
+
+	if (mouseMoved || hoverSceneChanged)
+	{
 		m_pMouseHoverScene = hoverScene;
 
 		if (hit && m_HighlightedUIElement &&
@@ -2541,6 +2540,7 @@ bool UIController::HandleMouseTouchInput(unsigned int iPad, unsigned int key)
 				screenX, screenY, false);
 		}
 	}
+	m_lastMouseHoverControl = focusControl;
 
 	const bool containerScene = pContainer != nullptr;
 #ifdef _WINDOWS64
@@ -2705,6 +2705,7 @@ void UIController::TouchBoxesClear(UIScene* pUIScene)
 	if (m_pMouseHoverScene == pUIScene)
 	{
 		m_pMouseHoverScene = nullptr;
+		m_lastMouseHoverControl = -1;
 		m_mouseHoverPositionValid = false;
 	}
 #endif

@@ -161,6 +161,7 @@ private:
 	UIELEMENT* m_HighlightedUIElement;
 #ifdef _WINDOWS64
 	UIScene* m_pMouseHoverScene;
+	int m_lastMouseHoverControl;
 	S32 m_lastMouseHoverX;
 	S32 m_lastMouseHoverY;
 	bool m_mouseHoverPositionValid;
