@@ -1339,8 +1339,6 @@ void Minecraft::run_middle()
 							app.SetGameSettings(i, eGameSetting_DisplayHUD, displayHud ? 0 : 1);
 							app.SetGameSettings(i, eGameSetting_DisplayHand, displayHud ? 0 : 1);
 						}
-						if (Windows64KeyboardInput::IsKeyPressed(VK_F3) && options != nullptr)
-							options->renderDebug = !options->renderDebug;
 						if (Windows64KeyboardInput::IsKeyPressed(VK_F4))
 							localplayers[i]->ullButtonsPressed |= 1LL << MINECRAFT_ACTION_RENDER_DEBUG;
 

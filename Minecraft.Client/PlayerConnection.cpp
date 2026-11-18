@@ -4,6 +4,7 @@
 #include "ServerLevel.h"
 #include "ServerPlayerGameMode.h"
 #include "PlayerList.h"
+#include "..\Minecraft.World\StringHelpers.h"
 #include "MinecraftServer.h"
 #include "..\Minecraft.World\net.minecraft.commands.h"
 #include "..\Minecraft.World\net.minecraft.network.h"
@@ -126,7 +127,7 @@ void PlayerConnection::disconnect(DisconnectPacket::eDisconnectReason reason)
 	send( shared_ptr<DisconnectPacket>( new DisconnectPacket(reason) ));
 	connection->sendAndQuit();
 	// 4J-PB - removed, since it needs to be localised in the language the client is in
-	//server->players->broadcastAll( shared_ptr<ChatPacket>( new ChatPacket(L"§e" + player->name + L" left the game.") ) );
+	//server->players->broadcastAll( shared_ptr<ChatPacket>( new ChatPacket(L"ï¿½e" + player->name + L" left the game.") ) );
 	if(getWasKicked())
 	{
 		server->getPlayers()->broadcastAll( shared_ptr<ChatPacket>( new ChatPacket(player->name, ChatPacket::e_ChatPlayerKickedFromGame) ) );
@@ -569,7 +570,7 @@ void PlayerConnection::onDisconnect(DisconnectPacket::eDisconnectReason reason, 
 	if( done ) return;
 //    logger.info(player.name + " lost connection: " + reason);
 	// 4J-PB - removed, since it needs to be localised in the language the client is in
-	//server->players->broadcastAll( shared_ptr<ChatPacket>( new ChatPacket(L"§e" + player->name + L" left the game.") ) );
+	//server->players->broadcastAll( shared_ptr<ChatPacket>( new ChatPacket(L"ï¿½e" + player->name + L" left the game.") ) );
 	if(getWasKicked())
 	{
 		server->getPlayers()->broadcastAll( shared_ptr<ChatPacket>( new ChatPacket(player->name, ChatPacket::e_ChatPlayerKickedFromGame) ) );
@@ -636,38 +637,32 @@ void PlayerConnection::handleSetCarriedItem(shared_ptr<SetCarriedItemPacket> pac
 
 void PlayerConnection::handleChat(shared_ptr<ChatPacket> packet)
 {
-	// 4J - TODO
-#if 0
-	wstring message = packet->message;
-	if (message.length() > SharedConstants::maxChatLength)
-	{
-		disconnect(L"Chat message too long");
+	if (packet == nullptr || packet->m_messageType != ChatPacket::e_ChatCustom ||
+		packet->m_stringArgs.empty())
 		return;
-	}
-	message = message.trim();
-	for (int i = 0; i < message.length(); i++)
+
+	wstring message = trimString(packet->m_stringArgs[0]);
+	if (message.empty() || message.length() > SharedConstants::maxChatLength)
+		return;
+
+	for (wchar_t character : message)
 	{
-		if (SharedConstants.acceptableLetters.indexOf(message.charAt(i)) < 0 && (int) message.charAt(i) < 32)
-		{
-			disconnect(L"Illegal characters in chat");
+		if (character < L' ' || character == 0x7f)
 			return;
-		}
 	}
 
-	if (message.startsWith("/"))
+	if (message[0] == L'/')
 	{
 		handleCommand(message);
-	} else {
-		message = "<" + player.name + "> " + message;
-		logger.info(message);
-		server.players.broadcastAll(new ChatPacket(message));
+		return;
 	}
+
 	chatSpamTickCount += SharedConstants::TICKS_PER_SECOND;
 	if (chatSpamTickCount > SharedConstants::TICKS_PER_SECOND * 10)
-	{
-		disconnect("disconnect.spam");
-	}
-#endif
+		return;
+
+	server->getPlayers()->broadcastAll(
+		shared_ptr<ChatPacket>(new ChatPacket(L"<" + player->name + L"> " + message)));
 }
 
 void PlayerConnection::handleCommand(const wstring& message)
@@ -740,13 +735,13 @@ int PlayerConnection::countDelayedPackets()
 void PlayerConnection::info(const wstring& string)
 {
 	// 4J-PB - removed, since it needs to be localised in the language the client is in
-	//send( shared_ptr<ChatPacket>( new ChatPacket(L"§7" + string) ) );
+	//send( shared_ptr<ChatPacket>( new ChatPacket(L"ï¿½7" + string) ) );
 }
 
 void PlayerConnection::warn(const wstring& string)
 {
 	// 4J-PB - removed, since it needs to be localised in the language the client is in
-	//send( shared_ptr<ChatPacket>( new ChatPacket(L"§9" + string) ) );
+	//send( shared_ptr<ChatPacket>( new ChatPacket(L"ï¿½9" + string) ) );
 }
 
 wstring PlayerConnection::getConsoleName()

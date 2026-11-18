@@ -39,6 +39,8 @@
 #include "..\..\Minecraft.World\compression.h"
 #include "..\..\Minecraft.World\OldChunkStorage.h"
 
+#include "ChatScreen.h"
+
 WCHAR chGlobalText[256];
 uint16_t ui16GlobalText[256];
 
@@ -1216,6 +1218,58 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 			{
 				Windows64KeyboardInput::SetCapture(true);
 			}
+		}
+
+		if (Windows64KeyboardInput::IsKBMActive()) {
+			//f1 toggles hud
+			if (Windows64KeyboardInput::IsKeyPressed(VK_F1)) {
+				const int primaryPad = ProfileManager.GetPrimaryPad();
+				const unsigned char displayHud = app.GetGameSettings(primaryPad, eGameSetting_DisplayHUD);
+				app.SetGameSettings(primaryPad, eGameSetting_DisplayHUD, displayHud ? 0 : 1);
+				app.SetGameSettings(primaryPad, eGameSetting_DisplayHand, displayHud ? 0 : 1);
+			}
+
+			//f3 debug menu
+			{
+				bool hitCombo = false;
+				if (Windows64KeyboardInput::IsKeyDown(VK_F3)) {
+					if (Windows64KeyboardInput::IsKeyPressed('Q')) {
+						hitCombo = true;
+					}
+				}
+
+				if (!hitCombo && Windows64KeyboardInput::IsKeyPressed(VK_F3) && pMinecraft->options) {
+					pMinecraft->options->renderDebug = !pMinecraft->options->renderDebug;
+				}
+			}
+			
+
+#ifdef _DEBUG_MENUS_ENABLED
+			//f6 uiscene debug menu
+			if (Windows64KeyboardInput::IsKeyPressed(VK_F6)) {
+				static bool s_debugConsole = false;
+				s_debugConsole = !s_debugConsole;
+				ui.ShowUIDebugConsole(s_debugConsole);
+			}
+#endif
+			//ingame player list menu
+			if (Windows64KeyboardInput::IsKeyPressed(VK_TAB) && !ui.GetMenuDisplayed(0)) {
+				if (pMinecraft) ui.NavigateToScene(0, eUIScene_InGameInfoMenu);
+			}
+
+			//open native chat
+			if (Windows64KeyboardInput::IsKeyPressed('T') && app.GetGameStarted() && !ui.GetMenuDisplayed(0) && pMinecraft->screen == NULL) {
+				pMinecraft->setScreen(new ChatScreen());
+				SetFocus(g_hWnd);
+			}
+
+			if (Windows64KeyboardInput::IsKeyPressed(VK_OEM_2) && app.GetGameStarted() && !ui.GetMenuDisplayed(0) && pMinecraft->screen == NULL) {
+				auto chatScreen = new ChatScreen();
+				//chatScreen->setCurrentMessage(L"/");
+				pMinecraft->setScreen(chatScreen);
+				SetFocus(g_hWnd);
+			}
+
 		}
 #if 0
 		PIXBeginNamedEvent(0,"Profile load check");

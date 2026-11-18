@@ -613,3 +613,14 @@ bool Windows64KeyboardInput::HasAnyInput() {
 	return false;
 }
 
+int Windows64KeyboardInput::GetX() {
+	POINT pt;
+	if (GetCursorPos(&pt)) return pt.x;
+	return 0;
+}
+
+int Windows64KeyboardInput::GetY() {
+	POINT pt;
+	if (GetCursorPos(&pt)) return pt.y;
+	return 0;
+}

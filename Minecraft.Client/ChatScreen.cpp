@@ -4,8 +4,6 @@
 #include "..\Minecraft.World\SharedConstants.h"
 #include "..\Minecraft.World\StringHelpers.h"
 
-const wstring ChatScreen::allowedChars = SharedConstants::acceptableLetters;
-
 ChatScreen::ChatScreen()
 {
 	frame = 0;
@@ -47,11 +45,17 @@ void ChatScreen::keyPressed(wchar_t ch, int eventKey)
         minecraft->setScreen(NULL);
         return;
     }
-    if (eventKey == Keyboard::KEY_BACK && message.length() > 0) message = message.substr(0, message.length() - 1);
-    if (allowedChars.find(ch) >= 0 && message.length() < SharedConstants::maxChatLength)
-	{
-        message += ch;
+    if (eventKey == Keyboard::KEY_BACK)
+    {
+        if (!message.empty())
+            message.pop_back();
+        return;
     }
+    if (ch < L' ' || SharedConstants::acceptableLetters.find(ch) == wstring::npos ||
+        message.length() >= SharedConstants::maxChatLength)
+        return;
+
+    message += ch;
 
 }
 

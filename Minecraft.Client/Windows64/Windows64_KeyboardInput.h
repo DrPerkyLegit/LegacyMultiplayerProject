@@ -27,6 +27,9 @@ public:
 	static bool IsKBMActive();
 	static bool HasAnyInput();
 
+	static int GetX();
+	static int GetY();
+
 	static void PreTick();
 	static void PostTick();
 

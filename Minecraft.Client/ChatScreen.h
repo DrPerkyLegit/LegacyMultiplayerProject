@@ -15,7 +15,6 @@ public:
     virtual void removed();
     virtual void tick();
 private:
-	static const wstring allowedChars;
 protected:
 	void keyPressed(wchar_t ch, int eventKey);
 public:
