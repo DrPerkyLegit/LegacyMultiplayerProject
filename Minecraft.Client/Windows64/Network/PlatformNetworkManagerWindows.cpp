@@ -9,6 +9,7 @@
 #include "..\..\User.h"
 #include "..\..\..\Minecraft.World\StringHelpers.h"
 #include "..\..\..\Minecraft.World\Socket.h"
+#include "..\..\Common\Network\ExternalServerList.h"
 
 namespace {
 	const unsigned short WINDOWS_NETWORK_PORT = 25565;
@@ -19,13 +20,18 @@ namespace {
 	const unsigned long LAN_DISCOVERY_MAGIC = 0x4C4D5043;
 	const unsigned char LAN_DISCOVERY_QUERY = 1;
 	const unsigned char LAN_DISCOVERY_RESPONSE = 2;
+	const unsigned char TCP_REQUEST_SERVER_INFO = 1;
+	const unsigned char TCP_REQUEST_JOIN_GAME = 2;
+	const DWORD TCP_REQUEST_TIMEOUT_MS = 1000;
+	const DWORD TCP_JOIN_TIMEOUT_MS = 1500;
+	const DWORD PENDING_CLIENT_TIMEOUT_MS = 5000;
 
 	bool SetNonBlocking(SOCKET socket) {
 		u_long enabled = 1;
 		return ioctlsocket(socket, FIONBIO, &enabled) == 0;
 	}
 
-	bool ConnectWithTimeout(SOCKET socket, const sockaddr_in& address) {
+	bool ConnectWithTimeout(SOCKET socket, const sockaddr_in& address, DWORD timeoutMs = 5000) {
 		if (!SetNonBlocking(socket)) return false;
 		if (connect(socket, reinterpret_cast<const sockaddr*>(&address), sizeof(address)) == 0) return true;
 
@@ -36,8 +42,8 @@ namespace {
 		FD_ZERO(&writableSockets);
 		FD_SET(socket, &writableSockets);
 		timeval timeout;
-		timeout.tv_sec = 5;
-		timeout.tv_usec = 0;
+		timeout.tv_sec = timeoutMs / 1000;
+		timeout.tv_usec = (timeoutMs % 1000) * 1000;
 		int ready = select(0, nullptr, &writableSockets, nullptr, &timeout);
 		if (ready == 0) {
 			WSASetLastError(WSAETIMEDOUT);
@@ -61,6 +67,11 @@ namespace {
 	struct LanDiscoveryPacket {
 		unsigned long magic;
 		unsigned char type;
+	};
+
+	struct ServerDataPacket {
+		unsigned long magic;
+		unsigned char type;
 		unsigned char playerCount;
 		unsigned char maxPlayers;
 		unsigned char ready;
@@ -70,7 +81,99 @@ namespace {
 		unsigned long texturePackParentId;
 		unsigned char subTexturePackId;
 		wchar_t displayName[32];
+		wchar_t playerNames[MINECRAFT_NET_MAX_PLAYERS][XUSER_NAME_SIZE];
 	};
+
+	void ApplyServerData(FriendSessionInfo* sessionInfo, const ServerDataPacket& serverData) {
+		sessionInfo->data.netVersion = serverData.netVersion;
+		sessionInfo->data.m_uiGameHostSettings = serverData.hostSettings;
+		sessionInfo->data.texturePackParentId = serverData.texturePackParentId;
+		sessionInfo->data.subTexturePackId = serverData.subTexturePackId;
+		sessionInfo->data.isReadyToJoin = serverData.ready != 0;
+		sessionInfo->serverPlayerNames.clear();
+
+		unsigned int playerCount = serverData.playerCount;
+		if (playerCount > MINECRAFT_NET_MAX_PLAYERS) playerCount = MINECRAFT_NET_MAX_PLAYERS;
+		for (unsigned int index = 0; index < playerCount; ++index) {
+			size_t nameLength = 0;
+			while (nameLength < XUSER_NAME_SIZE && serverData.playerNames[index][nameLength] != L'\0') {
+				++nameLength;
+			}
+			if (nameLength > 0) {
+				sessionInfo->serverPlayerNames.push_back(std::wstring(serverData.playerNames[index], nameLength));
+			}
+		}
+	}
+
+	bool WaitForSocket(SOCKET socket, bool writable, DWORD startTime, DWORD timeoutMs) {
+		DWORD elapsed = GetTickCount() - startTime;
+		if (elapsed >= timeoutMs) return false;
+
+		fd_set sockets;
+		FD_ZERO(&sockets);
+		FD_SET(socket, &sockets);
+		timeval timeout;
+		timeout.tv_sec = (timeoutMs - elapsed) / 1000;
+		timeout.tv_usec = ((timeoutMs - elapsed) % 1000) * 1000;
+		int result = writable
+			? select(0, nullptr, &sockets, nullptr, &timeout)
+			: select(0, &sockets, nullptr, nullptr, &timeout);
+		return result > 0;
+	}
+
+	bool SendAllWithTimeout(SOCKET socket, const char* data, int length, DWORD timeoutMs) {
+		int sentTotal = 0;
+		DWORD startTime = GetTickCount();
+		while (sentTotal < length) {
+			if (!WaitForSocket(socket, true, startTime, timeoutMs)) return false;
+			int sent = send(socket, data + sentTotal, length - sentTotal, 0);
+			if (sent > 0) {
+				sentTotal += sent;
+				continue;
+			}
+			int error = WSAGetLastError();
+			if (sent == SOCKET_ERROR && (error == WSAEWOULDBLOCK || error == WSAEINTR)) continue;
+			return false;
+		}
+		return true;
+	}
+
+	bool ReceiveAllWithTimeout(SOCKET socket, char* data, int length, DWORD timeoutMs) {
+		int receivedTotal = 0;
+		DWORD startTime = GetTickCount();
+		while (receivedTotal < length) {
+			if (!WaitForSocket(socket, false, startTime, timeoutMs)) return false;
+			int received = recv(socket, data + receivedTotal, length - receivedTotal, 0);
+			if (received > 0) {
+				receivedTotal += received;
+				continue;
+			}
+			int error = WSAGetLastError();
+			if (received == SOCKET_ERROR && (error == WSAEWOULDBLOCK || error == WSAEINTR)) continue;
+			return false;
+		}
+		return true;
+	}
+
+	bool QueryServerData(const sockaddr_in& address, ServerDataPacket& serverData) {
+		SOCKET socket = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+		if (socket == INVALID_SOCKET) return false;
+		if (!ConnectWithTimeout(socket, address, TCP_REQUEST_TIMEOUT_MS)) {
+			closesocket(socket);
+			return false;
+		}
+
+		const char request = TCP_REQUEST_SERVER_INFO;
+		bool success = SendAllWithTimeout(socket, &request, sizeof(request), TCP_REQUEST_TIMEOUT_MS) &&
+			ReceiveAllWithTimeout(socket, reinterpret_cast<char*>(&serverData), sizeof(serverData), TCP_REQUEST_TIMEOUT_MS);
+		closesocket(socket);
+		if (!success || serverData.magic != LAN_DISCOVERY_MAGIC || serverData.type != TCP_REQUEST_SERVER_INFO)
+			return false;
+
+		serverData.displayName[_countof(serverData.displayName) - 1] = L'\0';
+		return true;
+	}
+
 #pragma pack(pop)
 
 	SessionID MakeLanSessionId(unsigned long address, unsigned short port) {
@@ -213,7 +316,7 @@ bool CPlatformNetworkManagerWindows::StartListener() {
 
 	m_listenSocket = listener;
 	m_discoverySocket = discovery;
-	app.DebugPrintf("Windows LAN host listening on TCP %u and UDP %u.\n", WINDOWS_NETWORK_PORT, WINDOWS_DISCOVERY_PORT);
+	app.DebugPrintf("Windows LAN host listening on TCP %u and UDP %u.", WINDOWS_NETWORK_PORT, WINDOWS_DISCOVERY_PORT);
 	return true;
 }
 
@@ -225,44 +328,108 @@ void CPlatformNetworkManagerWindows::CloseListener() {
 
 	if (listener != INVALID_SOCKET) closesocket(listener);
 	if (discovery != INVALID_SOCKET) closesocket(discovery);
+	for (std::vector<PendingClient>::iterator it = m_pendingClients.begin(); it != m_pendingClients.end(); ++it) {
+		closesocket(it->socket);
+	}
+	m_pendingClients.clear();
 }
 
 void CPlatformNetworkManagerWindows::ProcessDiscoveryRequests() {
 	while (true) {
-		LanDiscoveryPacket request;
+		LanDiscoveryPacket request = {};
 		sockaddr_in remoteAddress;
 		int addressLength = sizeof(remoteAddress);
 		int received = recvfrom(m_discoverySocket, reinterpret_cast<char*>(&request), sizeof(request), 0, reinterpret_cast<sockaddr*>(&remoteAddress), &addressLength);
 		if (received == SOCKET_ERROR) {
 			int error = WSAGetLastError();
 			if (error != WSAEWOULDBLOCK && error != WSAEINTR) {
-				app.DebugPrintf("Receiving a Windows LAN discovery request failed: %d\n", error);
+				app.DebugPrintf("Receiving a Windows LAN discovery request failed: %d", error);
 			}
 			break;
 		}
 
 		if (received != sizeof(request) || request.magic != LAN_DISCOVERY_MAGIC || request.type != LAN_DISCOVERY_QUERY || !m_isHost || !m_inSession) continue;
-		app.DebugPrintf("Received a Windows LAN discovery query.\n");
+		app.DebugPrintf("Received a Windows LAN discovery query.");
 
 		LanDiscoveryPacket response = {};
 		response.magic = LAN_DISCOVERY_MAGIC;
 		response.type = LAN_DISCOVERY_RESPONSE;
-		response.playerCount = static_cast<unsigned char>(GetPlayerCount());
-		response.maxPlayers = static_cast<unsigned char>(MINECRAFT_NET_MAX_PLAYERS);
-		response.ready = 1;
-		response.netVersion = MINECRAFT_NET_VERSION;
-		response.gamePort = WINDOWS_NETWORK_PORT;
-		response.hostSettings = m_sessionData.m_uiGameHostSettings;
-		response.texturePackParentId = m_sessionData.texturePackParentId;
-		response.subTexturePackId = m_sessionData.subTexturePackId;
-
-		const wchar_t* displayName = m_hostPlayer != nullptr ? m_hostPlayer->GetOnlineName() : nullptr;
-		if (displayName == nullptr || displayName[0] == L'\0') displayName = L"LAN Game";
-		wcsncpy_s(response.displayName, _countof(response.displayName), displayName, _TRUNCATE);
 
 		int sent = sendto(m_discoverySocket, reinterpret_cast<const char*>(&response), sizeof(response), 0, reinterpret_cast<sockaddr*>(&remoteAddress), addressLength);
 		if (sent == SOCKET_ERROR) {
 			app.DebugPrintf("Sending a Windows LAN discovery response failed: %d", WSAGetLastError());
+		}
+	}
+}
+
+void CPlatformNetworkManagerWindows::ProcessPendingClients() {
+	for (std::vector<PendingClient>::iterator it = m_pendingClients.begin(); it != m_pendingClients.end();) {
+		char request = 0;
+		int received = recv(it->socket, &request, sizeof(request), 0);
+		if (received == SOCKET_ERROR) {
+			int error = WSAGetLastError();
+			if ((error == WSAEWOULDBLOCK || error == WSAEINTR) &&
+				GetTickCount() - it->acceptedAt < PENDING_CLIENT_TIMEOUT_MS) {
+				++it;
+				continue;
+			}
+			if (error != WSAEWOULDBLOCK && error != WSAEINTR) {
+				app.DebugPrintf("Receiving a Windows game connection request failed: %d", error);
+			}
+			closesocket(it->socket);
+			it = m_pendingClients.erase(it);
+			continue;
+		}
+
+		if (received == 0) {
+			closesocket(it->socket);
+			it = m_pendingClients.erase(it);
+			continue;
+		}
+
+		PendingClient pending = *it;
+		it = m_pendingClients.erase(it);
+		if (request == TCP_REQUEST_SERVER_INFO && received == sizeof(request)) {
+			ServerDataPacket response = {};
+			response.magic = LAN_DISCOVERY_MAGIC;
+			response.type = TCP_REQUEST_SERVER_INFO;
+			response.maxPlayers = static_cast<unsigned char>(MINECRAFT_NET_MAX_PLAYERS);
+			response.ready = m_inSession ? 1 : 0;
+			response.netVersion = MINECRAFT_NET_VERSION;
+			response.gamePort = WINDOWS_NETWORK_PORT;
+			response.hostSettings = app.GetGameHostOption(eGameHostOption_All);
+			response.texturePackParentId = m_sessionData.texturePackParentId;
+			response.subTexturePackId = m_sessionData.subTexturePackId;
+
+			{
+				std::lock_guard<std::mutex> lock(m_playersMutex);
+				for (std::vector<NetworkPlayerWindows*>::const_iterator it = m_players.begin();
+					it != m_players.end() && response.playerCount < MINECRAFT_NET_MAX_PLAYERS; ++it) {
+					if (!(*it)->IsConnected()) continue;
+					const wchar_t* playerName = (*it)->GetOnlineName();
+					if (playerName != nullptr) {
+						wcsncpy_s(response.playerNames[response.playerCount], XUSER_NAME_SIZE, playerName, _TRUNCATE);
+					}
+					++response.playerCount;
+				}
+			}
+
+			const wchar_t* displayName = m_hostPlayer != nullptr ? m_hostPlayer->GetOnlineName() : nullptr;
+			if (displayName == nullptr || displayName[0] == L'\0') displayName = L"LAN Game";
+			wcsncpy_s(response.displayName, _countof(response.displayName), displayName, _TRUNCATE);
+
+			if (!SendAllWithTimeout(pending.socket, reinterpret_cast<const char*>(&response), sizeof(response), TCP_REQUEST_TIMEOUT_MS)) {
+				app.DebugPrintf("Sending Windows server data failed.");
+			}
+			closesocket(pending.socket);
+		} else if (request == TCP_REQUEST_JOIN_GAME && received == sizeof(request)) {
+			if (SessionHasSpace()) {
+				AddRemotePlayer(pending.socket, pending.remoteAddress, false);
+			} else {
+				closesocket(pending.socket);
+			}
+		} else {
+			closesocket(pending.socket);
 		}
 	}
 }
@@ -272,6 +439,7 @@ void CPlatformNetworkManagerWindows::DoWork() {
 
 	if (m_isHost && m_listenSocket != INVALID_SOCKET) {
 		if (m_discoverySocket != INVALID_SOCKET) ProcessDiscoveryRequests();
+		ProcessPendingClients();
 
 		while (true) {
 			sockaddr_in remoteAddress;
@@ -293,12 +461,14 @@ void CPlatformNetworkManagerWindows::DoWork() {
 			BOOL noDelay = TRUE;
 			setsockopt(client, IPPROTO_TCP, TCP_NODELAY, reinterpret_cast<const char*>(&noDelay), sizeof(noDelay));
 
-			if (!SessionHasSpace()) {
+			if (m_pendingClients.size() >= 32) {
 				closesocket(client);
 				continue;
 			}
-			AddRemotePlayer(client, remoteAddress.sin_addr.s_addr, false);
+			PendingClient pending = { client, remoteAddress.sin_addr.s_addr, GetTickCount() };
+			m_pendingClients.push_back(pending);
 		}
+		ProcessPendingClients();
 	}
 
 	std::vector<NetworkPlayerWindows*> players;
@@ -510,23 +680,26 @@ int CPlatformNetworkManagerWindows::JoinGame(FriendSessionInfo* searchResult, in
 		return CGameNetworkManager::JOINGAME_FAIL_GENERAL;
 	}
 
-	m_gameNetworkManager->StateChange_AnyToJoining();
 	SOCKET client = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (client == INVALID_SOCKET) {
-		m_gameNetworkManager->StateChange_JoiningToIdle(JOIN_FAILED_NONSPECIFIC);
 		return CGameNetworkManager::JOINGAME_FAIL_GENERAL;
 	}
 
-	if (!ConnectWithTimeout(client, address)) {
+	if (!ConnectWithTimeout(client, address, TCP_JOIN_TIMEOUT_MS)) {
 		int error = WSAGetLastError();
 		app.DebugPrintf("Connecting to Windows game at %s:%u failed: %d", inet_ntoa(address.sin_addr), ntohs(address.sin_port), error);
 		closesocket(client);
-		m_gameNetworkManager->StateChange_JoiningToIdle(JOIN_FAILED_NONSPECIFIC);
+		return CGameNetworkManager::JOINGAME_FAIL_GENERAL;
+	}
+	const char request = TCP_REQUEST_JOIN_GAME;
+	if (!SendAllWithTimeout(client, &request, sizeof(request), TCP_REQUEST_TIMEOUT_MS)) {
+		closesocket(client);
 		return CGameNetworkManager::JOINGAME_FAIL_GENERAL;
 	}
 	BOOL noDelay = TRUE;
 	setsockopt(client, IPPROTO_TCP, TCP_NODELAY, reinterpret_cast<const char*>(&noDelay), sizeof(noDelay));
 
+	m_gameNetworkManager->StateChange_AnyToJoining();
 	NetworkPlayerWindows* localPlayer = CreateLocalPlayer(primaryUserIndex);
 	if (localPlayer == nullptr) {
 		closesocket(client);
@@ -616,6 +789,7 @@ bool CPlatformNetworkManagerWindows::_RunNetworkGame() {
 
 void CPlatformNetworkManagerWindows::UpdateAndSetGameSessionData(INetworkPlayer* pNetworkPlayerLeaving) {
 	m_sessionData.netVersion = MINECRAFT_NET_VERSION;
+	m_sessionData.m_uiGameHostSettings = app.GetGameHostOption(eGameHostOption_All);
 }
 
 void CPlatformNetworkManagerWindows::SystemFlagSet(INetworkPlayer* pNetworkPlayer, int index) {
@@ -630,11 +804,7 @@ void CPlatformNetworkManagerWindows::SystemFlagSet(INetworkPlayer* pNetworkPlaye
 bool CPlatformNetworkManagerWindows::SystemFlagGet(INetworkPlayer* pNetworkPlayer, int index)
 {
 	NetworkPlayerWindows* player = dynamic_cast<NetworkPlayerWindows*>(pNetworkPlayer);
-	return player != NULL &&
-		index >= 0 &&
-		index < m_flagIndexSize &&
-		static_cast<size_t>(index / 8) < player->m_systemFlags.size() &&
-		(player->m_systemFlags[index / 8] & static_cast<unsigned char>(128 >> (index % 8))) != 0;
+	return player != nullptr && index >= 0 && index < m_flagIndexSize && static_cast<size_t>(index / 8) < player->m_systemFlags.size() && (player->m_systemFlags[index / 8] & static_cast<unsigned char>(128 >> (index % 8))) != 0;
 }
 
 std::wstring CPlatformNetworkManagerWindows::GatherStats() { return L"Winsock TCP players: " + _toString(GetPlayerCount()); }
@@ -657,6 +827,34 @@ void CPlatformNetworkManagerWindows::SetSessionLabel(FriendSessionInfo* sessionI
 
 std::vector<FriendSessionInfo*>* CPlatformNetworkManagerWindows::GetSessionList(int iPad, int localPlayers, bool partyOnly) {
 	std::vector<FriendSessionInfo*>* sessions = new std::vector<FriendSessionInfo*>();
+	std::vector<ExternalServerList::Entry> savedServers;
+	if (!ExternalServerList::Read(savedServers)) {
+		app.DebugPrintf("Failed to read external servers from servers.db.");
+	} else {
+		for (size_t index = 0; index < savedServers.size(); ++index) {
+			uint64_t sessionId = 0;
+			if (!ExternalServerList::MakeSessionId(savedServers[index].address, savedServers[index].port, sessionId)) {
+				app.DebugPrintf("Ignoring invalid address in servers.db: %s", savedServers[index].address.c_str());
+				continue;
+			}
+
+			int nameLength = MultiByteToWideChar(CP_ACP, 0, savedServers[index].name.c_str(), -1, nullptr, 0);
+			if (nameLength <= 0) {
+				app.DebugPrintf("Ignoring server with an invalid name in servers.db.");
+				continue;
+			}
+			std::vector<wchar_t> wideName(nameLength);
+			if (MultiByteToWideChar(CP_ACP, 0, savedServers[index].name.c_str(), -1, &wideName[0], nameLength) == 0) {
+				app.DebugPrintf("Ignoring server with an invalid name in servers.db.");
+				continue;
+			}
+
+			FriendSessionInfo* sessionInfo = new FriendSessionInfo();
+			SetSessionLabel(sessionInfo, wideName.data(), sessionId);
+			sessions->push_back(sessionInfo);
+		}
+	}
+
 	if (!m_winsockStarted) return sessions;
 
 	SOCKET querySocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
@@ -686,7 +884,6 @@ std::vector<FriendSessionInfo*>* CPlatformNetworkManagerWindows::GetSessionList(
 	LanDiscoveryPacket query = {};
 	query.magic = LAN_DISCOVERY_MAGIC;
 	query.type = LAN_DISCOVERY_QUERY;
-	query.netVersion = MINECRAFT_NET_VERSION;
 
 	sockaddr_in broadcastAddress;
 	memset(&broadcastAddress, 0, sizeof(broadcastAddress));
@@ -768,10 +965,18 @@ std::vector<FriendSessionInfo*>* CPlatformNetworkManagerWindows::GetSessionList(
 			}
 
 			if (received != sizeof(response) || response.magic != LAN_DISCOVERY_MAGIC || response.type != LAN_DISCOVERY_RESPONSE) continue;
-			if (response.netVersion != MINECRAFT_NET_VERSION || response.ready == 0 || response.gamePort == 0) continue;
-			if (response.maxPlayers != 0 && (response.playerCount + localPlayers) > response.maxPlayers) continue;
 
-			SessionID sessionId = MakeLanSessionId(remoteAddress.sin_addr.s_addr, response.gamePort);
+			sockaddr_in serverAddress = remoteAddress;
+			serverAddress.sin_port = htons(WINDOWS_NETWORK_PORT);
+			ServerDataPacket serverData = {};
+			if (!QueryServerData(serverAddress, serverData) ||
+				serverData.netVersion != MINECRAFT_NET_VERSION ||
+				serverData.ready == 0 || serverData.gamePort == 0 ||
+				(serverData.maxPlayers != 0 && (serverData.playerCount + localPlayers) > serverData.maxPlayers)) {
+				continue;
+			}
+
+			SessionID sessionId = MakeLanSessionId(remoteAddress.sin_addr.s_addr, serverData.gamePort);
 			bool alreadyAdded = false;
 			for (std::vector<FriendSessionInfo*>::const_iterator it = sessions->begin(); it != sessions->end(); ++it) {
 				if ((*it)->sessionId == sessionId) {
@@ -781,14 +986,10 @@ std::vector<FriendSessionInfo*>* CPlatformNetworkManagerWindows::GetSessionList(
 			}
 			if (alreadyAdded) continue;
 
-			response.displayName[_countof(response.displayName) - 1] = L'\0';
-			const wchar_t* label = response.displayName[0] != L'\0' ? response.displayName : L"LAN Game";
+			const wchar_t* label = serverData.displayName[0] != L'\0' ? serverData.displayName : L"LAN Game";
 			FriendSessionInfo* sessionInfo = new FriendSessionInfo();
 			SetSessionLabel(sessionInfo, label, sessionId);
-			sessionInfo->data.netVersion = response.netVersion;
-			sessionInfo->data.m_uiGameHostSettings = response.hostSettings;
-			sessionInfo->data.texturePackParentId = response.texturePackParentId;
-			sessionInfo->data.subTexturePackId = response.subTexturePackId;
+			ApplyServerData(sessionInfo, serverData);
 			sessions->push_back(sessionInfo);
 		}
 	}
@@ -818,6 +1019,17 @@ void CPlatformNetworkManagerWindows::SetSessionsUpdatedCallback(void (*SessionsU
 
 void CPlatformNetworkManagerWindows::GetFullFriendSessionInfo(FriendSessionInfo* foundSession, void (*FriendSessionUpdatedFn)(bool success, void* pParam), void* pParam) {
 	bool success = foundSession != nullptr && (foundSession->sessionId == LOCAL_SESSION_ID || IsLanSessionId(foundSession->sessionId));
+	if (success && foundSession->sessionId != LOCAL_SESSION_ID) {
+		sockaddr_in address;
+		ServerDataPacket serverData = {};
+		if (GetLanAddress(foundSession->sessionId, &address) && QueryServerData(address, serverData) &&
+			serverData.netVersion == MINECRAFT_NET_VERSION && serverData.ready != 0 && serverData.gamePort != 0) {
+			ApplyServerData(foundSession, serverData);
+			if (serverData.displayName[0] != L'\0') {
+				SetSessionLabel(foundSession, serverData.displayName, foundSession->sessionId);
+			}
+		}
+	}
 	if (FriendSessionUpdatedFn != nullptr) FriendSessionUpdatedFn(success, pParam);
 }
 

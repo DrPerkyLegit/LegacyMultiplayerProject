@@ -180,7 +180,7 @@ void UIScene_LoadOrJoinMenu::updateTooltips()
     int iX=-1;
     if (DoesGamesListHaveFocus() && m_buttonListGames.getItemCount() > 0)
     {
-        if (m_currentSessions == NULL || m_iGameListIndex < static_cast<int>(m_currentSessions->size()))
+        if (m_currentSessions != NULL && m_iGameListIndex > 0 && m_iGameListIndex <= static_cast<int>(m_currentSessions->size()))
         {
             iY = IDS_TOOLTIPS_VIEW_GAMERCARD;
         }
@@ -939,13 +939,13 @@ void UIScene_LoadOrJoinMenu::handlePress(F64 controlId, F64 childId)
 			{
 				int nIndex = (int)childId;
 				m_iGameListIndex = nIndex;
-				if (m_currentSessions != NULL && nIndex == static_cast<int>(m_currentSessions->size()))
+				if (nIndex == 0)
 				{
 					m_bIgnoreInput = false;
 					ui.NavigateToScene(m_iPad, eUIScene_AddExternalServerMenu, NULL);
 					break;
 				}
-				CheckAndJoinGame(nIndex);
+				CheckAndJoinGame(nIndex - 1);
 			}
 
             break;
@@ -1092,10 +1092,10 @@ void UIScene_LoadOrJoinMenu::UpdateGamesList()
         unsigned int nIndex = m_buttonListGames.getCurrentSelection();
         if (m_currentSessions != NULL)
         {
-            addServerWasSelected = nIndex == m_currentSessions->size();
-            if (nIndex < m_currentSessions->size())
+            addServerWasSelected = nIndex == 0;
+            if (nIndex > 0 && nIndex <= m_currentSessions->size())
             {
-                pSelectedSession = m_currentSessions->at(nIndex);
+                pSelectedSession = m_currentSessions->at(nIndex - 1);
             }
         }
     }
@@ -1149,11 +1149,13 @@ void UIScene_LoadOrJoinMenu::UpdateGamesList()
 
     // clear out the games list and re-fill
     m_buttonListGames.clearList();
+    m_buttonListGames.addItem(L"Add External Server");
+    m_iGameListIndex = 0;
 
     if( filteredListSize > 0 )
     {
         // Reset the focus to the selected session if it still exists
-        unsigned int sessionIndex = 0;
+        unsigned int sessionIndex = 1;
         m_buttonListGames.setCurrentSelection(0);
 
         for( AUTO_VAR(it, m_currentSessions->begin()); it < m_currentSessions->end(); ++it)
@@ -1218,6 +1220,7 @@ void UIScene_LoadOrJoinMenu::UpdateGamesList()
             if(memcmp( &selectedSessionId, &sessionInfo->sessionId, sizeof(SessionID) ) == 0)
             {
                 m_buttonListGames.setCurrentSelection(sessionIndex);
+                m_iGameListIndex = sessionIndex;
                 break;
             }
             ++sessionIndex;
@@ -1225,10 +1228,9 @@ void UIScene_LoadOrJoinMenu::UpdateGamesList()
     }
 
     m_labelNoGames.setVisible(false);
-    m_buttonListGames.addItem(L"Add External Server");
     if (filteredListSize == 0 || addServerWasSelected)
     {
-        int selectedIndex = addServerWasSelected ? static_cast<int>(filteredListSize) : 0;
+        int selectedIndex = 0;
         m_buttonListGames.setCurrentSelection(selectedIndex);
         m_iGameListIndex = selectedIndex;
     }

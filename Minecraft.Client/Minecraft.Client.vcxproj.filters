@@ -1848,6 +1848,9 @@
     <ClInclude Include="Common\Network\SessionInfo.h">
       <Filter>Common\Source Files\Network</Filter>
     </ClInclude>
+    <ClInclude Include="Common\Network\ExternalServerList.h">
+      <Filter>Common\Source Files\Network</Filter>
+    </ClInclude>
     <ClInclude Include="Common\Network\GameNetworkManager.h">
       <Filter>Common\Source Files\Network</Filter>
     </ClInclude>

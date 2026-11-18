@@ -65,6 +65,12 @@ public:
 	virtual void FakeLocalPlayerJoined();
 
 private:
+	struct PendingClient {
+		SOCKET socket;
+		unsigned long remoteAddress;
+		DWORD acceptedAt;
+	};
+
 	virtual bool _LeaveGame(bool bMigrateHost, bool bLeaveRoom);
 	virtual void _HostGame(int usersMask, unsigned char publicSlots = MINECRAFT_NET_MAX_PLAYERS, unsigned char privateSlots = 0);
 	virtual bool _StartGame();
@@ -76,6 +82,7 @@ private:
 	bool StartListener();
 	void CloseListener();
 	void ProcessDiscoveryRequests();
+	void ProcessPendingClients();
 	NetworkPlayerWindows* CreateLocalPlayer(int userIndex);
 	NetworkPlayerWindows* AddRemotePlayer(SOCKET socket, unsigned long remoteAddress, bool isHost);
 	void RemoveRemotePlayer(NetworkPlayerWindows* player);
@@ -98,6 +105,7 @@ private:
 	NetworkPlayerWindows* m_localPlayers[XUSER_MAX_COUNT];
 	NetworkPlayerWindows* m_hostPlayer;
 	std::vector<NetworkPlayerWindows*> m_players;
+	std::vector<PendingClient> m_pendingClients;
 	std::mutex m_playersMutex;
 	void (*m_playerChangedCallback[XUSER_MAX_COUNT])(void* callbackParam, INetworkPlayer* pPlayer, bool leaving);
 	void* m_playerChangedCallbackParam[XUSER_MAX_COUNT];

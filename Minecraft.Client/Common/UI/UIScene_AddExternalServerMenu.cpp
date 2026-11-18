@@ -1,10 +1,13 @@
 #include "stdafx.h"
 #include "UI.h"
 #include "UIScene_AddExternalServerMenu.h"
+#include "..\Network\ExternalServerList.h"
 
 UIScene_AddExternalServerMenu::UIScene_AddExternalServerMenu(int iPad, void *initData, UILayer *parentLayer) : UIScene(iPad, parentLayer)
 {
 	m_serverName = L"";
+	m_serverIP = L"192.168.0.1";
+	m_serverPort = L"25565";
 	m_bIgnoreInput = false;
 	m_keyboardTarget = eKeyboardTarget_ServerName;
 
@@ -15,11 +18,11 @@ UIScene_AddExternalServerMenu::UIScene_AddExternalServerMenu(int iPad, void *ini
 	m_editServerName.SetCharLimit(32);
 
 	m_labelAddressName.init(L"Server Address");
-	m_editServerAddress.init(L"192.168.0.1", eControl_ServerAddress);
+	m_editServerAddress.init(m_serverIP, eControl_ServerAddress);
 	m_editServerAddress.SetCharLimit(64);
 
 	m_labelPortName.init(L"Server Port");
-	m_editServerPort.init(L"25565", eControl_ServerPort);
+	m_editServerPort.init(m_serverPort, eControl_ServerPort);
 	m_editServerPort.SetCharLimit(5);
 
 	m_buttonJoinEntry.init(L"Join", eControl_JoinEntry);
@@ -52,7 +55,10 @@ void UIScene_AddExternalServerMenu::updateComponents()
 void UIScene_AddExternalServerMenu::handleGainFocus(bool navBack)
 {
 	UIScene::handleGainFocus(navBack);
-	if (!navBack) SetFocusToElement(eControl_ServerName);
+	if (navBack)
+		m_bIgnoreInput = false;
+	else
+		SetFocusToElement(eControl_ServerName);
 }
 
 void UIScene_AddExternalServerMenu::handleInput(int iPad, int key, bool repeat, bool pressed, bool released, bool &handled)
@@ -107,9 +113,81 @@ void UIScene_AddExternalServerMenu::handlePress(F64 controlId, F64 childId)
 			&UIScene_AddExternalServerMenu::KeyboardCompleteServerNameCallback, this, C_4JInput::EKeyboardMode_Numeric, &m_editServerPort);
 		break;
 	case eControl_JoinEntry:
+		JoinServer(false);
+		break;
 	case eControl_SaveAndJoinEntry:
+		JoinServer(true);
 		break;
 	}
+}
+
+void UIScene_AddExternalServerMenu::JoinServer(bool save) {
+	if (m_serverName.empty() || m_serverIP.empty() || m_serverPort.empty()) {
+		UINT buttons[1] = { IDS_CONFIRM_OK };
+		ui.RequestMessageBox(IDS_ERROR_NETWORK_TITLE, IDS_ERROR_NETWORK, buttons, 1, m_iPad, NULL, NULL, app.GetStringTable());
+		return;
+	}
+
+	unsigned int port = 0;
+	for (size_t index = 0; index < m_serverPort.size(); ++index) {
+		if (m_serverPort[index] < L'0' || m_serverPort[index] > L'9') {
+			UINT buttons[1] = { IDS_CONFIRM_OK };
+			ui.RequestMessageBox(IDS_ERROR_NETWORK_TITLE, IDS_ERROR_NETWORK, buttons, 1, m_iPad, NULL, NULL, app.GetStringTable());
+			return;
+		}
+		port = port * 10 + static_cast<unsigned int>(m_serverPort[index] - L'0');
+		if (port > 65535) {
+			UINT buttons[1] = { IDS_CONFIRM_OK };
+			ui.RequestMessageBox(IDS_ERROR_NETWORK_TITLE, IDS_ERROR_NETWORK, buttons, 1, m_iPad, NULL, NULL, app.GetStringTable());
+			return;
+		}
+	}
+
+	if (port == 0) {
+		UINT buttons[1] = { IDS_CONFIRM_OK };
+		ui.RequestMessageBox(IDS_ERROR_NETWORK_TITLE, IDS_ERROR_NETWORK, buttons, 1, m_iPad, NULL, NULL, app.GetStringTable());
+		return;
+	}
+
+	char address[257] = {};
+	char name[257] = {};
+	if (WideCharToMultiByte(CP_ACP, 0, m_serverIP.c_str(), -1, address, sizeof(address), NULL, NULL) == 0 || WideCharToMultiByte(CP_ACP, 0, m_serverName.c_str(), -1, name, sizeof(name), NULL, NULL) == 0) {
+		UINT buttons[1] = { IDS_CONFIRM_OK };
+		ui.RequestMessageBox(IDS_ERROR_NETWORK_TITLE, IDS_ERROR_NETWORK, buttons, 1, m_iPad, NULL, NULL, app.GetStringTable());
+		return;
+	}
+
+	uint64_t sessionId = 0;
+	if (!ExternalServerList::MakeSessionId(address, static_cast<uint16_t>(port), sessionId)) {
+		UINT buttons[1] = { IDS_CONFIRM_OK };
+		ui.RequestMessageBox(IDS_ERROR_NETWORK_TITLE, IDS_ERROR_NETWORK, buttons, 1, m_iPad, NULL, NULL, app.GetStringTable());
+		return;
+	}
+
+	if (save) {
+		ExternalServerList::Entry entry = { address, static_cast<uint16_t>(port), name };
+		if (!ExternalServerList::Append(entry)) {
+			app.DebugPrintf("Failed to save external server to servers.db");
+			UINT buttons[1] = { IDS_CONFIRM_OK };
+			ui.RequestMessageBox(IDS_ERROR_NETWORK_TITLE, IDS_ERROR_NETWORK, buttons, 1, m_iPad, NULL, NULL, app.GetStringTable());
+			return;
+		}
+		g_NetworkManager.ForceFriendsSessionRefresh();
+	}
+
+	delete[] m_serverSession.displayLabel;
+	m_serverSession.displayLabel = new wchar_t[m_serverName.size() + 1];
+	wcscpy_s(m_serverSession.displayLabel, m_serverName.size() + 1, m_serverName.c_str());
+	m_serverSession.displayLabelLength = static_cast<unsigned char>(m_serverName.size());
+	m_serverSession.displayLabelViewableStartIndex = 0;
+	m_serverSession.sessionId = sessionId;
+	m_serverSession.data.netVersion = MINECRAFT_NET_VERSION;
+	m_serverSession.data.isReadyToJoin = true;
+	m_joinMenuInitData.selectedSession = &m_serverSession;
+	m_joinMenuInitData.iPad = m_iPad;
+
+	m_bIgnoreInput = true;
+	ui.NavigateToScene(m_iPad, eUIScene_JoinMenu, &m_joinMenuInitData);
 }
 
 int UIScene_AddExternalServerMenu::KeyboardCompleteServerNameCallback(LPVOID lpParam, bool bRes)
@@ -131,10 +209,12 @@ int UIScene_AddExternalServerMenu::KeyboardCompleteServerNameCallback(LPVOID lpP
 				break;
 			case eKeyboardTarget_ServerAddress:
 				if (value.size() > 64) value.resize(64);
+				scene->m_serverIP = value;
 				scene->m_editServerAddress.setLabel(value);
 				break;
 			case eKeyboardTarget_ServerPort:
 				if (value.size() > 5) value.resize(5);
+				scene->m_serverPort = value;
 				scene->m_editServerPort.setLabel(value);
 				break;
 			}

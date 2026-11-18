@@ -21,6 +21,7 @@ UIScene_JoinMenu::UIScene_JoinMenu(int iPad, void *_initData, UILayer *parentLay
 	m_friendInfoUpdatedOK = false;
 	m_friendInfoUpdatedERROR = false;
 	m_friendInfoRequestIssued = false;
+	m_bIgnoreInput = false;
 }
 
 void UIScene_JoinMenu::updateTooltips()
@@ -55,6 +56,10 @@ void UIScene_JoinMenu::tick()
 		m_buttonJoinGame.init(app.GetString(IDS_JOIN_GAME),eControl_JoinGame);
 
 		m_buttonListPlayers.init(eControl_GamePlayers);
+		m_buttonListPlayers.clearList();
+		for (std::vector<std::wstring>::const_iterator it = m_selectedSession->serverPlayerNames.begin(); it != m_selectedSession->serverPlayerNames.end(); ++it) {
+			m_buttonListPlayers.addItem(*it);
+		}
 
 
 		m_labelLabels[eLabel_Difficulty].init(app.GetString(IDS_LABEL_DIFFICULTY));
@@ -131,6 +136,7 @@ void UIScene_JoinMenu::tick()
 		m_buttonJoinGame.init(app.GetString(IDS_JOIN_GAME),eControl_JoinGame);
 
 		m_buttonListPlayers.init(eControl_GamePlayers);
+		m_buttonListPlayers.clearList();
 
 		m_labelLabels[eLabel_Difficulty].init(app.GetString(IDS_LABEL_DIFFICULTY));
 		m_labelLabels[eLabel_GameType].init(app.GetString(IDS_LABEL_GAME_TYPE));
@@ -400,6 +406,7 @@ void UIScene_JoinMenu::JoinGame(UIScene_JoinMenu* pClass)
 
 			if( exitReasonStringId == -1 )
 			{
+				pClass->m_bIgnoreInput=false;
 				ui.NavigateBack(pClass->m_iPad);
 			}
 			else

@@ -1,6 +1,8 @@
 #pragma once
 
 #include "UIScene.h"
+#include "..\Network\SessionInfo.h"
+#include "UIStructs.h"
 
 class UIScene_AddExternalServerMenu : public UIScene
 {
@@ -22,6 +24,11 @@ private:
 	};
 
 	wstring m_serverName;
+	wstring m_serverIP;
+	wstring m_serverPort;
+	FriendSessionInfo m_serverSession;
+	JoinMenuInitData m_joinMenuInitData;
+
 	bool m_bIgnoreInput;
 	EKeyboardTarget m_keyboardTarget;
 
@@ -64,4 +71,5 @@ protected:
 
 private:
 	static int KeyboardCompleteServerNameCallback(LPVOID lpParam, bool bRes);
+	void JoinServer(bool save);
 };

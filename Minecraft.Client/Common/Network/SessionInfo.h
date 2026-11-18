@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+#include <vector>
 
 
 // A struct that we store in the QoS data when we are hosting the session. Max size 1020 bytes.
@@ -30,6 +32,7 @@ public:
 	unsigned char displayLabelViewableStartIndex;
 	GameSessionData data;
 	bool hasPartyMember;
+	std::vector<std::wstring> serverPlayerNames;
 
 	FriendSessionInfo()
 	{
