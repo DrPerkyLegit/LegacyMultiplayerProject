@@ -40,6 +40,7 @@ ServerChunkCache::ServerChunkCache(ServerLevel *level, ChunkStorage *storage, Ch
 // 4J-PB added
 ServerChunkCache::~ServerChunkCache()
 {
+	storage->WaitForAll();
 	delete emptyChunk;
 	delete cache;
 	delete source;

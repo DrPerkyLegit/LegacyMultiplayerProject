@@ -37,6 +37,7 @@
 #include "..\Minecraft.World\ThreadName.h"
 #include "..\Minecraft.World\IntCache.h"
 #include "..\Minecraft.World\CompressedTileStorage.h"
+#include "..\Minecraft.World\McRegionChunkStorage.h"
 #include "..\Minecraft.World\SparseLightStorage.h"
 #include "..\Minecraft.World\SparseDataStorage.h"
 #include "..\Minecraft.World\compression.h"
@@ -889,6 +890,10 @@ void MinecraftServer::stopServer()
 
 	// On Durango/Orbis, we need to wait for all the asynchronous saving processes to complete before destroying the levels, as that will ultimately delete
 	// the directory level storage & therefore the ConsoleSaveSplit instance, which needs to be around until all the sub files have completed saving.
+	if (levels.length > 0 && levels[0] != NULL)
+	{
+		McRegionChunkStorage::WaitForAllSaves();
+	}
 
 	// 4J-PB remove the server levels
 	unsigned int iServerLevelC=levels.length;

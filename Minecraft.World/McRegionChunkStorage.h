@@ -36,8 +36,9 @@ public:
 	virtual void WaitForAll(); // 4J Added
 	virtual void WaitIfTooManyQueuedChunks(); // 4J Added
 
-private:
+public:
 	static void WaitForAllSaves();
 	static void WaitForSaves();
+private:
 	static int runSaveThreadProc(LPVOID lpParam);
 };
