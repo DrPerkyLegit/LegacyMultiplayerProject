@@ -25,6 +25,9 @@
 #include "..\Minecraft.World\net.minecraft.world.level.saveddata.h"
 #include "..\Minecraft.World\JavaMath.h"
 #include "Windows64\Windows64_Xuid.h"
+#ifdef _WINDOWS64
+#include "Windows64\Network\NetworkPlayerWindows.h"
+#endif
 
 // 4J - this class is fairly substantially altered as there didn't seem any point in porting code for banning, whitelisting, ops etc.
 
@@ -439,6 +442,12 @@ shared_ptr<ServerPlayer> PlayerList::getPlayerForLogin(PendingConnection *pendin
 	// Work out the base server player settings
 	INetworkPlayer *networkPlayer = pendingConnection->connection->getSocket()->getPlayer();
 #ifdef _WINDOWS64
+	if (networkPlayer != NULL && !networkPlayer->IsLocal())
+	{
+		NetworkPlayerWindows *windowsPlayer = dynamic_cast<NetworkPlayerWindows *>(networkPlayer);
+		if (windowsPlayer != nullptr)
+			windowsPlayer->SetDisplayName(userName);
+	}
 	if(networkPlayer != NULL && networkPlayer->IsHost())
 	{
 		player->setXuid(Win64Xuid::GetLegacyEmbeddedHostXuid());

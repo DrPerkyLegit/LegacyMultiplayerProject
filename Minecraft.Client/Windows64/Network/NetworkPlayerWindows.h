@@ -39,6 +39,7 @@ public:
 
 	void SetHost(bool isHost);
 	void SetSmallId(unsigned char smallId);
+	void SetDisplayName(const std::wstring& name);
 	void SetSessionIndex(int index);
 	void ResetForSession(bool isHost, unsigned char smallId);
 	void SetTransportSocket(SOCKET socket, unsigned long remoteAddress);

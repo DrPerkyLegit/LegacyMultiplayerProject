@@ -106,6 +106,7 @@ void NetworkPlayerWindows::SetSmallId(unsigned char smallId) {
 	m_smallId = smallId;
 	m_uid = ((static_cast<PlayerUID>(m_userIndex + 1) << 8) | smallId);
 }
+void NetworkPlayerWindows::SetDisplayName(const std::wstring& name) { m_name = name; }
 
 void NetworkPlayerWindows::SetSessionIndex(int index) { m_sessionIndex = index; }
 

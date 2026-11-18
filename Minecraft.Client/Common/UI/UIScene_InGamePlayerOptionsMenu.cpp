@@ -2,8 +2,12 @@
 #include "UI.h"
 #include "UIScene_InGamePlayerOptionsMenu.h"
 #include "..\..\Minecraft.h"
+#include "..\..\MinecraftServer.h"
 #include "..\..\MultiPlayerLocalPlayer.h"
 #include "..\..\ClientConnection.h"
+#include "..\..\PlayerConnection.h"
+#include "..\..\PlayerList.h"
+#include "..\..\ServerPlayer.h"
 #include "..\..\..\Minecraft.World\net.minecraft.network.packet.h"
 
 
@@ -26,7 +30,28 @@ UIScene_InGamePlayerOptionsMenu::UIScene_InGamePlayerOptionsMenu(int iPad, void 
 
 	if(editingPlayer != NULL)
 	{
-		m_labelGamertag.init(editingPlayer->GetDisplayName());
+		wstring displayName = editingPlayer->GetDisplayName();
+		if (displayName == L"LAN Player")
+		{
+			MinecraftServer *server = MinecraftServer::getInstance();
+			PlayerList *players = server != nullptr ? server->getPlayers() : nullptr;
+			if (players != nullptr)
+			{
+				for (const shared_ptr<ServerPlayer>& player : players->players)
+				{
+					if (player == nullptr || player->connection == nullptr)
+						continue;
+
+					INetworkPlayer *serverNetworkPlayer = player->connection->getNetworkPlayer();
+					if (serverNetworkPlayer != nullptr && serverNetworkPlayer->GetSmallId() == m_networkSmallId)
+					{
+						displayName = player->getName();
+						break;
+					}
+				}
+			}
+		}
+		m_labelGamertag.init(displayName);
 	}
 
 	bool trustPlayers = app.GetGameHostOption(eGameHostOption_TrustPlayers) != 0;
