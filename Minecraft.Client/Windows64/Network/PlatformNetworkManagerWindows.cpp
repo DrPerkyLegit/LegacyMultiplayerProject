@@ -6,6 +6,7 @@
 #include "PlatformNetworkManagerWindows.h"
 #include "..\..\Common\Network\GameNetworkManager.h"
 #include "..\..\Minecraft.h"
+#include "..\..\MinecraftServer.h"
 #include "..\..\User.h"
 #include "..\..\..\Minecraft.World\StringHelpers.h"
 #include "..\..\..\Minecraft.World\Socket.h"
@@ -591,6 +592,13 @@ bool CPlatformNetworkManagerWindows::IsHost() { return m_isHost && !m_isLeaving;
 bool CPlatformNetworkManagerWindows::JoinGameFromInviteInfo(int userIndex, int userMask, const INVITE_INFO* pInviteInfo) { return false; }
 
 bool CPlatformNetworkManagerWindows::LeaveGame(bool bMigrateHost) {
+	const bool waitForHostServer = m_isHost && MinecraftServer::serverHalted() &&
+		g_NetworkManager.ServerStoppedValid();
+	if (waitForHostServer) {
+		g_NetworkManager.ServerStoppedWait();
+		g_NetworkManager.ServerStoppedDestroy();
+	}
+
 	m_isLeaving = true;
 	CloseListener();
 

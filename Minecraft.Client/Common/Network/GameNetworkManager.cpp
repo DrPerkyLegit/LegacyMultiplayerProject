@@ -1442,6 +1442,7 @@ void CGameNetworkManager::ServerStoppedWait()
 		do
 		{
 			RenderManager.StartFrame();
+			DoWork();
 			result = m_hServerStoppedEvent->WaitForSignal(20);
 			// Tick some simple things
 			ProfileManager.Tick();

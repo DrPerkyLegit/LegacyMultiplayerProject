@@ -887,8 +887,14 @@ void PlayerList::tick()
 				for(unsigned int i = 0; i < players.size(); i++)
 				{
 					shared_ptr<ServerPlayer> p = players.at(i);
-					PlayerUID playersXuid = p->getOnlineXuid();
-					if (p != NULL && ProfileManager.AreXUIDSEqual(playersXuid, xuid ) )
+					if (p == nullptr || p->connection == nullptr)
+						continue;
+
+					INetworkPlayer *playerNetwork = p->connection->getNetworkPlayer();
+					const bool sameNetworkPlayer = playerNetwork != nullptr &&
+						playerNetwork->GetSmallId() == smallId;
+					const bool sameXuid = ProfileManager.AreXUIDSEqual(p->getOnlineXuid(), xuid);
+					if (sameNetworkPlayer || sameXuid)
 					{
 						player = p;
 						break;
@@ -901,7 +907,7 @@ void PlayerList::tick()
 					// 4J Stu - If we have kicked a player, make sure that they have no privileges if they later try to join the world when trust players is off
 					player->enableAllPlayerPrivileges( false );
 					player->connection->setWasKicked();
-					player->connection->send( shared_ptr<DisconnectPacket>( new DisconnectPacket(DisconnectPacket::eDisconnect_Kicked) ));
+					player->connection->disconnect(DisconnectPacket::eDisconnect_Kicked);
 				}
 //#endif
 			}

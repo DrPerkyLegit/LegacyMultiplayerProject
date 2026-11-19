@@ -52,11 +52,12 @@ void ServerConnection::stop()
     }
 	LeaveCriticalSection(&pending_cs);
 
-    for (unsigned int i = 0; i < players.size(); i++)
+	const vector<shared_ptr<PlayerConnection>> activePlayers = players;
+	for (const shared_ptr<PlayerConnection>& player : activePlayers)
 	{
-        shared_ptr<PlayerConnection> player = players[i];
-        player->connection->close(DisconnectPacket::eDisconnect_Closed);
-    }
+		if (player != nullptr && player->connection != nullptr && !player->done)
+			player->disconnect(DisconnectPacket::eDisconnect_Closed);
+	}
 }
 
 void ServerConnection::tick()

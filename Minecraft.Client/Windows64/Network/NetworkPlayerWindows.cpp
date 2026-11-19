@@ -198,6 +198,8 @@ bool NetworkPlayerWindows::FlushSendQueue()
 }
 
 void NetworkPlayerWindows::CloseTransport(bool isServerConnection) {
+	FlushSendQueue();
+
 	Socket* gameSocket = nullptr;
 	{
 		std::lock_guard<std::mutex> lock(m_transportMutex);
