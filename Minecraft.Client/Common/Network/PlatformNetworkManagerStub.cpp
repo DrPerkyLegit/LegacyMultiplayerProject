@@ -2,7 +2,7 @@
 #include "..\..\..\Minecraft.World\Socket.h"
 #include "..\..\..\Minecraft.World\StringHelpers.h"
 #include "PlatformNetworkManagerStub.h"
-#include "..\..\Xbox\Network\NetworkPlayerXbox.h"		// TODO - stub version of this?
+#include "NetworkPlayerStub.h"
 
 CPlatformNetworkManagerStub *g_pPlatformNetworkManager;
 
@@ -17,7 +17,7 @@ void CPlatformNetworkManagerStub::NotifyPlayerJoined(IQNetPlayer *pQNetPlayer	)
 	bool createFakeSocket = false;
 	bool localPlayer = false;
 
-	NetworkPlayerXbox *networkPlayer = (NetworkPlayerXbox *)addNetworkPlayer(pQNetPlayer);
+	NetworkPlayerStub *networkPlayer = (NetworkPlayerStub *)addNetworkPlayer(pQNetPlayer);
 
     if( pQNetPlayer->IsLocal() )
     {
@@ -489,7 +489,7 @@ wstring CPlatformNetworkManagerStub::GatherRTTStats()
 
 	for(unsigned int i = 0; i < GetPlayerCount(); ++i)
 	{
-		IQNetPlayer *pQNetPlayer = ((NetworkPlayerXbox *)GetPlayerByIndex( i ))->GetQNetPlayer();
+		IQNetPlayer *pQNetPlayer = ((NetworkPlayerStub *)GetPlayerByIndex( i ))->GetQNetPlayer();
 
 		if(!pQNetPlayer->IsLocal())
 		{
@@ -556,7 +556,7 @@ void CPlatformNetworkManagerStub::ForceFriendsSessionRefresh()
 
 INetworkPlayer *CPlatformNetworkManagerStub::addNetworkPlayer(IQNetPlayer *pQNetPlayer)
 {
-	NetworkPlayerXbox *pNetworkPlayer = new NetworkPlayerXbox(pQNetPlayer);
+	NetworkPlayerStub *pNetworkPlayer = new NetworkPlayerStub(pQNetPlayer);
 	pQNetPlayer->SetCustomDataValue((ULONG_PTR)pNetworkPlayer);
 	currentNetworkPlayers.push_back( pNetworkPlayer );
 	return pNetworkPlayer;

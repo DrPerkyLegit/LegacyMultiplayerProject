@@ -1620,7 +1620,7 @@
     <ClInclude Include="Windows64\GameConfig\Minecraft.spa.h">
       <Filter>Windows64\GameConfig</Filter>
     </ClInclude>
-    <ClInclude Include="Windows64\XML\ATGXmlParser.h">
+    <ClInclude Include="Common\XML\ATGXmlParser.h">
       <Filter>Windows64\XML</Filter>
     </ClInclude>
     <ClInclude Include="Windows64\Minecraft_Macros.h">
@@ -1992,14 +1992,8 @@
     <ClInclude Include="Common\UI\UIComponent_DebugUIConsole.h">
       <Filter>Common\Source Files\UI\Components</Filter>
     </ClInclude>
-    <ClInclude Include="Xbox\Network\PlatformNetworkManagerXbox.h">
-      <Filter>Xbox\Source Files\Network</Filter>
-    </ClInclude>
     <ClInclude Include="Common\Network\PlatformNetworkManagerStub.h">
       <Filter>Common\Source Files\Network</Filter>
-    </ClInclude>
-    <ClInclude Include="Xbox\Network\NetworkPlayerXbox.h">
-      <Filter>Xbox\Source Files\Network</Filter>
     </ClInclude>
     <ClInclude Include="Common\UI\UIControl_ButtonList.h">
       <Filter>Common\Source Files\UI\Controls</Filter>
@@ -2250,9 +2244,6 @@
     <ClInclude Include="Common\UI\UIScene_InGameSaveManagementMenu.h">
       <Filter>Common\Source Files\UI\Scenes\In-Game Menu Screens</Filter>
     </ClInclude>
-    <ClInclude Include="Xbox\Network\extra.h">
-      <Filter>Xbox\Source Files\Network</Filter>
-    </ClInclude>
     <ClInclude Include="Common\UI\UIScene_Keyboard.h">
       <Filter>Common\Source Files\UI\Scenes</Filter>
     </ClInclude>
@@ -2263,12 +2254,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Common\Audio\stb_vorbis.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Xbox\XML\xmlFilesCallback.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Xbox\Resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Windows64\Windows64_KeyboardInput.h">
@@ -2287,6 +2272,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Windows64\Windows64_Xuid.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Network\NetworkPlayerStub.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\XML\xmlFilesCallback.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -3689,14 +3680,8 @@
     <ClCompile Include="Common\UI\UIComponent_DebugUIConsole.cpp">
       <Filter>Common\Source Files\UI\Components</Filter>
     </ClCompile>
-    <ClCompile Include="Xbox\Network\PlatformNetworkManagerXbox.cpp">
-      <Filter>Xbox\Source Files\Network</Filter>
-    </ClCompile>
     <ClCompile Include="Common\Network\PlatformNetworkManagerStub.cpp">
       <Filter>Common\Source Files\Network</Filter>
-    </ClCompile>
-    <ClCompile Include="Xbox\Network\NetworkPlayerXbox.cpp">
-      <Filter>Xbox\Source Files\Network</Filter>
     </ClCompile>
     <ClCompile Include="Common\UI\UIControl_ButtonList.cpp">
       <Filter>Common\Source Files\UI\Controls</Filter>
@@ -3962,6 +3947,9 @@
     <ClCompile Include="Windows64\Network\NetworkPlayerWindows.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Common\Network\NetworkPlayerStub.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Library Include="Windows64\4JLibs\libs\4J_Render_PC.lib">
@@ -3991,9 +3979,5 @@
     <Library Include="Windows64\4JLibs\libs\4J_Storage_d.lib">
       <Filter>Windows64\4JLibs\libs</Filter>
     </Library>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="Xbox\MinecraftWindows.ico" />
-    <Image Include="Xbox\small.ico" />
   </ItemGroup>
 </Project>

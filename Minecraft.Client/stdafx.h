@@ -108,6 +108,7 @@ using namespace DirectX;
 #include "Common\Consoles_App.h"
 #include "Common\Minecraft_Macros.h"
 #include "Common\BuildVer.h"
+#include "Common\XML\ATGXmlParser.h"	
 
 	#include "Windows64\Sentient\MinecraftTelemetry.h"
 	#include "Windows64Media\strings.h"
@@ -115,7 +116,6 @@ using namespace DirectX;
 	#include "Windows64\Sentient\DynamicConfigurations.h"
 	#include "Windows64\Sentient\SentientTelemetryCommon.h"
 	#include "Windows64\GameConfig\Minecraft.spa.h"
-	#include "Windows64\XML\ATGXmlParser.h"	
 	#include "Windows64\Social\SocialManager.h"
 	#include "Common\Audio\SoundEngine.h"
 	#include "Windows64\Iggy\include\iggy.h"

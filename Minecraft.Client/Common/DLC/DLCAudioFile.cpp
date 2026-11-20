@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "DLCManager.h"
 #include "DLCAudioFile.h"
-#include "..\..\Xbox\XML\xmlFilesCallback.h"
+#include "..\..\Common\XML\xmlFilesCallback.h"
 
 DLCAudioFile::DLCAudioFile(const wstring &path) : DLCFile(DLCManager::e_DLCType_Audio,path)
 {	

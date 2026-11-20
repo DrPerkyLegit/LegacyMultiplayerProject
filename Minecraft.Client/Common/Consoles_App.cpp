@@ -25,7 +25,7 @@
 #include "..\..\Minecraft.Client\StatsCounter.h"
 #include "..\GameMode.h"
 #include "Tutorial\TutorialMode.h"
-#include "..\..\Minecraft.Client\Xbox\XML\xmlFilesCallback.h"
+#include "..\..\Minecraft.Client\Common\XML\xmlFilesCallback.h"
 #include "Minecraft_Macros.h"
 #include "..\..\Minecraft.Client\PlayerList.h"
 #include "..\..\Minecraft.Client\ServerPlayer.h"

@@ -11,7 +11,7 @@
 #include "StringTable.h"
 #include "Common\DLC\DLCAudioFile.h"
 
-#include "Xbox\XML\xmlFilesCallback.h"
+#include "Common\XML\xmlFilesCallback.h"
 
 DLCTexturePack::DLCTexturePack(DWORD id, DLCPack *pack, TexturePack *fallback) : AbstractTexturePack(id, NULL, pack->getName(), fallback)
 {
