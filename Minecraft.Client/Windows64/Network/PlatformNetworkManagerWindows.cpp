@@ -76,6 +76,7 @@ namespace {
 		unsigned char playerCount;
 		unsigned char maxPlayers;
 		unsigned char ready;
+		unsigned char isDedicated;
 		unsigned short netVersion;
 		unsigned short gamePort;
 		unsigned long hostSettings;
@@ -91,6 +92,7 @@ namespace {
 		sessionInfo->data.texturePackParentId = serverData.texturePackParentId;
 		sessionInfo->data.subTexturePackId = serverData.subTexturePackId;
 		sessionInfo->data.isReadyToJoin = serverData.ready != 0;
+		sessionInfo->isDedicatedSession = serverData.isDedicated;
 		sessionInfo->serverPlayerNames.clear();
 
 		unsigned int playerCount = serverData.playerCount;
@@ -207,6 +209,7 @@ CPlatformNetworkManagerWindows::CPlatformNetworkManagerWindows() {
 	m_searchParam = nullptr;
 
 	m_winsockStarted = false;
+	m_isFakeHost = false;
 	m_isHost = false;
 	m_inSession = false;
 	m_inGameplay = false;
@@ -258,6 +261,7 @@ void CPlatformNetworkManagerWindows::Terminate() {
 		m_inSession = false;
 		m_inGameplay = false;
 		m_isHost = false;
+		m_isFakeHost = false;
 	}
 
 	for (std::vector<NetworkPlayerWindows*>::iterator it = players.begin(); it != players.end(); ++it) {
@@ -401,12 +405,13 @@ void CPlatformNetworkManagerWindows::ProcessPendingClients() {
 			response.hostSettings = app.GetGameHostOption(eGameHostOption_All);
 			response.texturePackParentId = m_sessionData.texturePackParentId;
 			response.subTexturePackId = m_sessionData.subTexturePackId;
+			response.isDedicated = m_isFakeHost;
 
 			{
 				std::lock_guard<std::mutex> lock(m_playersMutex);
 				for (std::vector<NetworkPlayerWindows*>::const_iterator it = m_players.begin();
 					it != m_players.end() && response.playerCount < MINECRAFT_NET_MAX_PLAYERS; ++it) {
-					if (!(*it)->IsConnected()) continue;
+					if (!(*it)->IsConnected() || (*it)->IsFakeHost()) continue;
 					const wchar_t* playerName = (*it)->GetOnlineName();
 					if (playerName != nullptr) {
 						wcsncpy_s(response.playerNames[response.playerCount], XUSER_NAME_SIZE, playerName, _TRUNCATE);
@@ -490,7 +495,7 @@ int CPlatformNetworkManagerWindows::GetPlayerCount() {
 	int count = 0;
 	std::lock_guard<std::mutex> lock(m_playersMutex);
 	for (std::vector<NetworkPlayerWindows*>::const_iterator it = m_players.begin(); it != m_players.end(); ++it) {
-		if ((*it)->IsConnected()) ++count;
+		if ((*it)->IsConnected() && !(*it)->IsFakeHost()) ++count;
 	}
 	return count;
 }
@@ -499,7 +504,7 @@ int CPlatformNetworkManagerWindows::GetOnlinePlayerCount() {
 	int count = 0;
 	std::lock_guard<std::mutex> lock(m_playersMutex);
 	for (std::vector<NetworkPlayerWindows*>::const_iterator it = m_players.begin(); it != m_players.end(); ++it) {
-		if ((*it)->IsConnected() && !(*it)->IsLocal()) ++count;
+		if ((*it)->IsConnected() && !(*it)->IsFakeHost() && !(*it)->IsLocal()) ++count;
 	}
 	return count;
 }
@@ -519,6 +524,7 @@ NetworkPlayerWindows* CPlatformNetworkManagerWindows::CreateLocalPlayer(int user
 			player->SetHost(m_isHost);
 			player->SetSmallId(m_isHost ? 0 : static_cast<unsigned char>(userIndex + 1));
 		}
+		player->SetFakeHost(m_isFakeHost);
 		return player;
 	}
 
@@ -530,14 +536,17 @@ NetworkPlayerWindows* CPlatformNetworkManagerWindows::CreateLocalPlayer(int user
 
 	unsigned char smallId = m_isHost ? 0 : static_cast<unsigned char>(userIndex + 1);
 	NetworkPlayerWindows* player = new NetworkPlayerWindows(userIndex, smallId, true, m_isHost, name);
+	player->SetFakeHost(m_isFakeHost);
 	m_localPlayers[userIndex] = player;
 	{
 		std::lock_guard<std::mutex> lock(m_playersMutex);
 		player->SetSessionIndex(static_cast<int>(m_players.size()));
 		m_players.push_back(player);
 	}
-	m_gameNetworkManager->PlayerJoining(player);
-	NotifyPlayerChanged(player, false);
+	if (!player->IsFakeHost()) {
+		m_gameNetworkManager->PlayerJoining(player);
+		NotifyPlayerChanged(player, false);
+	}
 	return player;
 }
 
@@ -560,7 +569,7 @@ INetworkPlayer* CPlatformNetworkManagerWindows::GetPlayerByIndex(int playerIndex
 	std::lock_guard<std::mutex> lock(m_playersMutex);
 	int activeIndex = 0;
 	for (std::vector<NetworkPlayerWindows*>::const_iterator it = m_players.begin(); it != m_players.end(); ++it) {
-		if (!(*it)->IsConnected()) continue;
+		if (!(*it)->IsConnected() || (*it)->IsFakeHost()) continue;
 		if (activeIndex++ == playerIndex) return *it;
 	}
 	return nullptr;
@@ -569,7 +578,7 @@ INetworkPlayer* CPlatformNetworkManagerWindows::GetPlayerByIndex(int playerIndex
 INetworkPlayer* CPlatformNetworkManagerWindows::GetPlayerByXuid(PlayerUID xuid) {
 	std::lock_guard<std::mutex> lock(m_playersMutex);
 	for (std::vector<NetworkPlayerWindows*>::const_iterator it = m_players.begin(); it != m_players.end(); ++it) {
-		if ((*it)->IsConnected() && (*it)->GetUID() == xuid) return *it;
+		if ((*it)->IsConnected() && !(*it)->IsFakeHost() && (*it)->GetUID() == xuid) return *it;
 	}
 	return nullptr;
 }
@@ -616,6 +625,7 @@ bool CPlatformNetworkManagerWindows::LeaveGame(bool bMigrateHost) {
 	m_inSession = false;
 	m_inGameplay = false;
 	m_isHost = false;
+	m_isFakeHost = false;
 	return true;
 }
 
@@ -642,6 +652,7 @@ void CPlatformNetworkManagerWindows::HostGame(int localUsersMask, bool bOnlineGa
 	SetPrivateGame(bIsPrivate);
 
 	m_isLeaving = false;
+	m_isFakeHost = false;
 	m_isHost = true;
 	m_nextSmallId = 1;
 	if (!m_winsockStarted) {
@@ -721,6 +732,7 @@ int CPlatformNetworkManagerWindows::JoinGame(FriendSessionInfo* searchResult, in
 	std::wstring hostName = searchResult->displayLabel != nullptr ? searchResult->displayLabel : L"LAN Game";
 	NetworkPlayerWindows* remoteHost = new NetworkPlayerWindows(-1, 0, false, true, hostName);
 	remoteHost->SetSessionIndex(0);
+	remoteHost->SetFakeHost(searchResult->isDedicatedSession);
 	{
 		std::lock_guard<std::mutex> lock(m_playersMutex);
 		m_players.insert(m_players.begin(), remoteHost);
@@ -1045,9 +1057,11 @@ void CPlatformNetworkManagerWindows::ForceFriendsSessionRefresh() {
 	if (m_sessionsUpdatedCallback != nullptr) m_sessionsUpdatedCallback(m_searchParam);
 }
 
-void CPlatformNetworkManagerWindows::FakeLocalPlayerJoined() {
+void CPlatformNetworkManagerWindows::FakeLocalPlayerJoined(bool fakeHost) {
+	m_isFakeHost = m_isHost && fakeHost;
 	NetworkPlayerWindows* localPlayer = CreateLocalPlayer(0);
 	if (localPlayer != nullptr && m_isHost) {
+		localPlayer->SetFakeHost(m_isFakeHost);
 		m_hostPlayer = localPlayer;
 	}
 }

@@ -1476,7 +1476,7 @@ int CGameNetworkManager::GetJoiningReadyPercentage()
 	return s_pPlatformNetworkManager->GetJoiningReadyPercentage();
 }
 
-void CGameNetworkManager::FakeLocalPlayerJoined()
+void CGameNetworkManager::FakeLocalPlayerJoined(bool fakeHost)
 {
-	s_pPlatformNetworkManager->FakeLocalPlayerJoined();
+	s_pPlatformNetworkManager->FakeLocalPlayerJoined(fakeHost);
 }

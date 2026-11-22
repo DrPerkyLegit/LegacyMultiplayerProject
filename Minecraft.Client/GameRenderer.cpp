@@ -1092,31 +1092,49 @@ void GameRenderer::renderLevel(float a)
 // Request that an item be deleted, when it is safe to do so
 void GameRenderer::AddForDelete(byte *deleteThis)
 {
+#ifdef MINECRAFT_SERVER_BUILD
+	delete[] deleteThis;
+#else
 	EnterCriticalSection(&m_csDeleteStack);
 	m_deleteStackByte.push_back(deleteThis);
+#endif
 }
 
 void GameRenderer::AddForDelete(SparseLightStorage *deleteThis)
 {
+#ifdef MINECRAFT_SERVER_BUILD
+	delete deleteThis;
+#else
 	EnterCriticalSection(&m_csDeleteStack);
 	m_deleteStackSparseLightStorage.push_back(deleteThis);
+#endif
 }
 
 void GameRenderer::AddForDelete(CompressedTileStorage *deleteThis)
 {
+#ifdef MINECRAFT_SERVER_BUILD
+	delete deleteThis;
+#else
 	EnterCriticalSection(&m_csDeleteStack);
 	m_deleteStackCompressedTileStorage.push_back(deleteThis);
+#endif
 }
 
 void GameRenderer::AddForDelete(SparseDataStorage *deleteThis)
 {
+#ifdef MINECRAFT_SERVER_BUILD
+	delete deleteThis;
+#else
 	EnterCriticalSection(&m_csDeleteStack);
 	m_deleteStackSparseDataStorage.push_back(deleteThis);
+#endif
 }
 
 void GameRenderer::FinishedReassigning()
 {
+#ifndef MINECRAFT_SERVER_BUILD
 	LeaveCriticalSection(&m_csDeleteStack);
+#endif
 }
 
 int GameRenderer::runUpdate(LPVOID lpParam)
@@ -1207,11 +1225,13 @@ void GameRenderer::EnableUpdateThread()
 // 	return;
 // #endif
 #ifdef MULTITHREAD_ENABLE
+#ifndef MINECRAFT_SERVER_BUILD
 	if( updateRunning) return;
 	app.DebugPrintf("------------------EnableUpdateThread--------------------\n");
 	updateRunning = true;
 	m_updateEvents->Set(eUpdateCanRun);
 	m_updateEvents->Set(eUpdateEventIsFinished);
+#endif
 #endif
 }
 
@@ -1221,11 +1241,13 @@ void GameRenderer::DisableUpdateThread()
 // 	return;
 // #endif
 #ifdef MULTITHREAD_ENABLE
+#ifndef MINECRAFT_SERVER_BUILD
 	if( !updateRunning) return;
 	app.DebugPrintf("------------------DisableUpdateThread--------------------\n");
 	updateRunning = false;
 	m_updateEvents->Clear(eUpdateCanRun);	
 	m_updateEvents->WaitForSingle(eUpdateEventIsFinished,INFINITE);
+#endif
 #endif
 }
 

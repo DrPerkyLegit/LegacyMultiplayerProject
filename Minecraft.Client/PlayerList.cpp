@@ -77,6 +77,7 @@ void PlayerList::placeNewPlayer(Connection *connection, shared_ptr<ServerPlayer>
 
 		// Make sure these privileges are always turned off for the host player
 		INetworkPlayer *networkPlayer = connection->getSocket()->getPlayer();
+		bool fakeHost = networkPlayer != NULL && networkPlayer->IsFakeHost();
 		if(networkPlayer != NULL && networkPlayer->IsHost())
 		{
 			player->enableAllPlayerPrivileges(true);			
@@ -86,7 +87,7 @@ void PlayerList::placeNewPlayer(Connection *connection, shared_ptr<ServerPlayer>
 
 		// 4J Stu - TU-1 hotfix
 		// Fix for #13150 - When a player loads/joins a game after saving/leaving in the nether, sometimes they are spawned on top of the nether and cannot mine down
-		validatePlayerSpawnPosition(player);
+		if (!fakeHost) validatePlayerSpawnPosition(player);
 
 //        logger.info(getName() + " logged in with entity id " + playerEntity.entityId + " at (" + playerEntity.x + ", " + playerEntity.y + ", " + playerEntity.z + ")");
 
@@ -110,8 +111,8 @@ void PlayerList::placeNewPlayer(Connection *connection, shared_ptr<ServerPlayer>
 			}
 		}
 		player->setPlayerIndex( playerIndex );
-		player->setCustomSkin( packet->m_playerSkinId );
-		player->setCustomCape( packet->m_playerCapeId );
+		player->setCustomSkin( fakeHost ? 0 : packet->m_playerSkinId );
+		player->setCustomCape( fakeHost ? 0 : packet->m_playerCapeId );
 
 		// 4J-JEV: Moved this here so we can send player-model texture and geometry data.
 		shared_ptr<PlayerConnection> playerConnection = shared_ptr<PlayerConnection>(new PlayerConnection(server, connection, player));
@@ -137,7 +138,7 @@ void PlayerList::placeNewPlayer(Connection *connection, shared_ptr<ServerPlayer>
 			}
 		}
 
-		if(!player->customTextureUrl.empty() && player->customTextureUrl.substr(0,3).compare(L"def") != 0 && !app.IsFileInMemoryTextures(player->customTextureUrl))
+		if(!fakeHost && !player->customTextureUrl.empty() && player->customTextureUrl.substr(0,3).compare(L"def") != 0 && !app.IsFileInMemoryTextures(player->customTextureUrl))
 		{
 			if(	server->getConnection()->addPendingTextureRequest(player->customTextureUrl))
 			{
@@ -153,7 +154,7 @@ void PlayerList::placeNewPlayer(Connection *connection, shared_ptr<ServerPlayer>
 			app.AddMemoryTextureFile(player->customTextureUrl,NULL,0);
 		}
 
-		if(!player->customTextureUrl2.empty() && player->customTextureUrl2.substr(0,3).compare(L"def") != 0 && !app.IsFileInMemoryTextures(player->customTextureUrl2))
+		if(!fakeHost && !player->customTextureUrl2.empty() && player->customTextureUrl2.substr(0,3).compare(L"def") != 0 && !app.IsFileInMemoryTextures(player->customTextureUrl2))
 		{
 			if(	server->getConnection()->addPendingTextureRequest(player->customTextureUrl2))
 			{
@@ -194,7 +195,7 @@ void PlayerList::placeNewPlayer(Connection *connection, shared_ptr<ServerPlayer>
 		// This player is now added to the list, so incrementing this value invalidates all previous PreLogin packets
 		if(packet->m_friendsOnlyUGC) ++server->m_ugcPlayersVersion;
 
-		addPlayerToReceiving( player );
+		if (!fakeHost) addPlayerToReceiving( player );
 
 		playerConnection->send( shared_ptr<LoginPacket>( new LoginPacket(L"", player->entityId, level->getLevelData()->getGenerator(), level->getSeed(), player->gameMode->getGameModeForPlayer()->getId(),
 																		(byte) level->dimension->id, (byte) level->getMaxBuildHeight(), (byte) getMaxPlayers(),
@@ -208,13 +209,19 @@ void PlayerList::placeNewPlayer(Connection *connection, shared_ptr<ServerPlayer>
 
         // 4J-PB - removed, since it needs to be localised in the language the client is in
 		//server->players->broadcastAll( shared_ptr<ChatPacket>( new ChatPacket(L"�e" + playerEntity->name + L" joined the game.") ) );
-		broadcastAll( shared_ptr<ChatPacket>( new ChatPacket(player->name, ChatPacket::e_ChatPlayerJoinedGame) ) );
+		if (!fakeHost)
+		{
+			broadcastAll( shared_ptr<ChatPacket>( new ChatPacket(player->name, ChatPacket::e_ChatPlayerJoinedGame) ) );
+		}
 
-		MemSect(14);
-        add(player);
-		MemSect(0);
+		if (!fakeHost)
+		{
+			MemSect(14);
+			add(player);
+			MemSect(0);
+		}
 
-		player->doTick(true, true, false);	// 4J - added - force sending of the nearest chunk before the player is teleported, so we have somewhere to arrive on...
+		if (!fakeHost) player->doTick(true, true, false);	// 4J - added - force sending of the nearest chunk before the player is teleported, so we have somewhere to arrive on...
         playerConnection->teleport(player->x, player->y, player->z, player->yRot, player->xRot);
 
         server->getConnection()->addPlayerConnection(playerConnection);
@@ -404,12 +411,17 @@ void PlayerList::move(shared_ptr<ServerPlayer> player)
 
 void PlayerList::remove(shared_ptr<ServerPlayer> player)
 {
-    save(player);
+	INetworkPlayer *networkPlayer = player->connection != NULL ? player->connection->getNetworkPlayer() : NULL;
+	bool fakeHost = networkPlayer != NULL && networkPlayer->IsFakeHost();
+	if (!fakeHost) save(player);
 	//4J Stu - We don't want to save the map data for guests, so when we are sure that the player is gone delete the map
-	if(player->isGuest()) playerIo->deleteMapFilesForPlayer(player);
-	ServerLevel *level = player->getLevel();
-    level->removeEntity(player);
-    level->getChunkMap()->remove(player);
+	if(!fakeHost && player->isGuest()) playerIo->deleteMapFilesForPlayer(player);
+	if (!fakeHost)
+	{
+		ServerLevel *level = player->getLevel();
+		level->removeEntity(player);
+		level->getChunkMap()->remove(player);
+	}
 	AUTO_VAR(it, find(players.begin(),players.end(),player));
 	if( it != players.end() )
 	{
@@ -417,13 +429,13 @@ void PlayerList::remove(shared_ptr<ServerPlayer> player)
 	}
 	//broadcastAll(shared_ptr<PlayerInfoPacket>( new PlayerInfoPacket(player->name, false, 9999) ) );	
 
-	removePlayerFromReceiving(player);
+	if (!fakeHost) removePlayerFromReceiving(player);
 	player->connection = nullptr;		// Must remove reference to connection, or else there is a circular dependency
 	delete player->gameMode;		// Gamemode also needs deleted as it references back to this player
 	player->gameMode = NULL;
 
 	// 4J Stu - Save all the players currently in the game, which will also free up unused map id slots if required, and remove old players
-	saveAll(NULL,false);
+	if (!fakeHost) saveAll(NULL,false);
 }
 
 shared_ptr<ServerPlayer> PlayerList::getPlayerForLogin(PendingConnection *pendingConnection, const wstring& userName, PlayerUID xuid, PlayerUID onlineXuid)
@@ -1189,7 +1201,13 @@ void PlayerList::sendAllPlayerInfo(shared_ptr<ServerPlayer> player)
 
 int PlayerList::getPlayerCount()
 {
-	return (int)players.size();
+	int count = 0;
+	for(AUTO_VAR(it, players.begin()); it != players.end(); ++it)
+	{
+		INetworkPlayer *networkPlayer = (*it)->connection != NULL ? (*it)->connection->getNetworkPlayer() : NULL;
+		if(networkPlayer == NULL || !networkPlayer->IsFakeHost()) ++count;
+	}
+	return count;
 }
 
 int PlayerList::getPlayerCount(ServerLevel *level)
@@ -1198,7 +1216,8 @@ int PlayerList::getPlayerCount(ServerLevel *level)
 
 	for(AUTO_VAR(it, players.begin()); it != players.end(); ++it)
 	{
-		if( (*it)->level == level ) ++count;
+		INetworkPlayer *networkPlayer = (*it)->connection != NULL ? (*it)->connection->getNetworkPlayer() : NULL;
+		if( (*it)->level == level && (networkPlayer == NULL || !networkPlayer->IsFakeHost()) ) ++count;
 	}
 
 	return count;

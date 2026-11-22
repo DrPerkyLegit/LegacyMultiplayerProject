@@ -845,7 +845,9 @@ void MinecraftServer::stopServer()
 
 	// 4J-PB - need to halt the rendering of the data, since we're about to remove it
 	{
+#ifndef MINECRAFT_SERVER_BUILD
 		Minecraft::GetInstance()->gameRenderer->DisableUpdateThread();
+#endif
 	}
 
 	connection->stop();

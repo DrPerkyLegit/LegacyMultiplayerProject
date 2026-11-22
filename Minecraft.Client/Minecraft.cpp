@@ -123,10 +123,18 @@ Minecraft::Minecraft(Component *mouseComponent, Canvas *parent, MinecraftApplet 
 	// 4J-PB - end
 
 	orgWidth = orgHeight = 0;
+#ifndef MINECRAFT_SERVER_BUILD
 	achievementPopup = new AchievementPopup(this);
+#else
+	achievementPopup = NULL;
+#endif
 	gui = NULL;
 	noRender = false;
+#ifndef MINECRAFT_SERVER_BUILD
 	humanoidModel = new HumanoidModel(0);
+#else
+	humanoidModel = NULL;
+#endif
 	hitResult = 0;
 	options = NULL;
 	soundEngine = new SoundEngine();
@@ -160,6 +168,9 @@ Minecraft::Minecraft(Component *mouseComponent, Canvas *parent, MinecraftApplet 
 	// 4J - Our actual physical frame buffer is always 1280x720 ie in a 16:9 ratio. If we want to do a 4:3 mode, we are telling the original minecraft code
 	// that the width is 3/4 what it actually is, to correctly present a 4:3 image. Have added width_phys and height_phys for any code we add that requires
 	// to know the real physical dimensions of the frame buffer.
+#ifdef MINECRAFT_SERVER_BUILD
+	this->width = width;
+#else
 	if( RenderManager.IsWidescreen() )
 	{
 		this->width = width;
@@ -168,6 +179,7 @@ Minecraft::Minecraft(Component *mouseComponent, Canvas *parent, MinecraftApplet 
 	{
 		this->width = (width * 3 ) / 4;
 	}
+#endif
 	this->height = height;
 	this->width_phys = width;
 	this->height_phys = height;
@@ -177,7 +189,9 @@ Minecraft::Minecraft(Component *mouseComponent, Canvas *parent, MinecraftApplet 
 	appletMode = false;
 
 	Minecraft::m_instance = this;
+#ifndef MINECRAFT_SERVER_BUILD
 	TextureManager::createInstance();
+#endif
 
 	for(int i=0;i<XUSER_MAX_COUNT;i++)
 	{
@@ -194,7 +208,9 @@ Minecraft::Minecraft(Component *mouseComponent, Canvas *parent, MinecraftApplet 
 
 	// 4J-PB - Removed it from here on Orbis due to it causing a crash with the network init.
 	// We should work out why...
+#ifndef MINECRAFT_SERVER_BUILD
 	this->soundEngine->init(NULL);
+#endif
 
 #ifndef DISABLE_LEVELTICK_THREAD
 	levelTickEventQueue = new C4JThread::EventQueue(levelTickUpdateFunc, levelTickThreadInitFunc, "LevelTick_EventQueuePoll");
@@ -221,6 +237,19 @@ void Minecraft::connectTo(const wstring& server, int port)
 
 void Minecraft::init()
 {
+#ifdef MINECRAFT_SERVER_BUILD
+	printf("Headless core: locating world storage\n");
+	workingDirectory = getWorkingDirectory();
+	levelSource = new McRegionLevelStorageSource(File(workingDirectory, L"saves"));
+	printf("Headless core: loading options\n");
+	options = new Options(this, workingDirectory);
+	printf("Headless core: loading skin repository\n");
+	skins = new TexturePackRepository(workingDirectory, this);
+	skins->addDebugPacks();
+	printf("Headless core: creating progress service\n");
+	progressRenderer = new ProgressRenderer(this);
+	printf("Headless core: initialized\n");
+#else
 #if 0 // 4J - removed
 	if (parent != null)
 	{
@@ -394,6 +423,7 @@ void Minecraft::init()
 	progressRenderer = new ProgressRenderer(this);
 
 	RenderManager.CBuffLockStaticCreations();
+#endif
 }
 
 void Minecraft::renderLoadingScreen()
@@ -3606,7 +3636,9 @@ void Minecraft::setLevel(MultiPlayerLevel *level, int message /*=-1*/, shared_pt
 	//soundEngine->playStreaming(L"", 0, 0, 0, 0, 0);
 
 	// 4J - stop update thread from processing this level, which blocks until it is safe to move on - will be re-enabled if we set the level to be non-NULL
+#ifndef MINECRAFT_SERVER_BUILD
 	gameRenderer->DisableUpdateThread();
+#endif
 
 	for(unsigned int i = 0; i < levels.length; ++i)
 	{
@@ -3771,7 +3803,7 @@ void Minecraft::setLevel(MultiPlayerLevel *level, int message /*=-1*/, shared_pt
 		this->cameraTargetPlayer = player;
 
 		// 4J - allow update thread to start processing the level now both it & the player should be ok
-		gameRenderer->EnableUpdateThread();
+	if (gameRenderer != nullptr) gameRenderer->EnableUpdateThread();
 	}
 	else
 	{
@@ -4118,14 +4150,18 @@ void Minecraft::main()
 	useLomp = true;
 
 	MinecraftWorld_RunStaticCtors();
+#ifndef MINECRAFT_SERVER_BUILD
 	EntityRenderDispatcher::staticCtor();
 	TileEntityRenderDispatcher::staticCtor();
+#endif
 	User::staticCtor();
+#ifndef MINECRAFT_SERVER_BUILD
 	Tutorial::staticCtor();
+#endif
 	ColourTable::staticCtor();
 	app.loadDefaultGameRules();
 
-#ifdef _LARGE_WORLDS
+#if defined(_LARGE_WORLDS) && !defined(MINECRAFT_SERVER_BUILD)
 	LevelRenderer::staticCtor();
 #endif
 
@@ -4162,7 +4198,9 @@ void Minecraft::main()
 	}
 
 	// Common for all platforms
+#ifndef MINECRAFT_SERVER_BUILD
 	IUIScene_CreativeMenu::staticCtor();
+#endif
 
 	// On PS4, we call Minecraft::Start from another thread, as this has been timed taking ~2.5 seconds and we need to do some basic
 	// rendering stuff so that we don't break the TRCs on SubmitDone calls

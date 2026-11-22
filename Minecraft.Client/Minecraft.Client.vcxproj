@@ -572,6 +572,8 @@
     <LinkIncremental>true</LinkIncremental>
     <ImageXexOutput>$(OutDir)$(ProjectName)_D.xex</ImageXexOutput>
     <IncludePath>$(ProjectDir)\..\Minecraft.World\x64headers;$(ProjectDir)\Xbox\Sentient\Include;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)$(Platform)\Minecraft.Client\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)\$(Platform)\Minecraft.Client\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Durango'">
     <LinkIncremental>true</LinkIncremental>
@@ -593,6 +595,8 @@
     <LinkIncremental>true</LinkIncremental>
     <ImageXexOutput>$(OutDir)$(ProjectName)_D.xex</ImageXexOutput>
     <IncludePath>$(ProjectDir)\..\Minecraft.World\x64headers;$(ProjectDir)\Xbox\Sentient\Include;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)$(Platform)\Minecraft.Client\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)\$(Platform)\Minecraft.Client\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ContentPackage_Vita|x64'">
     <LinkIncremental>true</LinkIncremental>

@@ -10,6 +10,7 @@ NetworkPlayerWindows::NetworkPlayerWindows(int userIndex, unsigned char smallId,
 	
 	m_isLocal = isLocal;
 	m_isHost = isHost;
+	m_isFakeHost = false;
 
 	m_sessionIndex = -1;
 	m_remoteAddress = 0;
@@ -82,6 +83,7 @@ int NetworkPlayerWindows::GetSendQueueSizeMessages(INetworkPlayer* player, bool 
 int NetworkPlayerWindows::GetCurrentRtt() { return 0; }
 
 bool NetworkPlayerWindows::IsHost() { return m_isHost; }
+bool NetworkPlayerWindows::IsFakeHost() { return m_isFakeHost; }
 bool NetworkPlayerWindows::IsGuest() { return false; }
 bool NetworkPlayerWindows::IsLocal() { return m_isLocal; }
 int NetworkPlayerWindows::GetSessionIndex() { return m_sessionIndex; }
@@ -102,6 +104,7 @@ std::wstring NetworkPlayerWindows::GetDisplayName() { return m_name; }
 PlayerUID NetworkPlayerWindows::GetUID() { return m_uid; }
 
 void NetworkPlayerWindows::SetHost(bool isHost) { m_isHost = isHost; }
+void NetworkPlayerWindows::SetFakeHost(bool isFakeHost) { m_isFakeHost = isFakeHost; }
 void NetworkPlayerWindows::SetSmallId(unsigned char smallId) {
 	m_smallId = smallId;
 	m_uid = ((static_cast<PlayerUID>(m_userIndex + 1) << 8) | smallId);
@@ -112,6 +115,7 @@ void NetworkPlayerWindows::SetSessionIndex(int index) { m_sessionIndex = index; 
 
 void NetworkPlayerWindows::ResetForSession(bool isHost, unsigned char smallId) {
 	m_isHost = isHost;
+	m_isFakeHost = false;
 	SetSmallId(smallId);
 	m_gameSocket = nullptr;
 	m_remoteAddress = 0;

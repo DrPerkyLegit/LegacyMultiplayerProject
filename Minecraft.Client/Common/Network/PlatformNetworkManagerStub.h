@@ -164,5 +164,5 @@ public:
 private:
 	void NotifyPlayerJoined( IQNetPlayer *pQNetPlayer );
 
-	void FakeLocalPlayerJoined() { NotifyPlayerJoined(m_pIQNet->GetLocalPlayerByUserIndex(0)); }
+	void FakeLocalPlayerJoined(bool fakeHost) { NotifyPlayerJoined(m_pIQNet->GetLocalPlayerByUserIndex(0)); }
 };

@@ -181,7 +181,7 @@ private:
 
 
 public:
-	void FakeLocalPlayerJoined();		// Temporary method whilst we don't have real networking to make this happen
+	void FakeLocalPlayerJoined(bool fakeHost = false);		// Temporary method whilst we don't have real networking to make this happen
 };
 
 extern CGameNetworkManager g_NetworkManager;

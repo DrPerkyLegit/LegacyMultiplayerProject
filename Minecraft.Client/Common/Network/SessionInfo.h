@@ -31,6 +31,7 @@ public:
 	unsigned char displayLabelLength;
 	unsigned char displayLabelViewableStartIndex;
 	GameSessionData data;
+	bool isDedicatedSession;
 	bool hasPartyMember;
 	std::vector<std::wstring> serverPlayerNames;
 
@@ -39,6 +40,7 @@ public:
 		displayLabel = NULL;
 		displayLabelLength = 0;
 		displayLabelViewableStartIndex = 0;
+		isDedicatedSession = false;
 		hasPartyMember = false;
 	}
 

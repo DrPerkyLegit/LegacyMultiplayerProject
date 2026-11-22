@@ -116,6 +116,6 @@ public:
 	virtual void GetFullFriendSessionInfo( FriendSessionInfo *foundSession, void (* FriendSessionUpdatedFn)(bool success, void *pParam), void *pParam ) = 0;
 	virtual void ForceFriendsSessionRefresh() = 0;
 
-	virtual void FakeLocalPlayerJoined() {};		// Temporary method whilst we don't have real networking to make this happen
+	virtual void FakeLocalPlayerJoined(bool fakeHost = false) {};		// Temporary method whilst we don't have real networking to make this happen
 
 };

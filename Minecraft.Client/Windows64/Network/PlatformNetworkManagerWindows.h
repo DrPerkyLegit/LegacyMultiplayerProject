@@ -62,7 +62,7 @@ public:
 	virtual void SetSessionsUpdatedCallback(void (*SessionsUpdatedCallback)(LPVOID pParam), LPVOID pSearchParam);
 	virtual void GetFullFriendSessionInfo(FriendSessionInfo* foundSession, void (*FriendSessionUpdatedFn)(bool success, void* pParam), void* pParam);
 	virtual void ForceFriendsSessionRefresh();
-	virtual void FakeLocalPlayerJoined();
+	virtual void FakeLocalPlayerJoined(bool fakeHost);
 
 private:
 	struct PendingClient {
@@ -94,6 +94,7 @@ private:
 	SOCKET m_discoverySocket;
 	bool m_winsockStarted;
 	bool m_isHost;
+	bool m_isFakeHost;
 	bool m_inSession;
 	bool m_inGameplay;
 	bool m_isLocalGame;

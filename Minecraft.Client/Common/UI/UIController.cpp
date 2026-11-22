@@ -1544,6 +1544,9 @@ bool UIController::IsPauseMenuDisplayed(int iPad)
 
 bool UIController::IsContainerMenuDisplayed(int iPad)
 {
+#ifdef MINECRAFT_SERVER_BUILD
+	return false;
+#else
 	EUIGroup group;
 	if( app.GetGameStarted() )
 	{
@@ -1556,6 +1559,7 @@ bool UIController::IsContainerMenuDisplayed(int iPad)
 		group = eUIGroup_Fullscreen;
 	}
 	return m_groups[(int)group]->IsContainerMenuDisplayed();
+#endif
 }
 
 bool UIController::IsIgnorePlayerJoinMenuDisplayed(int iPad)

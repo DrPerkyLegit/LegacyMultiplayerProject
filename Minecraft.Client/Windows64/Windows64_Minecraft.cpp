@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "Windows64_Xuid.h"
+#include "Windows64_Directories.h"
 
 #include <assert.h>
 #include <wchar.h>
@@ -706,6 +707,11 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 	if (!SetCurrentDirectoryW(executablePath))
 	{
 		MessageBoxW(NULL, L"Unable to set the working directory to the executable folder.", L"Legacy Multiplayer Client", MB_OK | MB_ICONERROR);
+		return FALSE;
+	}
+	if (!EnsureWindows64GameHddDirectory())
+	{
+		MessageBoxW(NULL, L"Unable to create the Windows64\\GameHDD directory.", L"Legacy Multiplayer Client", MB_OK | MB_ICONERROR);
 		return FALSE;
 	}
 	Win64Xuid::ResolvePersistentXuid();

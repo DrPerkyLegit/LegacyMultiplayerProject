@@ -15,6 +15,7 @@ public:
 	virtual int GetSendQueueSizeMessages( INetworkPlayer *player, bool lowPriority ) = 0;
 	virtual int GetCurrentRtt() = 0;
 	virtual bool IsHost() = 0;
+	virtual bool IsFakeHost() { return false; }
 	virtual bool IsGuest() = 0;
 	virtual bool IsLocal() = 0;
 	virtual int GetSessionIndex() = 0;

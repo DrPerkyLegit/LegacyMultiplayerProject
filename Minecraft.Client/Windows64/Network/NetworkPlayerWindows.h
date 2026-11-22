@@ -23,6 +23,7 @@ public:
 	virtual int GetSendQueueSizeMessages(INetworkPlayer* player, bool lowPriority);
 	virtual int GetCurrentRtt();
 	virtual bool IsHost();
+	virtual bool IsFakeHost();
 	virtual bool IsGuest();
 	virtual bool IsLocal();
 	virtual int GetSessionIndex();
@@ -38,6 +39,7 @@ public:
 	virtual PlayerUID GetUID();
 
 	void SetHost(bool isHost);
+	void SetFakeHost(bool isFakeHost);
 	void SetSmallId(unsigned char smallId);
 	void SetDisplayName(const std::wstring& name);
 	void SetSessionIndex(int index);
@@ -60,6 +62,7 @@ private:
 	unsigned char m_smallId;
 	bool m_isLocal;
 	bool m_isHost;
+	bool m_isFakeHost;
 	int m_sessionIndex;
 	std::wstring m_name;
 	PlayerUID m_uid;
